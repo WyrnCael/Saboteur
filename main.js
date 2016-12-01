@@ -18,6 +18,12 @@ app.get("/index.html", function(req, response) {
   response.end();
 });
 
+app.get("/", function(req, response) {
+  response.status(200);
+  response.render("index");
+  response.end();
+});
+
 app.listen(3000, function() {
 console.log("Servidor arrancado en el puerto 3000");
 });

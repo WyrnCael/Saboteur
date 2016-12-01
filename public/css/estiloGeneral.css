@@ -1,0 +1,77 @@
+#all{
+	padding: 5px 50px 5px 50px;
+	height: 100%;
+}
+
+h1{
+	font-family:Georgia,"Times New Roman",Times,serif;
+    font-weight:normal;
+    text-shadow:0 0 1px #000;
+    color:#444444;
+    font-size:2.5em;
+    padding:2px 0 0;
+    line-height:1.2em;
+    margin:0 0 10px;
+}
+
+html, body{
+	height: 100%;
+}
+
+body{
+	background-image: url("../img/background.png");
+	background-repeat: no-repeat;
+	background-position: center center;
+	background-attachment: fixed;
+	background-size: cover;
+}
+
+#logo{
+	float: left;
+}
+
+#datosUsuario{
+	float: right;
+	background: rgb(0, 102, 102);
+	background: rgba(0, 102, 102, 0.75);
+	border-radius: 8px;
+	padding: 10px;
+	margin-bottom: 10px;
+}
+
+#infoConectado{
+	text-align: center;
+	padding-bottom: 10px;
+	color: white;
+	font-weight: bold;
+}
+
+#botonLogin{
+	padding-top: 5px;
+	float: left;
+}
+
+#botonNuevoUser{
+	padding-top: 5px;
+	float: right;
+}
+
+#panelCentral{
+	clear: both;
+	background: rgb(163, 202, 193);
+	background: rgba(163, 202, 193, 0.85);
+	padding: 10px 30px 10px 30px;
+	height: 80%;
+	border-radius: 8px;
+}
+
+th{
+	background-color: #86592d;
+	color: white;
+}
+
+table, th, td{
+	border-collapse: collapse;
+	border: 1px solid #86592d;
+	padding: 5px 10px 5px 10px;
+}

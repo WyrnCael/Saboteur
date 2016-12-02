@@ -6,8 +6,6 @@
 "use strict";
 
 var mysql = require("mysql");
-var moment = require("moment");
-moment.locale('es');
 
 var conexion = mysql.createConnection({
     host:  "localhost",

@@ -6,6 +6,8 @@
 "use strict";
 
 var mysql = require("mysql");
+var moment = require("moment");
+moment.locale('es');
 
 var conexion = mysql.createConnection({
     host:  "localhost",
@@ -15,8 +17,23 @@ var conexion = mysql.createConnection({
 });
 
 function altaUsuario(datosUsuario){
-    console.log(datosUsuario);
-    console.log(datosUsuario["datosNuevoUsuario"].usuario);
+    conexion.connect(function (err) {
+    if (err) {
+        console.error(err);
+    } else {
+        conexion.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento, Herramienta)" + 
+                       "VALUES (?, ?, ?, ?, ?, ?, ?)", [datosUsuario["datosNuevoUsuario"].usuario, datosUsuario["datosNuevoUsuario"].contraseña,
+                        datosUsuario["datosNuevoUsuario"].nombre, datosUsuario["datosNuevoUsuario"].sexo, datosUsuario["datosNuevoUsuario"].foto, datosUsuario["datosNuevoUsuario"].nacimiento, false],
+            function(err, rows) {
+                if (err) {
+                    console.error(err);
+                } else {
+                   console.log("Guardado!")
+                }
+                conexion.end();
+            });
+        }
+    });
 }
 
 function bajaUsuario(){

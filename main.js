@@ -23,7 +23,6 @@ app.get("/index.html", function(req, response) {
 });
 
 app.post("/index_post.html", function(req, response) {
-  console.log(req.body);
   DAO.altaUsuario(req.body);
   response.status(300);
   response.redirect("/index.html");  

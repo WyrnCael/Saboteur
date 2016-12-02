@@ -19,9 +19,9 @@ function altaUsuario(datosUsuario){
     if (err) {
         console.error(err);
     } else {
-        conexion.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento, Herramienta)" + 
-                       "VALUES (?, ?, ?, ?, ?, ?, ?)", [datosUsuario["datosNuevoUsuario"].usuario, datosUsuario["datosNuevoUsuario"].contraseña,
-                        datosUsuario["datosNuevoUsuario"].nombre, datosUsuario["datosNuevoUsuario"].sexo, datosUsuario["datosNuevoUsuario"].foto, datosUsuario["datosNuevoUsuario"].nacimiento, false],
+        conexion.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento)" + 
+                       "VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario["datosNuevoUsuario"].usuario, datosUsuario["datosNuevoUsuario"].contraseña,
+                        datosUsuario["datosNuevoUsuario"].nombre, datosUsuario["datosNuevoUsuario"].sexo, datosUsuario["datosNuevoUsuario"].foto, datosUsuario["datosNuevoUsuario"].nacimiento],
             function(err, rows) {
                 if (err) {
                     console.error(err);

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+
+	<div id="panelCentral">
+	<h1>¡Bienvenid@, nombreUsuario!</h1>	
+	<p><h2>Partidas abiertas</h2>
+	Las siguientes partidas han sido creadas por ti, pero aún están a la espera de recibir más jugadores.
+	</p>
+	<p>
+	<table> 
+            <tr>
+                <th>Nombre</th>
+                <th>Fecha</th>
+                <th>Número de jugadores</th>
+            </tr>
+            <tr>
+                <td>Nombre</td>
+                <td>fecha</td>             
+                <td>4/5</td>
+                <td>Cerrar partida</td>
+            </tr>
+        </table>
+	</p>
+	<p><h2>Partidas activas</h2>
+	Haz clic en el titulo de la partida para ver su estado actual.	
+
+	Se marcan resaltadas las partidas en las que es tu turno.
+	</p>
+	<p>
+	<table> 
+            <tr>
+                <th>Nombre</th>
+                <th>Usuario creador</th>
+                <th>Fecha</th>
+                <th>Turno</th>
+            </tr>
+            <tr>
+                <td>Nombre</td>
+                <td>nomCreador</td>             
+                <td>14/05/2016</td>
+                <td>otro</td>
+            </tr>
+        </table>
+
+	</p>
+	<p><h2>Partidas terminadas</h2>
+	</p>
+	<p>
+	<table> 
+            <tr>
+                <th>Nombre</th>
+                <th>Usuario creador</th>
+                <th>¿Has ganado?</th>
+            </tr>
+            <tr>
+                <td>Nombre</td>
+                <td>Nombre</td>             
+                <td>Sí</td>
+            </tr>
+        </table>
+
+	</p>
+
+	</div>
+</div>
+</body>
+</html>

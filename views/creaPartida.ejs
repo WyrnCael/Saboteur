@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<link rel="stylesheet" href="./css/formularios.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+
+	<div id="panelCentral">
+		<div id="formulario">
+			<p><h1>Nueva partida</h1>
+			Introduce los datos de la partida:
+			</p>		
+			<form action="listaPartidas.html" method="POST"> 
+				<p><label for="nombrePartida">Nombre:<span>*</span></label><input type="text" name="nombrePartida"></p>
+				<p><label for="numeroJugadores">Número máximo de jugadores(entre 3 y 7):<span>*</span></label>
+					<select name="numeroJugadores">
+					   <option value="3">3</option> 
+					   <option value="4">4</option> 
+					   <option value="5">5</option>
+					   <option value="6">6</option> 
+					   <option value="7">7</option> 
+					</select></p>
+				<p><input type="submit" value="Crear partida"></p>
+			</form>
+		</div>
+		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>
+	</div>
+	</div>
+</div>
+</body>
+</html>

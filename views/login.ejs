@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<link rel="stylesheet" href="./css/formularios.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+
+	<div id="panelCentral">
+		<div id="formulario">
+			<p><h1>Login</h1>
+			Introduce los datos para loguearte:
+			</p>		
+			<form action="index.html" method="POST"> 
+				<p><label for="usuario">Nombre de usuario:</label><input type="text" name="usuario"></p>
+				<p><label for="contraseña">Contraseña:</label><input type="password" name="contraseña"></p>
+				<p><input type="submit" value="Login"></p>
+			</form>
+		</div>
+	</div>
+</div>
+</body>
+</html>

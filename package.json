@@ -1,8 +1,17 @@
 {
-    "name": "Saboteur",
-    "version": "1.0.0",
-    "keywords": ["util", "functional", "server", "client", "browser"],
-    "author": "Jota",
-    "contributors": [],
-    "dependencies": {}
+  "name": "Saboteur",
+  "version": "1.0.0",
+  "keywords": [
+    "util",
+    "functional",
+    "server",
+    "client",
+    "browser"
+  ],
+  "author": "Jota",
+  "contributors": [],
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "mysql": "^2.12.0"
+  }
 }

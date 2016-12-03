@@ -13,11 +13,23 @@
 	<%- include("cabecera") %>
 
 	<div id="panelCentral">
+            
+
 		<div id="formulario">
 			<p><h1>Nuevo usuario</h1>
 			Introduce los datos para crear un nuevo usuario. Los campos marcados con asterísco (<span>*</span>) son obligatorios:
-			</p>		
-			<form action="index_post.html" method="POST"> 
+			</p>	
+                        <div id="caja_errores_form">
+                            <% if (errores) { %>
+                                La información introducida no es correcta:
+                            <% } %>
+                            <ul>
+                                <% errores.forEach(function(error) { %>
+                                <li><%= error.msg %></li>
+                                <% }); %>
+                            </ul>
+                        </div>
+			<form action="procesar_fromulario_registro" method="POST"> 
 				<p><label for="usuario">Nombre de usuario:<span>*</span></label><input type="text" name="datosNuevoUsuario[usuario]"></p>
 				<p><label for="contraseña">Contraseña:<span>*</span></label><input type="password" name="datosNuevoUsuario[contraseña]"></p>
 				<p><label for="nombre">Nombre completo:<span>*</span></label><input type="text" name="datosNuevoUsuario[nombre]"></p>	

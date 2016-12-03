@@ -12,6 +12,7 @@
   "contributors": [],
   "dependencies": {
     "body-parser": "^1.15.2",
+    "express-validator": "^3.0.0",
     "mysql": "^2.12.0"
   }
 }

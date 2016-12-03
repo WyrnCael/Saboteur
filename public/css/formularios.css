@@ -16,3 +16,10 @@
 #formulario span{
 	color: red;
 }
+
+#caja_errores_form{
+    border-radius: 8px;
+    border: 1px solid black;
+    padding: 10px;
+    background-color: red;
+}

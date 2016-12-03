@@ -9,7 +9,7 @@ var path = require("path");
 var ejs = require("ejs");
 var bodyParser = require("body-parser");
 var multer = require("multer");
-var upload = multer({ dest: "uploads/" });
+var upload = multer({ storage: multer.memoryStorage() });
 var fs = require("fs");
 var DAO = require('./DAO.js');
 var app = express();
@@ -47,12 +47,8 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
     // El método isEmpty() devuelve true si las comprobaciones
     // no han detectado ningún error
     if (result.isEmpty()) {
-        var urlFichero;
         if(req.file){
-            urlFichero = path.join("img", req.file.filename);
-            var fichDestino = path.join("public", urlFichero);
-            fs.createReadStream(req.file.path).pipe(fs.createWriteStream(fichDestino));
-            datos.foto = urlFichero;
+            datos.foto = req.file.buffer;
         }
        
         DAO.altaUsuario(datos, function(err){
@@ -79,6 +75,24 @@ app.get("/", function(req, response) {
   response.status(200);
   response.render("index");
   response.end();
+});
+
+app.get("/imagen/:nick", function(request, response, next) {
+   var n = String(request.params.nick);
+   
+    DAO.obtenerImagenUsuario(n, function(err, imagen) {
+        if(err) {
+            next(err);
+        } else {
+            if(imagen) {
+                response.end(imagen);
+            }
+            else{
+                response.status(404);
+                response.end("not found");
+            }
+        }
+     });
 });
 
 app.listen(3000, function() {

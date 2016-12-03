@@ -8,6 +8,9 @@ var expressValidator = require("express-validator");
 var path = require("path");
 var ejs = require("ejs");
 var bodyParser = require("body-parser");
+var multer = require("multer");
+var upload = multer({ dest: "uploads/" });
+var fs = require("fs");
 var DAO = require('./DAO.js');
 var app = express();
 
@@ -30,7 +33,7 @@ app.get("/registro.html", function(req, response) {
   response.end();
 });
 
-app.post("/procesar_fromulario_registro", function(req, response) {
+app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, response) {
   var datos = req.body;
   req.checkBody("usuario", "El campo 'Nombre de usuario' no puede estar vacío.").notEmpty();
   req.checkBody("usuario", "El campo 'Nombre de usuario' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});
@@ -44,6 +47,14 @@ app.post("/procesar_fromulario_registro", function(req, response) {
     // El método isEmpty() devuelve true si las comprobaciones
     // no han detectado ningún error
     if (result.isEmpty()) {
+        var urlFichero;
+        if(req.file){
+            urlFichero = path.join("img", req.file.filename);
+            var fichDestino = path.join("public", urlFichero);
+            fs.createReadStream(req.file.path).pipe(fs.createWriteStream(fichDestino));
+            datos.foto = urlFichero;
+        }
+       
         DAO.altaUsuario(datos);
         response.status(300);
         response.redirect("/index.html");  

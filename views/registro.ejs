@@ -29,7 +29,7 @@
                                 </ul>                            
                             </div>
                         <% } %>
-                       <form action="procesar_fromulario_registro" method="POST"> 
+                       <form action="procesar_fromulario_registro" method="POST" enctype="multipart/form-data"> 
 				<p><label for="usuario">Nombre de usuario:<span>*</span></label><input type="text" name="usuario" value=
                                 <% if(datosNuevoUsuario.usuario) { %>
                                     <%- JSON.stringify(datosNuevoUsuario.usuario) %>

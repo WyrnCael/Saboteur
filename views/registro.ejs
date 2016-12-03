@@ -19,24 +19,43 @@
 			<p><h1>Nuevo usuario</h1>
 			Introduce los datos para crear un nuevo usuario. Los campos marcados con asterísco (<span>*</span>) son obligatorios:
 			</p>	
-                        <div id="caja_errores_form">
-                            <% if (errores) { %>
-                                La información introducida no es correcta:
-                            <% } %>
-                            <ul>
-                                <% errores.forEach(function(error) { %>
-                                <li><%= error.msg %></li>
-                                <% }); %>
-                            </ul>
-                        </div>
-			<form action="procesar_fromulario_registro" method="POST"> 
-				<p><label for="usuario">Nombre de usuario:<span>*</span></label><input type="text" name="datosNuevoUsuario[usuario]"></p>
-				<p><label for="contraseña">Contraseña:<span>*</span></label><input type="password" name="datosNuevoUsuario[contraseña]"></p>
-				<p><label for="nombre">Nombre completo:<span>*</span></label><input type="text" name="datosNuevoUsuario[nombre]"></p>	
-				<p><label for="sexo">Sexo:<span>*</span></label><input type="radio" name="datosNuevoUsuario[sexo]" value="hombre"> Hombre		
-					<input type="radio" name="datosNuevoUsuario[sexo]" value="mujer"> Mujer</p>				
-				<p><label for="foto">Foto: </label><input type="file" name="datosNuevoUsuario[foto]"></p>
-				<p><label for="nacimiento">Fecha de nacimiento:</label><input type="date" name="datosNuevoUsuario[nacimiento]"></p>
+                        <% if (errores !== undefined) { %>
+                            <div id="caja_errores_form">                            
+                                La información introducida no es correcta:                            
+                                <ul>
+                                    <% errores.forEach(function(error) { %>
+                                    <li><%= error.msg %></li>
+                                    <% }); %>
+                                </ul>                            
+                            </div>
+                        <% } %>
+                       <form action="procesar_fromulario_registro" method="POST"> 
+				<p><label for="usuario">Nombre de usuario:<span>*</span></label><input type="text" name="usuario" value=
+                                <% if(datosNuevoUsuario.usuario) { %>
+                                    <%- JSON.stringify(datosNuevoUsuario.usuario) %>
+                                <% } %>
+                                ></p>
+				<p><label for="contraseña">Contraseña:<span>*</span></label><input type="password" name="contraseña"></p>
+				<p><label for="nombre">Nombre completo:<span>*</span></label><input type="text" name="nombre" value=
+                                <% if(datosNuevoUsuario.nombre) { %>
+                                    <%- JSON.stringify(datosNuevoUsuario.nombre) %>
+                                <% } %>
+                                ></p>	
+				<p><label for="sexo">Sexo:<span>*</span></label>
+                                        <% if(datosNuevoUsuario.sexo) { %>                                            
+                                            <input type="radio" name="sexo" value="hombre" <% if(datosNuevoUsuario.sexo === "hombre") { %> checked <% } %> > Hombre		
+                                            <input type="radio" name="sexo" value="mujer" <% if(datosNuevoUsuario.sexo === "mujer") { %> checked <% } %> > Mujer
+                                        <% } else { %>
+                                            <input type="radio" name="sexo" value="hombre"> Hombre		
+                                            <input type="radio" name="sexo" value="mujer"> Mujer
+                                        <% } %>
+                                        </p>				
+				<p><label for="foto">Foto: </label><input type="file" name="foto"></p>
+				<p><label for="nacimiento">Fecha de nacimiento:</label><input type="date" name="nacimiento" value=
+                                <% if(datosNuevoUsuario.nacimiento) { %>
+                                    <%= datosNuevoUsuario.nacimiento %>
+                                <% } %>
+                                ></p>
 				<p><input type="submit" value="Crear cuenta"></p>
 			</form>
 		</div>

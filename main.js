@@ -24,35 +24,33 @@ app.get("/index.html", function(req, response) {
   response.end();
 });
 
-app.post("/registro_usuario", function(req, response) {
-  DAO.altaUsuario(req.body);
-  response.status(300);
-  response.redirect("/index.html");  
-  response.end();
-});
-
 app.get("/registro.html", function(req, response) {
   response.status(200);
-  response.render("registro", {errores: []});
+  response.render("registro", {errores: undefined, datosNuevoUsuario: {} });
   response.end();
 });
 
 app.post("/procesar_fromulario_registro", function(req, response) {
-  req.checkBody("datosNuevoUsuario[usuario]", "El campo 'Nombre de usuario' no puede estar vacío.").notEmpty();
-  req.checkBody("datosNuevoUsuario[contraseña]", "El campo 'Contraseña' no puede estar vacío.").notEmpty();  
-  req.checkBody("datosNuevoUsuario[nombre]", "El campo 'Nombre completo' no puede estar vacío.").notEmpty();
-  req.checkBody("datosNuevoUsuario[sexo]", "Debe elegir un sexo.").notEmpty();
-  req.checkBody("datosNuevoUsuario[nacimiento]", "La fecha de nacimiento no puede ser posterior a la actual.").isBefore();
+  var datos = req.body;
+  req.checkBody("usuario", "El campo 'Nombre de usuario' no puede estar vacío.").notEmpty();
+  req.checkBody("usuario", "El campo 'Nombre de usuario' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});
+  req.checkBody("contraseña", "El campo 'Contraseña' no puede estar vacío.").notEmpty();  
+  req.checkBody("contraseña", "El campo 'Contraseña' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});
+  req.checkBody("nombre", "El campo 'Nombre completo' no puede estar vacío.").notEmpty();
+  req.checkBody("nombre", "El campo 'Nombre completo' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});
+  req.checkBody("sexo", "Debe elegir un sexo.").notEmpty();
+  if(datos.nacimiento !== "") req.checkBody("nacimiento", "La fecha de nacimiento no puede ser posterior a la actual.").isBefore();
   req.getValidationResult().then(function(result) {
     // El método isEmpty() devuelve true si las comprobaciones
     // no han detectado ningún error
     if (result.isEmpty()) {
+        DAO.altaUsuario(datos);
         response.status(300);
-        response.redirect("registro_usuario");        
+        response.redirect("/index.html");  
         response.end();
     } else {
         response.status(200);
-        response.render("registro", {errores: result.array()});
+        response.render("registro", {errores: result.array(), datosNuevoUsuario: datos });
         response.end();
     }
   });  

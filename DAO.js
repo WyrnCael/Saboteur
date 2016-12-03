@@ -20,8 +20,8 @@ function altaUsuario(datosUsuario){
         console.error(err);
     } else {
         conexion.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento)" + 
-                       "VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario["datosNuevoUsuario"].usuario, datosUsuario["datosNuevoUsuario"].contraseña,
-                        datosUsuario["datosNuevoUsuario"].nombre, datosUsuario["datosNuevoUsuario"].sexo, datosUsuario["datosNuevoUsuario"].foto, datosUsuario["datosNuevoUsuario"].nacimiento],
+                       "VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario.usuario, datosUsuario.contraseña,
+                        datosUsuario.nombre, datosUsuario.sexo, datosUsuario.foto, datosUsuario.nacimiento],
             function(err, rows) {
                 if (err) {
                     console.error(err);

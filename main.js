@@ -55,10 +55,18 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
             datos.foto = urlFichero;
         }
        
-        DAO.altaUsuario(datos);
-        response.status(300);
-        response.redirect("/index.html");  
-        response.end();
+        DAO.altaUsuario(datos, function(err){
+            if(err){
+                response.status(300);
+                response.render("registro", {errores: [{ msg: "Nombre de usuario no disponible."}], datosNuevoUsuario: datos });
+                response.end();
+            }
+            else{
+                response.status(300);
+                response.redirect("/index.html");  
+                response.end();
+            }
+        });       
     } else {
         response.status(200);
         response.render("registro", {errores: result.array(), datosNuevoUsuario: datos });

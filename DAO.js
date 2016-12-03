@@ -7,28 +7,28 @@
 
 var mysql = require("mysql");
 
-var conexion = mysql.createConnection({
+var pool = mysql.createPool({
     host:  "localhost",
     user:  "root",
     password: "",
     database: "Saboteur"
 });
 
-function altaUsuario(datosUsuario){
-    conexion.connect(function (err) {
+function altaUsuario(datosUsuario, callback){
+    pool.getConnection(function(err, con) {
     if (err) {
-        console.error(err);
+        callback(err);
     } else {
-        conexion.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento)" + 
+        con.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento)" + 
                        "VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario.usuario, datosUsuario.contraseña,
                         datosUsuario.nombre, datosUsuario.sexo, datosUsuario.foto, datosUsuario.nacimiento],
-            function(err, rows) {
+            function(err, rows) { 
+                con.release();
                 if (err) {
-                    console.error(err);
+                    callback(err);
                 } else {
-                   console.log("Guardado!")
-                }
-                conexion.end();
+                   callback(null);
+                }                
             });
         }
     });

@@ -11,6 +11,21 @@ var bodyParser = require("body-parser");
 var multer = require("multer");
 var upload = multer({ storage: multer.memoryStorage() });
 var fs = require("fs");
+var session = require("express-session");
+var mysqlSession = require("express-mysql-session");
+var MySQLStore = mysqlSession(session);
+var sessionStore = new MySQLStore({
+   host:  "localhost",
+    user:  "root",
+    password: "",
+    database: "Saboteur"
+});
+var middlewareSession = session({
+    saveUninitialized: false,
+    secret: "Saboteur111",
+    resave: false,
+    store: sessionStore
+});
 var DAO = require('./DAO.js');
 var app = express();
 
@@ -19,17 +34,19 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static(__dirname + '/public'));
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(middlewareSession);
 
 
 app.get("/index.html", function(req, response) {
   response.status(200);
-  response.render("index");
+  response.render("index", {session: req.session });
+  console.log(req.session.nick);
   response.end();
 });
 
 app.get("/registro.html", function(req, response) {
   response.status(200);
-  response.render("registro", {errores: undefined, datosNuevoUsuario: {} });
+  response.render("registro", {errores: undefined, datosNuevoUsuario: {}, session: req.session });
   response.end();
 });
 
@@ -54,18 +71,19 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
         DAO.altaUsuario(datos, function(err){
             if(err){
                 response.status(300);
-                response.render("registro", {errores: [{ msg: "Nombre de usuario no disponible."}], datosNuevoUsuario: datos });
+                response.render("registro", {errores: [{ msg: "Nombre de usuario no disponible."}], datosNuevoUsuario: datos, session: req.session });
                 response.end();
             }
             else{
-                response.status(300);
-                response.redirect("/index.html");  
+                req.session.nick = datos.usuario;
+                response.status(200);
+                response.render("index", {session: req.session });  
                 response.end();
             }
         });       
     } else {
         response.status(200);
-        response.render("registro", {errores: result.array(), datosNuevoUsuario: datos });
+        response.render("registro", {errores: result.array(), datosNuevoUsuario: datos, session: req.session  });
         response.end();
     }
   });  
@@ -73,8 +91,36 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
 
 app.get("/", function(req, response) {
   response.status(200);
-  response.render("index");
+  response.render("index", {session: req.session });
   response.end();
+});
+
+app.get("/logout", function(request, response) {
+   request.session.destroy();
+   response.status(200);
+    response.render("index", {session: {} });
+    response.end();
+});
+
+app.post("/procesar_login", function(req, response) {
+    DAO.login(req.body, function(err, user){
+        if(err){
+            // Login incorrecto
+            console.log(err);
+        }
+        else{
+            if(user){
+                req.session.nick = user.Nick;
+                response.status(200);
+                response.render("index", {session: req.session });
+            } else{
+                // Login incorrecto
+                response.status(200);
+                response.render("index", {session: req.session });
+            }
+        }
+        response.end();
+    });
 });
 
 app.get("/imagen/:nick", function(request, response, next) {

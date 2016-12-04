@@ -3,26 +3,41 @@
 		<div id="logo">
 			<img src="./img/Logo.png">
 		</div>
-		<div id="datosUsuario">
-			<div id="infoConectado">
-				No estás conectado.
-			</div>
-			<div>
-				<form action="index.html" method="POST"> 
-					<div><input type="text"  name="user" onblur="if (this.value == '') {this.value = 'Usuario';}"
- 											onfocus="if (this.value == 'Usuario') {this.value = '';}" 
- 											value="Usuario"></div>
-					<div><input type="password" name="password" onblur="if (this.value == '') {this.value = 'Contraseña';}"
- 											onfocus="if (this.value == 'Contraseña') {this.value = '';}" 
- 											value="Contraseña"></div>
-					<div id="botonLogin">
-						<input type="submit" value="Login">
-					</div>
-					<div id="botonNuevoUser">
-						<input type="button" onclick="location.href='registro.html';" value="Nuevo Usuario" />
-					</div>
-				</form>
-			</div>
+		<div id="datosUsuario">			
+                    <% if(session.nick) { %>
+                        <div id="infoConectado">
+                                Bienvenido, <%= session.nick %>
+                        </div>    
+                        <div>
+                            <form action="/logout" method="GET"> 
+                                <div id="botonDesconectar">
+                                        <input type="submit" value="Logout" />
+                                </div>
+                            </form>
+                        </div>
+                    <% } else { %>
+                        <div id="infoConectado">
+                                No estás conectado.
+                        </div>
+                        <div>
+
+                            <form action="procesar_login" method="POST"> 
+                                <div><input type="text"  name="user" onblur="if (this.value == '') {this.value = 'Usuario';}"
+                                                                                onfocus="if (this.value == 'Usuario') {this.value = '';}" 
+                                                                                value="Usuario"></div>
+                                <div><input type="password" name="password" onblur="if (this.value == '') {this.value = 'Contraseña';}"
+                                                                                onfocus="if (this.value == 'Contraseña') {this.value = '';}" 
+                                                                                value="Contraseña"></div>
+                                <div id="botonLogin">
+                                        <input type="submit" value="Login">
+                                </div>
+                                <div id="botonNuevoUser">
+                                        <input type="button" onclick="location.href='registro.html';" value="Nuevo Usuario" />
+                                </div>
+                            </form>
+                        </div>
+                    <% } %>
+			
 		</div>		
 </div>
 </cabecera>

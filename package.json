@@ -12,6 +12,8 @@
   "contributors": [],
   "dependencies": {
     "body-parser": "^1.15.2",
+    "express-mysql-session": "^1.2.0",
+    "express-session": "^1.14.2",
     "express-validator": "^3.0.0",
     "multer": "^1.2.0",
     "mysql": "^2.12.0"

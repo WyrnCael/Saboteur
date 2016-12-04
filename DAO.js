@@ -34,8 +34,24 @@ function altaUsuario(datosUsuario, callback){
     });
 }
 
-function bajaUsuario(){
-    
+function login(datosLogin, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Usuarios WHERE Nick = ? AND Contraseña = ?";
+        con.query(sql, [datosLogin.user, datosLogin.password],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err, null);
+                } else {
+                    var row = rows[0];        
+                   callback(null, row);
+                }                
+            });
+        }
+    });
 }
 
 function obtenerImagenUsuario(id, callback){
@@ -62,6 +78,6 @@ function obtenerImagenUsuario(id, callback){
 
 module.exports = {
     altaUsuario: altaUsuario,
-    bajaUsuario: bajaUsuario,
+    login: login,
     obtenerImagenUsuario: obtenerImagenUsuario
 }

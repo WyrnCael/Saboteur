@@ -132,8 +132,7 @@ function obtenerPartidasCreadasPor(nombreUsuario, callback){
                           " ON partidas.Nombre = jugadoresenpartida.Nombre" + 
                           " AND partidas.NickCreador = ?" +
                   " GROUP BY partidas.Nombre";
-          console.log(sql);
-        con.query(sql, [nombreUsuario],
+          con.query(sql, [nombreUsuario],
             function(err, rows) {   
                 con.release();
                 if (err) {

@@ -1,7 +1,5 @@
 /* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * GRUPO 111 - Rubén Casado y Juan José Prieto
  */
 var express = require('express');
 var expressValidator = require("express-validator");
@@ -38,10 +36,16 @@ app.use(middlewareSession);
 
 
 app.get("/index.html", function(req, response) {
-  response.status(200);
-  response.render("index", {session: req.session });
-  console.log(req.session.nick);
-  response.end();
+  if(req.session.nick){
+      response.status(200);
+      response.render("listaPartidas", {session: req.session });
+  }
+  else{
+      response.status(200);
+      response.render("index", {session: req.session });
+  
+  }
+   response.end();
 });
 
 app.get("/registro.html", function(req, response) {
@@ -90,8 +94,8 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
 });
 
 app.get("/", function(req, response) {
-  response.status(200);
-  response.render("index", {session: req.session });
+  response.status(300);
+  response.redirect("/index.html");
   response.end();
 });
 
@@ -112,11 +116,11 @@ app.post("/procesar_login", function(req, response) {
             if(user){
                 req.session.nick = user.Nick;
                 response.status(200);
-                response.render("index", {session: req.session });
+                response.render("listaPartidas", {session: req.session });
             } else{
                 // Login incorrecto
                 response.status(200);
-                response.render("index", {session: req.session });
+                response.render("login", {session: req.session, errores: [{ msg: "Usuario o contraseña incorrectos."}]  });
             }
         }
         response.end();
@@ -134,8 +138,9 @@ app.get("/imagen/:nick", function(request, response, next) {
                 response.end(imagen);
             }
             else{
-                response.status(404);
-                response.end("not found");
+                urlAvatar = path.join("img", "avatarDefault.png");
+                var fichDestino = path.join("public", urlAvatar);
+                fs.createReadStream(fichDestino).pipe(response);
             }
         }
      });

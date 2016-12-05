@@ -1,12 +1,12 @@
 <cabecera>
 <div id="cabecera">
 		<div id="logo">
-			<img src="./img/Logo.png">
+			<a href="/index.html"><img src="./img/Logo.png"></a>
 		</div>
 		<div id="datosUsuario">			
                     <% if(session.nick) { %>
                         <div id="infoConectado">
-                                Bienvenido, <%= session.nick %>
+                                <img src="/imagen/<%= session.nick %>" alt="Imagen de usuario" height="50" width="50"><p><%= session.nick %></p>
                         </div>    
                         <div>
                             <form action="/logout" method="GET"> 

@@ -35,8 +35,12 @@ body{
 	background: rgb(0, 102, 102);
 	background: rgba(0, 102, 102, 0.75);
 	border-radius: 8px;
-	padding: 10px;
+	padding: 5px 10px 5px 10px;
 	margin-bottom: 10px;
+}
+
+#datosUsuario img{
+    border: 1px solid black;
 }
 
 #infoConectado{

@@ -17,9 +17,19 @@
 			<p><h1>Login</h1>
 			Introduce los datos para loguearte:
 			</p>		
-			<form action="index.html" method="POST"> 
-				<p><label for="usuario">Nombre de usuario:</label><input type="text" name="usuario"></p>
-				<p><label for="contraseña">Contraseña:</label><input type="password" name="contraseña"></p>
+                        <% if (errores !== undefined) { %>
+                            <div id="caja_errores_form">                            
+                                La información introducida no es correcta:                            
+                                <ul>
+                                    <% errores.forEach(function(error) { %>
+                                    <li><%= error.msg %></li>
+                                    <% }); %>
+                                </ul>                            
+                            </div>
+                        <% } %>
+			<form action="procesar_login" method="POST"> 
+				<p><label for="user">Nombre de usuario:</label><input type="text" name="user"></p>
+				<p><label for="password">Contraseña:</label><input type="password" name="password"></p>
 				<p><input type="submit" value="Login"></p>
 			</form>
 		</div>

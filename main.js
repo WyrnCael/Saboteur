@@ -37,8 +37,8 @@ app.use(middlewareSession);
 
 app.get("/index.html", function(req, response) {
   if(req.session.nick){
-      response.status(200);
-      response.render("listaPartidas", {session: req.session });
+      response.status(300);
+      response.redirect("/listaPartidas.html");
   }
   else{
       response.status(200);
@@ -80,8 +80,8 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
             }
             else{
                 req.session.nick = datos.usuario;
-                response.status(200);
-                response.render("index", {session: req.session });  
+                response.status(300);
+                response.redirect("/listaPartidas.html");  
                 response.end();
             }
         });       
@@ -115,8 +115,8 @@ app.post("/procesar_login", function(req, response) {
         else{
             if(user){
                 req.session.nick = user.Nick;
-                response.status(200);
-                response.render("listaPartidas", {session: req.session });
+                response.status(300);
+                response.redirect("/listaPartidas.html");
             } else{
                 // Login incorrecto
                 response.status(200);
@@ -124,6 +124,57 @@ app.post("/procesar_login", function(req, response) {
             }
         }
         response.end();
+    });
+});
+
+app.get("/listaPartidas.html", function(req, response) {
+    response.status(200);
+    DAO.obtenerPartidasCreadasPor(req.session.nick, function(error, datosPartida){
+        if(error){
+            console.log(error);
+        }
+        else{
+            response.render("listaPartidas", {session: req.session, datosPartida: datosPartida });
+            response.end();
+        }
+    });
+    
+});
+
+app.get("/creaPartida.html", function(req, response) {
+    response.status(200);
+    response.render("creaPartida", {session: req.session });
+    response.end();
+});
+
+app.post("/procesar_creacion_partida", function(req, response) {
+    var datosPartida = {};
+    datosPartida.nombre = req.body.nombrePartida;
+    datosPartida.creador = req.session.nick;
+    datosPartida.maxJugadores = req.body.numeroJugadores;
+    
+    DAO.crearPartida(datosPartida, function(err, user){
+        if(err){
+            console.log(err);
+        }
+        else{
+            response.status(300);
+            response.redirect("/index.html");            
+        }
+        response.end();
+    });
+});
+
+app.get("/unirsePartida.html", function(req, response) {
+    DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
+        if(err){
+            console.log(err);
+        }
+        else{
+            response.status(200);
+            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
+            response.end();
+        }
     });
 });
 

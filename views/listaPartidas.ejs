@@ -23,12 +23,14 @@
                 <th>Fecha</th>
                 <th>Número de jugadores</th>
             </tr>
+            <% for(var i = 0; i < datosPartida.length; i++){ %>
             <tr>
-                <td>Nombre</td>
-                <td>fecha</td>             
-                <td>4/5</td>
+                <td><%= datosPartida[i].Nombre %></td>
+                <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
+                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
                 <td>Cerrar partida</td>
             </tr>
+            <% } %>
         </table>
 	</p>
 	<p><h2>Partidas activas</h2>
@@ -51,6 +53,11 @@
                 <td>otro</td>
             </tr>
         </table>
+        
+        <p><h2>Nueva Partida</h2>
+	Inicia una nueva partida.
+        <p><a href="/creaPartida.html"> <input type="submit" value="Crear partida"></a></p>
+	</p>
 
 	</p>
 	<p><h2>Partidas terminadas</h2>

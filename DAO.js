@@ -76,8 +76,106 @@ function obtenerImagenUsuario(id, callback){
     });
 }
 
+function crearPartida(datosPartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        con.query("INSERT INTO Partidas(Nombre, NickCreador, FechaCreacion, Estado, MaxJugadores)" + 
+                       "VALUES (?, ?, NOW(), ?, ?)", [datosPartida.nombre, datosPartida.creador, 0, datosPartida.maxJugadores],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {
+                   insertJugadorEnPartida(datosPartida.creador, datosPartida.nombre, function(err){
+                       if(err){
+                           callback(err);
+                       }
+                       else{
+                           callback(null);
+                       }
+                   });                   
+                }                
+            });
+        }
+    });
+}
+
+function insertJugadorEnPartida(NickJugador, NickPartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        con.query("INSERT INTO JugadoresEnPartida(Nick, Nombre, Herramienta)" + 
+                       "VALUES (?, ?, TRUE)", [NickJugador, NickPartida],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {
+                   callback(null);
+                }                
+            });
+        }
+    });
+}
+
+function obtenerPartidasCreadasPor(nombreUsuario, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT Partidas.Nombre, Partidas.NickCreador, Partidas.MaxJugadores, FechaCreacion, COUNT(*) AS NumJugadores" +
+                  " FROM Partidas" + 
+                  " INNER JOIN jugadoresenpartida" +
+                          " ON partidas.Nombre = jugadoresenpartida.Nombre" + 
+                          " AND partidas.NickCreador = ?" +
+                  " GROUP BY partidas.Nombre";
+          console.log(sql);
+        con.query(sql, [nombreUsuario],
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
+function obtenerPartidasAbiertas(nickJugador, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT Partidas.Nombre, Partidas.NickCreador," +
+                        " Partidas.MaxJugadores, FechaCreacion, COUNT(*) AS NumJugadores" +
+                  " FROM Partidas" +
+                  " INNER JOIN jugadoresenpartida" +
+                          " ON partidas.Nombre = jugadoresenpartida.Nombre" +
+                  " GROUP BY partidas.Nombre" +
+                  " HAVING partidas.MaxJugadores > NumJugadores";
+        con.query(sql,
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
 module.exports = {
     altaUsuario: altaUsuario,
     login: login,
-    obtenerImagenUsuario: obtenerImagenUsuario
+    obtenerImagenUsuario: obtenerImagenUsuario,
+    crearPartida: crearPartida,
+    obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
+    obtenerPartidasAbiertas: obtenerPartidasAbiertas
 }

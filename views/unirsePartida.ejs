@@ -22,13 +22,15 @@
 		                <th>Máximo de jugadores</th>
 		                <th>Jugadores apuntados</th>
 		            </tr>
-		            <tr>
-		                <td>Nombre</td>
-		                <td>14/05/2016</td>             
-		                <td>5</td>
-		                <td>uno, otro</td>
-		                <td>Unirse</td>
-		            </tr>
+		             <% for(var i = 0; i < datosPartida.length; i++){ %>
+                            <tr>
+                                <td><%= datosPartida[i].Nombre %></td>
+                                <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
+                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
+                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
+                                <td>Unirse a la partida</td>
+                            </tr>
+            <% } %>
 		    </table>
 		</p>
 		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>

@@ -14,8 +14,9 @@
 	<div id="panelCentral">
 		<p><h1>Unirse a partida</h1></p>
 		<p>A continuación se muestra una lista con las partidas abiertas que admiten jugadores.</p>
+		
 		<p>
-			<table> 
+                	<table> 
 		            <tr>
 		                <th>Nombre</th>
 		                <th>Fecha</th>
@@ -24,17 +25,51 @@
 		            </tr>
 		             <% for(var i = 0; i < datosPartida.length; i++){ %>
                             <tr>
-                                <td><%= datosPartida[i].Nombre %></td>
-                                <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
-                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
-                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
-                                <td>Unirse a la partida</td>
+                            <form action="/procesar_unirse_partida" method="POST">
+                                <td>
+                                    <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
+                                    <%= datosPartida[i].Nombre %>
+                                </td>
+                                <td> <input name="Fecha" type="hidden" value= "<%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>" />
+                                    <%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>
+                                </td>
+                                <td><%= datosPartida[i].MaxJugadores %>
+                                </td>
+                                <td>
+                                    <%= datosPartida[i].NumJugadores %>
+                                </td>
+                                <% if ( jugadores[datosPartida[i].Nombre].indexOf( session.nick ) > -1 ) { %>
+                                    <td>¡Unido!</td>
+                                <% } %>
+                                <% else { %>
+                                    <td><input type="submit" name="Unirse" value="Unirse" > </td>
+                                <% } %>
+                            </form>
                             </tr>
-            <% } %>
+                            <% } %>
 		    </table>
 		</p>
+               
 		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>
 	</div>
 </div>
 </body>
 </html>
+
+--------------------------------------
+
+//https://forum.jquery.com/topic/ayuda-envio-por-post-en-una-tabla-din%C3%A1mica
+
+<td class="row_fixed">
+    <div>    
+   
+        <input name="idPedido[]" type="hidden" value="<?php echo $idPedido ?>" />                
+        <input name="idProducto[]" type="hidden" value="<?php echo $idProducto ?>" />
+        <input name="nombreCliente[]" type="hidden" value="<?php echo $nombreCliente ?>" />
+        <input name="idCliente[]" type="hidden" value="<?php echo $idCliente ?>"/>
+        <input type="hidden" value="<?php echo $infoPedido ?>" name="infoPedido[]" id="infoPedido" />
+        <input type="hidden" value="<?php echo $fecha_ingresoPedido ?>" name="fecha_ingresoPedido[]" class="datetimepicker"/>                   
+        <input name="" value="Agregar" type="submit"/>
+        
+    </div>                         
+</td>

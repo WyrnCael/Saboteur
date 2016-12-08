@@ -13,7 +13,7 @@ var session = require("express-session");
 var mysqlSession = require("express-mysql-session");
 var MySQLStore = mysqlSession(session);
 var sessionStore = new MySQLStore({
-   host:  "localhost",
+    host:  "localhost", 
     user:  "root",
     password: "",
     database: "Saboteur"
@@ -166,17 +166,49 @@ app.post("/procesar_creacion_partida", function(req, response) {
 });
 
 app.get("/unirsePartida.html", function(req, response) {
-    DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
+    
+    var partidaJugadores = [];
+    DAO.obtenerPartidasAbiertas(function(err, partidasAbiertas){
         if(err){
             console.log(err);
         }
         else{
             response.status(200);
-            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
+            
+            partidasAbiertas.forEach(function(p){
+                DAO.obtenerJugadoresPartida(p.Nombre, function(err, jugadores){
+                  if (err){
+                      console.log(err);
+                  }
+                  else
+                      partidaJugadores[p.Nombre] = new Array(jugadores);
+              });
+              
+          });
+          console.log(partidaJugadores);
+            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas, jugadores: partidaJugadores});
             response.end();
         }
     });
+    
+    
 });
+
+app.post("/procesar_unirse_partida", function(req, response){
+    
+    DAO.insertJugadorEnPartida(req.session.nick, req.body.Nombre, function(err){
+        if(err){
+            console.log(err);
+            response.redirect("/unirsePartida.html");   
+        }
+        else{
+            response.status(300);
+            //response.redirect("/unirsePartida.html");            
+        }
+        response.end();
+    });
+    console.log(req.body.Nombre);
+})
 
 app.get("/imagen/:nick", function(request, response, next) {
    var n = String(request.params.nick);
@@ -196,6 +228,8 @@ app.get("/imagen/:nick", function(request, response, next) {
         }
      });
 });
+
+
 
 app.listen(3000, function() {
 console.log("Servidor arrancado en el puerto 3000");

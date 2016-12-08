@@ -109,7 +109,7 @@ function insertJugadorEnPartida(NickJugador, NickPartida, callback){
     } else {
         con.query("INSERT INTO JugadoresEnPartida(Nick, Nombre, Herramienta)" + 
                        "VALUES (?, ?, TRUE)", [NickJugador, NickPartida],
-            function(err, rows) { 
+            function(err) { 
                 con.release();
                 if (err) {
                     callback(err);
@@ -145,7 +145,7 @@ function obtenerPartidasCreadasPor(nombreUsuario, callback){
     });
 }
 
-function obtenerPartidasAbiertas(nickJugador, callback){
+function obtenerPartidasAbiertas(callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
@@ -162,13 +162,36 @@ function obtenerPartidasAbiertas(nickJugador, callback){
                 con.release();
                 if (err) {
                     callback(err);
-                } else {                      
+                } else {  
                     callback(null, rows);
                 }
             });
         }
-    });
+    });    
 }
+
+function obtenerJugadoresPartida(nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = " SELECT jugadoresenpartida.Nick " +
+                  " FROM jugadoresenpartida" +
+                  " WHERE jugadoresenpartida.Nombre = ? ";
+        con.query(sql, [nombrePartida],
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {  
+                    callback(null, rows);
+                }
+            });
+        }
+    });    
+}
+
+
 
 module.exports = {
     altaUsuario: altaUsuario,
@@ -176,5 +199,7 @@ module.exports = {
     obtenerImagenUsuario: obtenerImagenUsuario,
     crearPartida: crearPartida,
     obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
-    obtenerPartidasAbiertas: obtenerPartidasAbiertas
+    obtenerPartidasAbiertas: obtenerPartidasAbiertas,
+    insertJugadorEnPartida: insertJugadorEnPartida,
+    obtenerJugadoresPartida: obtenerJugadoresPartida
 }

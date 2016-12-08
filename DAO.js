@@ -6,12 +6,13 @@
 "use strict";
 
 var mysql = require("mysql");
+var config = require('./config.js');
 
 var pool = mysql.createPool({
-    host:  "localhost",
-    user:  "root",
-    password: "",
-    database: "Saboteur"
+    host:  config.dbHost, 
+    user:  config.dbUser,
+    password: config.dbPassword,
+    database: config.dbName
 });
 
 function altaUsuario(datosUsuario, callback){

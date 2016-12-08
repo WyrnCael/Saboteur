@@ -12,11 +12,15 @@ var fs = require("fs");
 var session = require("express-session");
 var mysqlSession = require("express-mysql-session");
 var MySQLStore = mysqlSession(session);
+var DAO = require('./DAO.js');
+var config = require('./config.js');
+var app = express();
+
 var sessionStore = new MySQLStore({
-    host:  "localhost", 
-    user:  "root",
-    password: "",
-    database: "Saboteur"
+    host:  config.dbHost, 
+    user:  config.dbUser,
+    password: config.dbPassword,
+    database: config.dbName
 });
 var middlewareSession = session({
     saveUninitialized: false,
@@ -24,9 +28,6 @@ var middlewareSession = session({
     resave: false,
     store: sessionStore
 });
-var DAO = require('./DAO.js');
-var app = express();
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static(__dirname + '/public'));
@@ -232,6 +233,6 @@ app.get("/imagen/:nick", function(request, response, next) {
 
 
 
-app.listen(3000, function() {
-console.log("Servidor arrancado en el puerto 3000");
+app.listen(config.port, function() {
+    console.log("Servidor arrancado en el puerto " + config.port);
 });

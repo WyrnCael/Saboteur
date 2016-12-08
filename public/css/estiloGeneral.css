@@ -1,17 +1,7 @@
 #all{
 	padding: 5px 50px 5px 50px;
 	height: 100%;
-}
-
-h1{
-	font-family:Georgia,"Times New Roman",Times,serif;
-    font-weight:normal;
-    text-shadow:0 0 1px #000;
-    color:#444444;
-    font-size:2.5em;
-    padding:2px 0 0;
-    line-height:1.2em;
-    margin:0 0 10px;
+        font-family: Tahoma, Geneva, sans-serif;
 }
 
 html, body{
@@ -36,7 +26,6 @@ body{
 	background: rgba(0, 102, 102, 0.75);
 	border-radius: 8px;
 	padding: 5px 10px 5px 10px;
-	margin-bottom: 10px;
 }
 
 #datosUsuario img{
@@ -60,6 +49,12 @@ body{
 	float: right;
 }
 
+#menu{
+    clear: both;
+    background: rgb(0, 102, 102);
+    background: rgba(0, 102, 102, 0.75);    
+}
+
 #panelCentral{
 	clear: both;
 	background: rgb(163, 202, 193);
@@ -67,6 +62,15 @@ body{
 	padding: 10px 30px 10px 30px;
 	height: 80%;
 	border-radius: 8px;
+}
+
+h1{
+    font-weight:normal;
+    text-shadow:0 0 1px #000;
+    color:#444444;
+    font-size:2.5em;
+    padding:2px 0 0;
+    line-height:1.2em;
 }
 
 th{
@@ -78,4 +82,22 @@ table, th, td{
 	border-collapse: collapse;
 	border: 1px solid #86592d;
 	padding: 5px 10px 5px 10px;
+}
+
+.boton {
+    background-color: #FFD000;
+    border: none;
+    color: black;
+    font-weight: bold;
+    padding: 8px 25px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 5px 0px 5px 5px;
+}
+
+.boton:hover{
+	cursor: pointer;
+        background-color: #FFC000;
 }

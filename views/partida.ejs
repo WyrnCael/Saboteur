@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+        <%- include("menu") %>
+
+	<div id="panelCentral">
+            <h1>Partida: <%= datosPartida.nombre %></h1>	
+            <p>Creada por: <%= datosPartida.nickCreador %></p>
+            <p>Jugadores: <%= datosPartida.jugadores %></p>
+            <p>Turno de: <%= datosPartida.turnoDe %></p>
+            <p>Turnos restartes: <%= datosPartida.turnosRestantes %></p>
+            <h2>Tablero</h2>
+            <h2>Tus cartas</h2>	        
+	</div>
+</div>
+</body>
+</html>

@@ -10,6 +10,7 @@
 <body>
 <div id="all">
 	<%- include("cabecera") %>
+        <%- include("menu") %>
 
 	<div id="panelCentral">
 		<p><h1>Unirse a partida</h1></p>
@@ -38,12 +39,7 @@
                                 <td>
                                     <%= datosPartida[i].NumJugadores %>
                                 </td>
-                                <% if ( jugadores[datosPartida[i].Nombre].indexOf( session.nick ) > -1 ) { %>
-                                    <td>¡Unido!</td>
-                                <% } %>
-                                <% else { %>
-                                    <td><input type="submit" name="Unirse" value="Unirse" > </td>
-                                <% } %>
+                                
                             </form>
                             </tr>
                             <% } %>
@@ -55,21 +51,3 @@
 </div>
 </body>
 </html>
-
---------------------------------------
-
-//https://forum.jquery.com/topic/ayuda-envio-por-post-en-una-tabla-din%C3%A1mica
-
-<td class="row_fixed">
-    <div>    
-   
-        <input name="idPedido[]" type="hidden" value="<?php echo $idPedido ?>" />                
-        <input name="idProducto[]" type="hidden" value="<?php echo $idProducto ?>" />
-        <input name="nombreCliente[]" type="hidden" value="<?php echo $nombreCliente ?>" />
-        <input name="idCliente[]" type="hidden" value="<?php echo $idCliente ?>"/>
-        <input type="hidden" value="<?php echo $infoPedido ?>" name="infoPedido[]" id="infoPedido" />
-        <input type="hidden" value="<?php echo $fecha_ingresoPedido ?>" name="fecha_ingresoPedido[]" class="datetimepicker"/>                   
-        <input name="" value="Agregar" type="submit"/>
-        
-    </div>                         
-</td>

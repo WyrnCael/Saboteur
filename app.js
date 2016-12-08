@@ -181,7 +181,8 @@ app.get("/unirsePartida.html", function(req, response) {
                       console.log(err);
                   }
                   else
-                      partidaJugadores[p.Nombre] = new Array(jugadores);
+                      partidaJugadores[p.Nombre] = jugadores;
+                  console.log(jugadores);
               });
               
           });

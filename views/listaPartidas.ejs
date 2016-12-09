@@ -29,7 +29,10 @@
                 <td><%= datosPartida[i].Nombre %></td>
                 <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
                 <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
-                <td>Cerrar partida</td>
+                <form action="/procesar_cerrar_partida" method="POST">
+                    <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
+                    <td><input type="submit" value="Cerrar"></td>
+                </form>
             </tr>
             <% } %>
         </table>

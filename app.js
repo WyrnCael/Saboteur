@@ -189,10 +189,15 @@ app.get("/unirsePartida.html", function(req, response) {
             console.log(err);
         }
         else{
+            // Recorremos las partidas abiertas
             for(var i = 0; i < partidasAbiertas.length; i++){
                var j = 0;
                     var incluido = false;
+                    // Mientras el usuario actual no esté en la partida, seguimos
+                    // buscando.
                     while(!incluido && j < partidasAbiertas[i].Jugadores.length){
+                        // Si el jugador esta en la partida, la eliminamos y 
+                        // seguimos con la siguiente partida.
                         if(partidasAbiertas[i].Jugadores[j].Nick === req.session.nick){
                             partidasAbiertas.splice(i, 1);
                             incluido = true;
@@ -223,6 +228,159 @@ app.post("/procesar_unirse_partida", function(req, response){
         response.end();
     });
 })
+
+app.post("/procesar_cerrar_partida", function(req, response){
+    
+    var partidas = [];
+    partidas[0] = {};
+    partidas[0].Nombre = req.body.Nombre;
+    // Obtenemos la lista de jugadores
+    DAO.obtenerJugadoresPartidas(partidas, function(err, datosPartida){
+        if(err){
+            console.log(err);  
+        }
+        else{
+            // Iniciamos la partidas poniendo los valores por defecto y generando
+            // los valores aleatorios:
+            var partida = datosPartida[0];
+            partida.estado = 1; // Partida iniciada
+            // Generamos un turno aleatorio:
+            var randomTurn = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+            partida.turnoDe = partida.Jugadores[randomTurn].Nick;
+            partida.maxJugadores = partida.Jugadores.length; // Jugadores actuales
+            switch(partida.maxJugadores){ // Numero de turnos.
+                case 3:
+                    partida.turnos = 50;
+                    break;
+                case 4:
+                    partida.turnos = 45;
+                    break;
+                case 5:                    
+                case 6:
+                    partida.turnos = 40;
+                    break;
+                case 7:
+                    partida.turnos = 35;
+                    break;
+            }
+            DAO.iniciarPartida(partida, function(err, datosPartida){
+                if(err){
+                    console.log(err);  
+                }
+                else{
+                    // Carta inicial
+                    var datosCarta = {};
+                    datosCarta.nombrePartida = req.body.Nombre;
+                    datosCarta.posX = 3;
+                    datosCarta.posY = 0;
+                    datosCarta.valor = 20;
+                    DAO.asignarCartaSinJugador(datosCarta, function(err, datosPartida){
+                        if(err){
+                            console.log(err);  
+                        }
+                        else{
+                            // Cartas en destino
+                            var destino = {
+                                nombrePartida : req.body.Nombre,
+                                posX : 1
+                            };
+                             var destinos = [{}, {}, {}];                             
+                             destinos[0].nombrePartida = req.body.Nombre;
+                             destinos[0].posX = 1;
+                             destinos[0].posY = 6;
+                             destinos[0].valor = 21;
+                             destinos[1].nombrePartida = req.body.Nombre;
+                             destinos[1].posX = 3;
+                             destinos[1].posY = 6;
+                             destinos[1].valor = 21;
+                             destinos[2].nombrePartida = req.body.Nombre;
+                             destinos[2].posX = 5;
+                             destinos[2].posY = 6;
+                             destinos[2].valor = 21;
+                             var randomDestino = Math.floor(Math.random() * (3 - 1 + 1));
+                             destinos[randomDestino].valor = 22;
+                             DAO.asignarCartaSinJugador(destinos[randomDestino], function(err){
+                                if(err){
+                                    console.log(err);
+                                } 
+                                else{
+                                    destinos.splice(randomDestino, 1);
+                                    var n = 2;
+                                    destinos.forEach(function(p){
+                                         DAO.asignarCartaSinJugador(p, function(err){
+                                            if(err){
+                                                console.log(err);
+                                            } 
+                                            else{                                                
+                                                n--;
+                                                if(n === 0){
+                                                    // Generar cartas para jugadores
+                                                    n = partida.Jugadores.length;
+                                                    partida.Jugadores.forEach(function(p){
+                                                    var j = 6;
+                                                        for(var i = 0; i < 6; i++){
+                                                            var datosCartaJ = {};
+                                                            datosCartaJ.nombrePartida = req.body.Nombre;
+                                                            datosCartaJ.nick = p.Nick;
+                                                            datosCartaJ.posX = -1;
+                                                            datosCartaJ.posY = -1;
+                                                            DAO.asignarCartaJugador(datosCartaJ, function(err){
+                                                                if(err){
+                                                                    console.log(err);
+                                                                }
+                                                                else{
+                                                                    j--;
+                                                                    if(j === 0){
+                                                                        n--;
+                                                                        if(n === 0){
+                                                                            var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+                                                                            var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
+                                                                            DAO.asignarRolJugador(datosRol, function(err){
+                                                                                if(err){
+                                                                                    console.log(err);
+                                                                                }
+                                                                                else{
+                                                                                    partida.Jugadores.splice(randomJugador, 1);
+                                                                                    var m = partida.Jugadores.length;
+                                                                                    partida.Jugadores.forEach(function(p){
+                                                                                       datosRol.nick = p.Nick;
+                                                                                       datosRol.tipo = 0;
+                                                                                       DAO.asignarRolJugador(datosRol, function(err){
+                                                                                            if(err){
+                                                                                                console.log(err);
+                                                                                            }
+                                                                                            else{
+                                                                                                m--;
+                                                                                                if(m === 0){
+                                                                                                    response.status(300);
+                                                                                                    response.redirect("/index.html");   
+                                                                                                    response.end();
+                                                                                                }
+                                                                                            }
+                                                                                       });
+                                                                                    });
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                    });                                                    
+                                                    
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+                             });
+                        }
+                    });
+                }
+            });          
+        }
+    });
+});
 
 app.get("/imagen/:nick", function(request, response, next) {
    var n = String(request.params.nick);

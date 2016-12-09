@@ -132,7 +132,8 @@ function obtenerPartidasCreadasPor(nombreUsuario, callback){
                   " INNER JOIN jugadoresenpartida" +
                           " ON partidas.Nombre = jugadoresenpartida.Nombre" + 
                           " AND partidas.NickCreador = ?" +
-                  " GROUP BY partidas.Nombre";
+                  " GROUP BY partidas.Nombre" +
+                  " HAVING partidas.MaxJugadores > NumJugadores";
           con.query(sql, [nombreUsuario],
             function(err, rows) {   
                 con.release();
@@ -204,10 +205,10 @@ function iniciarPartida(datosPartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "UPDATE Partidas SET Estado=?, TrunoDe=?, MaxJugadores=?, TrunosRestantes=?)" + 
-                       "WHERE Nombre=?";
+        var sql = "UPDATE Partidas SET Estado=?, TurnoDe=?, MaxJugadores=?, TrunosRestantes=?" + 
+                   " WHERE Nombre=?";
         con.query(sql, [datosPartida.estado, datosPartida.turnoDe, 
-                        datosPartida.maxJugadores, datosPartida.turnos, datosPartida.nombre], 
+                        datosPartida.maxJugadores, datosPartida.turnos, datosPartida.Nombre], 
             function(err, rows) {   
                 con.release();
                 if (err) {
@@ -220,15 +221,42 @@ function iniciarPartida(datosPartida, callback){
     });
 }
 
-function asignarCarta(datosCarta, callback){
+function asignarCartaJugador(datosCarta, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
     } else {
+        if(datosCarta.valor === undefined){
+            datosCarta.valor = obtenerCartaAleatoria();
+        }
         var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
                        "VALUES (?, ?, ?, ?, ?)";
         con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
-                        datosCarta.posX, datosCarta.posY, obtenerCartaAleatoria()], 
+                        datosCarta.posX, datosCarta.posY, datosCarta.valor], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
+function asignarCartaSinJugador(datosCarta, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        if(datosCarta.valor === undefined){
+            datosCarta.valor = obtenerCartaAleatoria();
+        }
+        var sql = "INSERT INTO Cartas(NombrePartida, PosX, PosY, Valor)" + 
+                       "VALUES (?, ?, ?, ?)";
+        con.query(sql, [datosCarta.nombrePartida, 
+                        datosCarta.posX, datosCarta.posY, datosCarta.valor], 
             function(err, rows) {   
                 con.release();
                 if (err) {
@@ -247,7 +275,7 @@ function asignarRolJugador(datosRol, callback){
         callback(err);
     } else {
         var sql = "UPDATE JugadoresEnPartida SET TipoJugador=?" + 
-                       "WHERE Nombre=? AND Nick=?";
+                       " WHERE Nombre=? AND Nick=?";
         con.query(sql, [datosRol.tipo, datosRol.nombre, datosRol.nick], 
             function(err, rows) {   
                 con.release();
@@ -304,7 +332,9 @@ module.exports = {
     obtenerPartidasAbiertas: obtenerPartidasAbiertas,
     insertJugadorEnPartida: insertJugadorEnPartida,
     iniciarPartida: iniciarPartida,
-    asignarCarta: asignarCarta,
+    asignarCartaSinJugador: asignarCartaSinJugador,
+    asignarCartaJugador: asignarCartaJugador,
     asignarRolJugador: asignarRolJugador,
-    descartarCarta: descartarCarta
+    descartarCarta: descartarCarta,
+    obtenerJugadoresPartidas: obtenerJugadoresPartidas
 }

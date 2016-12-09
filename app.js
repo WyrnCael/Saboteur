@@ -222,10 +222,7 @@ app.post("/procesar_unirse_partida", function(req, response){
             console.log(err);  
         }
         else{
-            console.log(parseInt(req.body.NumJugadores) + 1);
-            console.log(req.body.MaxJugadores);
             if(parseInt(req.body.NumJugadores) + 1 === parseInt(req.body.MaxJugadores)){
-                console.log("SI");
                 var partidas = [];
                 partidas[0] = {};
                 partidas[0].Nombre = req.body.Nombre;

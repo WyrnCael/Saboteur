@@ -49,6 +49,12 @@ app.get("/index.html", function(req, response) {
    response.end();
 });
 
+app.get("/login.html", function(req, response) {
+  response.status(200);
+  response.render("login", {errores: undefined, datosNuevoUsuario: {}, session: req.session });
+  response.end();
+});
+
 app.get("/registro.html", function(req, response) {
   response.status(200);
   response.render("registro", {errores: undefined, datosNuevoUsuario: {}, session: req.session });
@@ -144,52 +150,60 @@ app.get("/listaPartidas.html", function(req, response) {
 
 app.get("/creaPartida.html", function(req, response) {
     response.status(200);
-    response.render("creaPartida", {session: req.session });
+    response.render("creaPartida", {errores: undefined, session: req.session });
     response.end();
 });
 
 app.post("/procesar_creacion_partida", function(req, response) {
-    var datosPartida = {};
-    datosPartida.nombre = req.body.nombrePartida;
-    datosPartida.creador = req.session.nick;
-    datosPartida.maxJugadores = req.body.numeroJugadores;
-    
-    DAO.crearPartida(datosPartida, function(err, user){
-        if(err){
-            console.log(err);
+    req.checkBody("nombrePartida", "El campo 'Nombre no puede estar vacío.").notEmpty();
+    req.checkBody("nombrePartida", "El campo 'Nombre' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});                
+    req.getValidationResult().then(function(result) {
+        if (result.isEmpty()) {
+            var datosPartida = {};
+            datosPartida.nombre = req.body.nombrePartida;
+            datosPartida.creador = req.session.nick;
+            datosPartida.maxJugadores = req.body.numeroJugadores;
+            DAO.crearPartida(datosPartida, function(err, user){
+                if(err){
+                    response.status(200);
+                    response.render("creaPartida", {errores: [{ msg: "El nombre de partida no está disponible."}], session: req.session });
+                }
+                else{
+                    response.status(300);
+                    response.redirect("/index.html");            
+                }
+                response.end();
+            });
         }
         else{
-            response.status(300);
-            response.redirect("/index.html");            
-        }
-        response.end();
+            response.status(200);
+            response.render("creaPartida", {errores: result.array(), session: req.session });
+        }    
     });
 });
 
 app.get("/unirsePartida.html", function(req, response) {
     
-    var partidaJugadores = [];
-    DAO.obtenerPartidasAbiertas(function(err, partidasAbiertas){
+    DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
         if(err){
             console.log(err);
         }
         else{
+            for(var i = 0; i < partidasAbiertas.length; i++){
+               var j = 0;
+                    var incluido = false;
+                    while(!incluido && j < partidasAbiertas[i].Jugadores.length){
+                        if(partidasAbiertas[i].Jugadores[j].Nick === req.session.nick){
+                            partidasAbiertas.splice(i, 1);
+                            incluido = true;
+                            i--;
+                        }
+                        j++;
+                    }
+            }
             response.status(200);
-            
-            partidasAbiertas.forEach(function(p){
-                DAO.obtenerJugadoresPartida(p.Nombre, function(err, jugadores){
-                  if (err){
-                      console.log(err);
-                  }
-                  else
-                      partidaJugadores[p.Nombre] = jugadores;
-                  console.log(jugadores);
-              });
-              
-          });
-          console.log(partidaJugadores);
-            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas, jugadores: partidaJugadores});
-            response.end();
+            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
+            response.end();   
         }
     });
     
@@ -200,16 +214,14 @@ app.post("/procesar_unirse_partida", function(req, response){
     
     DAO.insertJugadorEnPartida(req.session.nick, req.body.Nombre, function(err){
         if(err){
-            console.log(err);
-            response.redirect("/unirsePartida.html");   
+            console.log(err);  
         }
         else{
             response.status(300);
-            //response.redirect("/unirsePartida.html");            
+            response.redirect("/index.html");            
         }
         response.end();
     });
-    console.log(req.body.Nombre);
 })
 
 app.get("/imagen/:nick", function(request, response, next) {

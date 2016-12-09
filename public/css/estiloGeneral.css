@@ -51,6 +51,8 @@ body{
 
 #menu{
     clear: both;
+    margin: 0 auto;
+    vertical-align: initial;
     background: rgb(0, 102, 102);
     background: rgba(0, 102, 102, 0.75);    
 }
@@ -60,8 +62,12 @@ body{
 	background: rgb(163, 202, 193);
 	background: rgba(163, 202, 193, 0.85);
 	padding: 10px 30px 10px 30px;
-	height: 80%;
+	height: 100%;
 	border-radius: 8px;
+}
+
+#pie{
+    padding-top: 20px;
 }
 
 h1{

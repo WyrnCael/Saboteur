@@ -18,6 +18,16 @@
 			<p><h1>Nueva partida</h1>
 			Introduce los datos de la partida:
 			</p>		
+                        <% if (errores !== undefined) { %>
+                            <div id="caja_errores_form">                            
+                                La información introducida no es correcta:                            
+                                <ul>
+                                    <% errores.forEach(function(error) { %>
+                                    <li><%= error.msg %></li>
+                                    <% }); %>
+                                </ul>                            
+                            </div>
+                        <% } %>
 			<form action="procesar_creacion_partida" method="POST"> 
 				<p><label for="nombrePartida">Nombre:<span>*</span></label><input type="text" name="nombrePartida"></p>
 				<p><label for="numeroJugadores">Número máximo de jugadores(entre 3 y 7):<span>*</span></label>
@@ -34,6 +44,7 @@
 		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>
 	</div>
 	</div>
+        <%- include("pie") %>
 </div>
 </body>
 </html>

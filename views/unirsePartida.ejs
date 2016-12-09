@@ -34,10 +34,16 @@
                                 <td> <input name="Fecha" type="hidden" value= "<%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>" />
                                     <%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>
                                 </td>
-                                <td><%= datosPartida[i].MaxJugadores %>
+                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %>
                                 </td>
                                 <td>
-                                    <%= datosPartida[i].NumJugadores %>
+                                    <%= datosPartida[i].Jugadores[0].Nick %>
+                                    <% for(var j = 1; j < datosPartida[i].Jugadores.length; j++){ %>
+                                        , <%= datosPartida[i].Jugadores[j].Nick %>
+                                    <% } %>
+                                </td>
+                                <td>
+                                    <input type="submit" value="Unirse">
                                 </td>
                                 
                             </form>
@@ -48,6 +54,7 @@
                
 		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>
 	</div>
+        <%- include("pie") %>
 </div>
 </body>
 </html>

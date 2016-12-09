@@ -2,9 +2,11 @@
 <div id="menu">
 
     <% if(session.nick) { %>
+        <a href="/index.html"><input type="submit" class="boton" value="Inicio"></a>
         <a href="/unirsePartida.html"><input type="submit" class="boton" value="Unirse a partida"></a>
         <a href="/creaPartida.html"><input type="submit" class="boton" value="Crear Partida"></a>
     <% } else { %>
+        <a href="/index.html"><input type="submit" class="boton" value="Inicio"></a>
         <a href="/login.html"><input type="submit" class="boton" value="Login"></a>
         <a href="/registro.html"><input type="submit" class="boton" value="Nuevo Usuario"></a>
     <% } %>

@@ -146,7 +146,7 @@ function obtenerPartidasCreadasPor(nombreUsuario, callback){
     });
 }
 
-function obtenerPartidasAbiertas(callback){
+function obtenerPartidasAbiertas(nickJugador, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
@@ -157,39 +157,46 @@ function obtenerPartidasAbiertas(callback){
                   " INNER JOIN jugadoresenpartida" +
                           " ON partidas.Nombre = jugadoresenpartida.Nombre" +
                   " GROUP BY partidas.Nombre" +
-                  " HAVING partidas.MaxJugadores > NumJugadores";
-        con.query(sql,
+                  " HAVING partidas.MaxJugadores > NumJugadores AND Partidas.NickCreador != ?";
+        con.query(sql, [nickJugador], 
             function(err, rows) {   
                 con.release();
                 if (err) {
                     callback(err);
                 } else {  
-                    callback(null, rows);
+                    obtenerJugadoresPartidas(rows, callback);
                 }
             });
         }
     });    
 }
 
-function obtenerJugadoresPartida(nombrePartida, callback){
+function obtenerJugadoresPartidas(partidas, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
     } else {
-        var sql = " SELECT jugadoresenpartida.Nick " +
+        var n = partidas.length;
+        partidas.forEach(function(p){
+            var sql = " SELECT jugadoresenpartida.Nick " +
                   " FROM jugadoresenpartida" +
                   " WHERE jugadoresenpartida.Nombre = ? ";
-        con.query(sql, [nombrePartida],
-            function(err, rows) {   
-                con.release();
-                if (err) {
-                    callback(err);
-                } else {  
-                    callback(null, rows);
-                }
+            con.query(sql, [p.Nombre],
+                function(err, rows) {
+                    if (err) {
+                        con.release();
+                        callback(err);
+                    } else {  
+                        partidas[partidas.indexOf(p)].Jugadores = rows;
+                        n--;
+                        if(n === 0){
+                            callback(null, partidas);
+                        }
+                    }
             });
-        }
-    });    
+        });
+    }
+    });
 }
 
 function iniciarPartida(datosPartida, callback){
@@ -296,7 +303,6 @@ module.exports = {
     obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
     obtenerPartidasAbiertas: obtenerPartidasAbiertas,
     insertJugadorEnPartida: insertJugadorEnPartida,
-    obtenerJugadoresPartida: obtenerJugadoresPartida,
     iniciarPartida: iniciarPartida,
     asignarCarta: asignarCarta,
     asignarRolJugador: asignarRolJugador,

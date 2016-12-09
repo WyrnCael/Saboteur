@@ -31,10 +31,13 @@
                                     <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
                                     <%= datosPartida[i].Nombre %>
                                 </td>
-                                <td> <input name="Fecha" type="hidden" value= "<%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>" />
+                                <td> 
                                     <%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %>
                                 </td>
-                                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %>
+                                <td>
+                                    <input name="NumJugadores" type="hidden" value= "<%= datosPartida[i].NumJugadores %>" />
+                                    <input name="MaxJugadores" type="hidden" value= "<%= datosPartida[i].MaxJugadores %>" />
+                                    <%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %>
                                 </td>
                                 <td>
                                     <%= datosPartida[i].Jugadores[0].Nick %>

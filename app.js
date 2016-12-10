@@ -198,7 +198,6 @@ app.post("/procesar_creacion_partida", function(req, response) {
 });
 
 app.get("/unirsePartida.html", function(req, response) {
-    
     DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
         if(err){
             console.log(err);
@@ -207,19 +206,19 @@ app.get("/unirsePartida.html", function(req, response) {
             // Recorremos las partidas abiertas
             for(var i = 0; i < partidasAbiertas.length; i++){
                var j = 0;
-                    var incluido = false;
-                    // Mientras el usuario actual no esté en la partida, seguimos
-                    // buscando.
-                    while(!incluido && j < partidasAbiertas[i].Jugadores.length){
-                        // Si el jugador esta en la partida, la eliminamos y 
-                        // seguimos con la siguiente partida.
-                        if(partidasAbiertas[i].Jugadores[j].Nick === req.session.nick){
-                            partidasAbiertas.splice(i, 1);
-                            incluido = true;
-                            i--;
-                        }
-                        j++;
+                var incluido = false;
+                // Mientras el usuario actual no esté en la partida, seguimos
+                // buscando.
+                while(!incluido && j < partidasAbiertas[i].Jugadores.length){
+                    // Si el jugador esta en la partida, la eliminamos y 
+                    // seguimos con la siguiente partida.
+                    if(partidasAbiertas[i].Jugadores[j].Nick === req.session.nick){
+                        partidasAbiertas.splice(i, 1);
+                        incluido = true;
+                        i--;
                     }
+                    j++;
+                }
             }
             response.status(200);
             response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
@@ -276,6 +275,20 @@ app.post("/procesar_cerrar_partida", function(req, response){
             response.end();
         }
     });
+});
+
+app.post("/procesar_mostar_partida", function(req, response){
+   DAO.obtenerPartida(req.body.Nombre, function(err, datosPartida){
+        if(err){
+            console.log(err);
+        } 
+        else{
+            response.status(200);
+            response.render("partida", {session: req.session, datosPartida: datosPartida[0]});                
+            response.end();
+        }
+   });
+    
 });
 
 app.get("/imagen/:nick", function(request, response, next) {

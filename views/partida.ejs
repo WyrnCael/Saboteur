@@ -13,11 +13,15 @@
         <%- include("menu") %>
 
 	<div id="panelCentral">
-            <h1>Partida: <%= datosPartida.nombre %></h1>	
-            <p>Creada por: <%= datosPartida.nickCreador %></p>
-            <p>Jugadores: <%= datosPartida.jugadores %></p>
-            <p>Turno de: <%= datosPartida.turnoDe %></p>
-            <p>Turnos restartes: <%= datosPartida.turnosRestantes %></p>
+            <h1>Partida: <%= datosPartida.Nombre %></h1>	
+            <p>Creada por: <%= datosPartida.NickCreador %></p>
+            <p>Jugadores: 
+                <%= datosPartida.Jugadores[0].Nick %>
+                <% for(var j = 1; j < datosPartida.Jugadores.length; j++){ %>
+                    , <%= datosPartida.Jugadores[j].Nick %>
+                <% } %>
+            <p>Turno de: <%= datosPartida.TurnoDe %></p>
+            <p>Turnos restartes: <%= datosPartida.TurnosRestantes %></p>
             <h2>Tablero</h2>
             <h2>Tus cartas</h2>	        
 	</div>

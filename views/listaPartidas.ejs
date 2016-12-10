@@ -42,10 +42,10 @@
             <% } %>
         </table>
 	</p>
-	<p><h2>Partidas activas</h2>
-	Haz clic en el titulo de la partida para ver su estado actual.	
-
-	Se marcan resaltadas las partidas en las que es tu turno.
+	<p><h2>Partidas activas</h2></p>
+	<p>Haz clic en el nombre de la partida para ver su estado actual.	
+        </p>
+	<p>Se marcan resaltadas las partidas en las que es tu turno.
 	</p>
 	<p>
 	<table> 
@@ -56,8 +56,15 @@
                 <th>Turno</th>
             </tr>
             <% for(var i = 0; i < partidasActivas.length; i++){ %>
-                <tr>
-                    <td><%= partidasActivas[i].Nombre %></td>
+                <% if (partidasActivas[i].Nick === partidasActivas[i].TurnoDe) { %>
+                    <tr class="turnoDeJugador">
+                <% } else { %>
+                    <tr>
+                <% } %>
+                    <td><form action="/procesar_mostar_partida" method="POST">
+                        <input name="Nombre" type="hidden" value= "<%= partidasActivas[i].Nombre %>" />
+                        <input type="submit" class="botonPartida" value="<%= partidasActivas[i].Nombre %>">
+                    </form></td>
                     <td><%= partidasActivas[i].NickCreador %></td>           
                     <td><%= partidasActivas[i].FechaCreacion.getDate() %>/<%= partidasActivas[i].FechaCreacion.getMonth() + 1 %>/<%= partidasActivas[i].FechaCreacion.getFullYear() %></td>
                     <td><%= partidasActivas[i].TurnoDe %></td>

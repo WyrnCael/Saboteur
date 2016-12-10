@@ -103,6 +103,24 @@ function crearPartida(datosPartida, callback){
     });
 }
 
+function obtenerPartida(nombre, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        con.query("SELECT * FROM Partidas WHERE Nombre=?", [nombre],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {  
+                    obtenerJugadoresPartidas(rows, callback);
+                }                
+            });
+        }
+    });
+}
+
 function insertJugadorEnPartida(NickJugador, NickPartida, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -155,7 +173,6 @@ function obtenerPartidasActivas(nickJugador, callback){
         var sql = "SELECT * FROM Partidas" + 
                     " INNER JOIN jugadoresenpartida" +
                     " ON partidas.Nombre = jugadoresenpartida.Nombre" +
-                    " GROUP BY partidas.Nombre" +
                     " HAVING jugadoresenpartida.Nick = ? AND partidas.Estado = 1";
         con.query(sql, [nickJugador], 
             function(err, rows) {   
@@ -224,24 +241,28 @@ function obtenerJugadoresPartidas(partidas, callback){
         callback(err);
     } else {
         var n = partidas.length;
-        partidas.forEach(function(p){
-            var sql = " SELECT jugadoresenpartida.Nick " +
-                  " FROM jugadoresenpartida" +
-                  " WHERE jugadoresenpartida.Nombre = ? ";
-            con.query(sql, [p.Nombre],
-                function(err, rows) {
-                    if (err) {
-                        con.release();
-                        callback(err);
-                    } else {  
-                        partidas[partidas.indexOf(p)].Jugadores = rows;
-                        n--;
-                        if(n === 0){
-                            callback(null, partidas);
+        
+        if(n === 0) callback(null, partidas);
+        else{
+            partidas.forEach(function(p){
+                var sql = " SELECT jugadoresenpartida.Nick " +
+                      " FROM jugadoresenpartida" +
+                      " WHERE jugadoresenpartida.Nombre = ? ";
+                con.query(sql, [p.Nombre],
+                    function(err, rows) {
+                        if (err) {
+                            con.release();
+                            callback(err);
+                        } else {  
+                            partidas[partidas.indexOf(p)].Jugadores = rows;
+                            n--;                        
+                            if(n === 0){
+                                callback(null, partidas);
+                            }
                         }
-                    }
-            });
-        });
+                });
+            });    
+        }            
     }
     });
 }
@@ -394,7 +415,7 @@ function iniciarDatosPartida(datosPartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "UPDATE Partidas SET Estado=?, TurnoDe=?, MaxJugadores=?, TrunosRestantes=?" + 
+        var sql = "UPDATE Partidas SET Estado=?, TurnoDe=?, MaxJugadores=?, TurnosRestantes=?" + 
                    " WHERE Nombre=?";
         con.query(sql, [datosPartida.estado, datosPartida.turnoDe, 
                         datosPartida.maxJugadores, datosPartida.turnos, datosPartida.Nombre], 
@@ -517,6 +538,7 @@ module.exports = {
     login: login,
     obtenerImagenUsuario: obtenerImagenUsuario,
     crearPartida: crearPartida,
+    obtenerPartida: obtenerPartida,
     obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
     obtenerPartidasAbiertas: obtenerPartidasAbiertas,
     insertJugadorEnPartida: insertJugadorEnPartida,
@@ -528,4 +550,4 @@ module.exports = {
     obtenerJugadoresPartidas: obtenerJugadoresPartidas,
     obtenerPartidasActivas: obtenerPartidasActivas,
     obtenerPartidasTerminadas: obtenerPartidasTerminadas
-}
+};

@@ -13,6 +13,7 @@ var session = require("express-session");
 var mysqlSession = require("express-mysql-session");
 var MySQLStore = mysqlSession(session);
 var DAO = require('./DAO.js');
+var logica = require('./logica.js');
 var config = require('./config.js');
 var app = express();
 
@@ -298,7 +299,19 @@ app.post("/procesar_mostar_partida", function(req, response){
                               tablero[i] = new Array(7);
                             }
                             cartasTablero.forEach(function(p){
+                                // Ocultamos las casillas finales
+                                if(p.Valor === 21 || p.Valor === 22){
+                                    p.Valor = 23;
+                                }
                                 tablero[p.PosX][p.PosY] = p;
+                            });
+                            
+                            // Mostarmos las casillas finales si la ha revelado
+                            // con la lupa
+                            cartas.forEach(function(p){
+                               if(p.Valor === 21 || p.Valor === 22){
+                                   tablero[p.PosX][p.PosY] = p;
+                               } 
                             });
                             response.status(200);
                             response.render("partida", {session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero});                
@@ -308,8 +321,16 @@ app.post("/procesar_mostar_partida", function(req, response){
                 }
             });            
         }
-   });
-    
+   });    
+});
+
+app.post("/procesar_carta_seleccionada", function(req, response){
+    var tablero = req.body.Tablero;
+    logica.obtenerPosicionesPosibles(tablero, tablero[3][0], req.body.Cartas[req.body.Inice]); 
+    response.status(200);
+    console.log(tablero);
+    response.render("partida", {session: req.session, datosPartida: req.body.DatosPartida, cartas: req.body.Cartas, tablero: tablero});                
+    response.end();
 });
 
 app.get("/imagen/usuario/:nick", function(request, response, next) {
@@ -361,7 +382,10 @@ app.get("/imagen/carta/:id", function(request, response, next) {
             case 22:
                 pathCarta = "Gold";
                break;
-           default:
+            case 23:
+                pathCarta = "DNK";
+                break;
+            default:
                 found = false;
                 break;
        }

@@ -1,0 +1,37 @@
+#filaCartas{
+    display: table-row;
+}
+
+.casillaCarta{
+    display: table-cell;
+    padding: 5px;    
+    background-color: #FFD000;
+    border: 1px solid black;
+}
+
+.casillaCartaVacia{
+    display: table-cell;
+    background-color: #FFD000;
+    border: 1px solid black;
+    width: 80px;
+    height: 80px;
+    padding: 0px;
+    clear: both;
+}
+
+.casillaCartaTurnoActual{
+    display: table-cell;
+    padding: 5px;    
+    background-color: green;
+    border: 1px solid black;
+}
+
+.casillaCartaVaciaDisponible{
+    display: table-cell;
+    background-color: green;
+    border: 1px solid black;
+    width: 80px;
+    height: 80px;
+    padding: 0px;
+    clear: both;
+}

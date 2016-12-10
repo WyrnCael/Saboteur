@@ -23,7 +23,29 @@
             <p>Turno de: <%= datosPartida.TurnoDe %></p>
             <p>Turnos restartes: <%= datosPartida.TurnosRestantes %></p>
             <h2>Tablero</h2>
-            <h2>Tus cartas</h2>	        
+            
+                <% for(var i = 0; i < 7; i++){ %>
+                    <div id="filaCartas">
+                        <% for(var j = 0; j < 7; j++){ %>                            
+                                <% if(tablero[i][j] !== undefined) { %>
+                                    <div class="casillaCarta">
+                                        <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
+                                    </div>
+                                <% } else { %>
+                                    <div class="casillaCartaVacia"></div>                                    
+                                <% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+            
+            <h2>Tus cartas</h2>	
+            <div id="filaCartas">
+                <% for(var j = 0; j < cartas.length; j++){ %>
+                    <div class="casillaCarta">
+                        <img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" height="75" width="75">  
+                    </div>
+                <% } %>
+            </div>
 	</div>
         <%- include("pie") %>
 </div>

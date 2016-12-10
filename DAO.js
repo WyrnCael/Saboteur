@@ -504,7 +504,7 @@ function descartarCarta(datosCarta, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "DELETE FROM Cartas WHERE Nick=? AND Nombre=? AND PosX=-1 AND PosY=-1" + 
+        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=-1 AND PosY=-1" + 
                        "AND Valor=?";
         con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
                         datosCarta.posX, datosCarta.posY, datosCarta.valor], 
@@ -525,6 +525,44 @@ function descartarCarta(datosCarta, callback){
             });
         }
        
+    });
+}
+
+function obtenerCartasDisponiblesJugadorPartida(nick, nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=-1 AND PosY=-1";
+        con.query(sql, [nick, nombrePartida], 
+            function(err, rows) {  
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
+function obtenerCartasTablero(nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Cartas WHERE NombrePartida=? AND PosX!=-1 AND PosY!=-1";
+        con.query(sql, [nombrePartida], 
+            function(err, rows) {  
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
     });
 }
 
@@ -549,5 +587,7 @@ module.exports = {
     descartarCarta: descartarCarta,
     obtenerJugadoresPartidas: obtenerJugadoresPartidas,
     obtenerPartidasActivas: obtenerPartidasActivas,
-    obtenerPartidasTerminadas: obtenerPartidasTerminadas
+    obtenerPartidasTerminadas: obtenerPartidasTerminadas,
+    obtenerCartasDisponiblesJugadorPartida: obtenerCartasDisponiblesJugadorPartida,
+    obtenerCartasTablero: obtenerCartasTablero
 };

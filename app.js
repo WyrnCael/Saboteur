@@ -283,15 +283,36 @@ app.post("/procesar_mostar_partida", function(req, response){
             console.log(err);
         } 
         else{
-            response.status(200);
-            response.render("partida", {session: req.session, datosPartida: datosPartida[0]});                
-            response.end();
+            DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, req.body.Nombre, function(err, cartas){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    DAO.obtenerCartasTablero(req.body.Nombre, function(err, cartasTablero){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            var tablero = new Array(7);
+                            for (var i = 0; i < 7; i++) {
+                              tablero[i] = new Array(7);
+                            }
+                            cartasTablero.forEach(function(p){
+                                tablero[p.PosX][p.PosY] = p;
+                            });
+                            response.status(200);
+                            response.render("partida", {session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero});                
+                            response.end();
+                        }
+                    });
+                }
+            });            
         }
    });
     
 });
 
-app.get("/imagen/:nick", function(request, response, next) {
+app.get("/imagen/usuario/:nick", function(request, response, next) {
    var n = String(request.params.nick);
    
     DAO.obtenerImagenUsuario(n, function(err, imagen) {
@@ -302,12 +323,59 @@ app.get("/imagen/:nick", function(request, response, next) {
                 response.end(imagen);
             }
             else{
-                urlAvatar = path.join("img", "avatarDefault.png");
+                var urlAvatar = path.join("img", "avatarDefault.png");
                 var fichDestino = path.join("public", urlAvatar);
                 fs.createReadStream(fichDestino).pipe(response);
             }
         }
      });
+});
+
+app.get("/imagen/carta/:id", function(request, response, next) {
+   var n = parseInt(request.params.id);
+   var pathCarta = "";
+   var found = true;
+   if(n > 0 && n <= 15){
+       pathCarta = "T" + n;
+   }
+   else{
+       switch(n){
+            case 16:
+                pathCarta = "Bomba";
+                break;
+            case 17:
+                pathCarta = "Lupa";
+               break;
+            case 18:
+                pathCarta = "PicoArreglado";
+               break;
+            case 19:
+                pathCarta = "PicoRoto";
+               break;
+            case 20:
+                pathCarta = "Start";
+               break;
+            case 21:
+                pathCarta = "NoGold";
+               break;
+            case 22:
+                pathCarta = "Gold";
+               break;
+           default:
+                found = false;
+                break;
+       }
+    }
+    if(found){
+        pathCarta += ".png";
+        var url = path.join("img", pathCarta);
+        var fichDestino = path.join("public", url);
+        fs.createReadStream(fichDestino).pipe(response);
+    } else {
+        response.status(404);
+        response.end();
+    }
+    
 });
 
 

@@ -135,14 +135,29 @@ app.post("/procesar_login", function(req, response) {
 });
 
 app.get("/listaPartidas.html", function(req, response) {
-    response.status(200);
     DAO.obtenerPartidasCreadasPor(req.session.nick, function(error, datosPartida){
         if(error){
             console.log(error);
         }
         else{
-            response.render("listaPartidas", {session: req.session, datosPartida: datosPartida });
-            response.end();
+            DAO.obtenerPartidasActivas(req.session.nick, function(err, partidasActivas){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    DAO.obtenerPartidasTerminadas(req.session.nick, function(err, partidasTerminadas){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            response.status(200);
+                            response.render("listaPartidas", {session: req.session, datosPartida: datosPartida, partidasActivas: partidasActivas, partidasTerminadas: partidasTerminadas });
+                            response.end();
+                        }
+                    });
+                }
+            });
+            
         }
     });
     

@@ -147,6 +147,52 @@ function obtenerPartidasCreadasPor(nombreUsuario, callback){
     });
 }
 
+function obtenerPartidasActivas(nickJugador, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Partidas" + 
+                    " INNER JOIN jugadoresenpartida" +
+                    " ON partidas.Nombre = jugadoresenpartida.Nombre" +
+                    " GROUP BY partidas.Nombre" +
+                    " HAVING jugadoresenpartida.Nick = ? AND partidas.Estado = 1";
+        con.query(sql, [nickJugador], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {  
+                    callback(null, rows);
+                }
+            });
+        }
+    });    
+}
+
+function obtenerPartidasTerminadas(nickJugador, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Partidas" + 
+                    " INNER JOIN jugadoresenpartida" +
+                    " ON partidas.Nombre = jugadoresenpartida.Nombre" +
+                    " GROUP BY partidas.Nombre" +
+                    " HAVING jugadoresenpartida.Nick = ? AND partidas.Estado = 2";
+        con.query(sql, [nickJugador], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {  
+                    callback(null, rows);
+                }
+            });
+        }
+    });    
+}
+
 function obtenerPartidasAbiertas(nickJugador, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -479,5 +525,7 @@ module.exports = {
     asignarCartaJugador: asignarCartaJugador,
     asignarRolJugador: asignarRolJugador,
     descartarCarta: descartarCarta,
-    obtenerJugadoresPartidas: obtenerJugadoresPartidas
+    obtenerJugadoresPartidas: obtenerJugadoresPartidas,
+    obtenerPartidasActivas: obtenerPartidasActivas,
+    obtenerPartidasTerminadas: obtenerPartidasTerminadas
 }

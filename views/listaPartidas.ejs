@@ -23,16 +23,21 @@
                 <th>Nombre</th>
                 <th>Fecha</th>
                 <th>Número de jugadores</th>
+                <th>Cerrar partida</th>
             </tr>
             <% for(var i = 0; i < datosPartida.length; i++){ %>
             <tr>
                 <td><%= datosPartida[i].Nombre %></td>
                 <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
                 <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
-                <form action="/procesar_cerrar_partida" method="POST">
-                    <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
-                    <td><input type="submit" value="Cerrar"></td>
-                </form>
+                <% if(datosPartida[i].NumJugadores >= 3) { %>
+                    <form action="/procesar_cerrar_partida" method="POST">
+                        <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
+                        <td><input type="submit" value="Cerrar"></td>
+                    </form>
+                <% } else { %>
+                    <td>Min. 3 jugadores</td>
+                <% } %>
             </tr>
             <% } %>
         </table>
@@ -50,20 +55,17 @@
                 <th>Fecha</th>
                 <th>Turno</th>
             </tr>
-            <tr>
-                <td>Nombre</td>
-                <td>nomCreador</td>             
-                <td>14/05/2016</td>
-                <td>otro</td>
-            </tr>
+            <% for(var i = 0; i < partidasActivas.length; i++){ %>
+                <tr>
+                    <td><%= partidasActivas[i].Nombre %></td>
+                    <td><%= partidasActivas[i].NickCreador %></td>           
+                    <td><%= partidasActivas[i].FechaCreacion.getDate() %>/<%= partidasActivas[i].FechaCreacion.getMonth() + 1 %>/<%= partidasActivas[i].FechaCreacion.getFullYear() %></td>
+                    <td><%= partidasActivas[i].TurnoDe %></td>
+                </tr>
+            <% } %>
         </table>
         
-        <p><h2>Nueva Partida</h2>
-	Inicia una nueva partida.
-        <p><a href="/creaPartida.html"> <input type="submit" value="Crear partida"></a></p>
-	</p>
-
-	</p>
+        </p>
 	<p><h2>Partidas terminadas</h2>
 	</p>
 	<p>
@@ -73,11 +75,17 @@
                 <th>Usuario creador</th>
                 <th>¿Has ganado?</th>
             </tr>
-            <tr>
-                <td>Nombre</td>
-                <td>Nombre</td>             
-                <td>Sí</td>
-            </tr>
+            <% for(var i = 0; i < partidasTerminadas.length; i++){ %>
+                <tr>
+                    <td><%= partidasTerminadas[i].Nombre %></td>
+                    <td><%= partidasTerminadas[i].NickGanador %></td>
+                    <% if (partidasTerminadas[i].NickGanador === partidasTerminadas[i].Nick) { %>
+                        <td>Si</td>
+                    <% } else { %>
+                        <td>No</td>
+                    <% } %>
+                </tr>
+            <% } %>
         </table>
 
 	</p>

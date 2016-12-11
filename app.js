@@ -412,24 +412,48 @@ app.post("/procesar_insertar_carta", function(req, response){
                                             for (var i = 0; i < 7; i++) {
                                               tablero[i] = new Array(7);
                                             }
+                                            
                                             cartasTablero.forEach(function(p){
-                                                // Ocultamos las casillas finales
-                                                if(p.Valor === 21 || p.Valor === 22){
-                                                    p.Valor = 23;
-                                                }
                                                 tablero[p.PosX][p.PosY] = p;
                                             });
-
-                                            // Mostarmos las casillas finales si la ha revelado
-                                            // con la lupa
-                                            cartas.forEach(function(p){
-                                               if(p.Valor === 21 || p.Valor === 22){
-                                                   tablero[p.PosX][p.PosY] = p;
+                                            
+                                            console.log(tablero);
+                                            logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
+                                               if(err){
+                                                   console.log(err);
                                                } 
+                                               else{
+                                                   if(final){
+                                                       // Fin De Partida
+                                                        response.status(200);
+                                                        response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
+                                                        response.end();
+                                                   }
+                                                   else{
+                                                        cartasTablero.forEach(function(p){
+                                                            // Ocultamos las casillas finales
+                                                            if(p.Valor === 21 || p.Valor === 22){
+                                                                p.Valor = 23;
+                                                            }
+                                                            tablero[p.PosX][p.PosY] = p;
+                                                        });
+                                                        
+                                                        // Mostarmos las casillas finales si la ha revelado
+                                                        // con la lupa o se ha llegado a ella
+                                                        cartas.forEach(function(p){
+                                                           if(p.Valor === 21 || p.Valor === 22){
+                                                               tablero[p.PosX][p.PosY] = p;
+                                                           } 
+                                                        });
+                                                        
+                                                        response.status(200);
+                                                        response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
+                                                        response.end();
+                                                   }
+                                               }
                                             });
-                                            response.status(200);
-                                            response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
-                                            response.end();
+                                            
+                                            
                                         }
                                     });                                      
                                 }

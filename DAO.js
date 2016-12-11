@@ -508,6 +508,27 @@ function insertarCartaTablero(datosCarta, callback){
     });
 }
 
+function obtenerJugadoresVenCarta(carta, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Cartas WHERE NombrePartida=?"+
+                    "AND PosX=? AND PosY=?";
+        con.query(sql, [carta.NombrePartida, 
+                        carta.PosX, carta.PosY], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
 function asignarRolJugador(datosRol, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -562,7 +583,7 @@ function obtenerCartasDisponiblesJugadorPartida(nick, nombrePartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "SELECT * FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=-1 AND PosY=-1";
+        var sql = "SELECT * FROM Cartas WHERE Nick=? AND NombrePartida=?";
         con.query(sql, [nick, nombrePartida], 
             function(err, rows) {  
                 con.release();
@@ -620,5 +641,6 @@ module.exports = {
     obtenerPartidasTerminadas: obtenerPartidasTerminadas,
     obtenerCartasDisponiblesJugadorPartida: obtenerCartasDisponiblesJugadorPartida,
     obtenerCartasTablero: obtenerCartasTablero,
-    actualizarDatosPartida: actualizarDatosPartida
+    actualizarDatosPartida: actualizarDatosPartida,
+    obtenerJugadoresVenCarta: obtenerJugadoresVenCarta
 };

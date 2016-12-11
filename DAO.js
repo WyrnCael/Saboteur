@@ -370,7 +370,6 @@ function iniciaPartida(partidas, callback){
                                                                                 var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
                                                                                 var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
                                                                                 h--;
-                                                                                console.log(h);
                                                                                 asignarRolJugador(datosRol, function(err){                                                                                    
                                                                                     if(err){
                                                                                         console.log(err);

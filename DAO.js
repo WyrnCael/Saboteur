@@ -363,18 +363,20 @@ function iniciaPartida(partidas, callback){
                                                                     if(j === 0){
                                                                         n--;
                                                                         if(n === 0){
+                                                                            var h;
                                                                             if(partida.Jugadores.length <= 4) h = 1;
                                                                             else h = 2;
                                                                             while(h > 0){
                                                                                 var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
                                                                                 var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
-                                                                                asignarRolJugador(datosRol, function(err){
+                                                                                h--;
+                                                                                console.log(h);
+                                                                                asignarRolJugador(datosRol, function(err){                                                                                    
                                                                                     if(err){
                                                                                         console.log(err);
                                                                                     }
-                                                                                    else{                                                                                        
-                                                                                        partida.Jugadores.splice(randomJugador, 1);
-                                                                                        h--;
+                                                                                    else{                                                                                  
+                                                                                        partida.Jugadores.splice(randomJugador, 1);                                                                                          
                                                                                         if(h === 0){
                                                                                             var m = partida.Jugadores.length;
                                                                                             partida.Jugadores.forEach(function(p){

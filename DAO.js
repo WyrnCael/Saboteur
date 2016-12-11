@@ -245,7 +245,7 @@ function obtenerJugadoresPartidas(partidas, callback){
         if(n === 0) callback(null, partidas);
         else{
             partidas.forEach(function(p){
-                var sql = " SELECT jugadoresenpartida.Nick " +
+                var sql = " SELECT * " +
                       " FROM jugadoresenpartida" +
                       " WHERE jugadoresenpartida.Nombre = ? ";
                 con.query(sql, [p.Nombre],
@@ -277,27 +277,27 @@ function iniciaPartida(partidas, callback){
             var partida = partidas[0];    
             // Iniciamos la partidas poniendo los valores por defecto y generando
             // los valores aleatorios:
-            partida.estado = 1; // Partida iniciada
+            partida.Estado = 1; // Partida iniciada
             // Generamos un turno aleatorio:
             var randomTurn = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
-            partida.turnoDe = partida.Jugadores[randomTurn].Nick;
-            partida.maxJugadores = partida.Jugadores.length; // Jugadores actuales
-            switch(partida.maxJugadores){ // Numero de turnos.
+            partida.TurnoDe = partida.Jugadores[randomTurn].Nick;
+            partida.MaxJugadores = partida.Jugadores.length; // Jugadores actuales
+            switch(partida.MaxJugadores){ // Numero de turnos.
                 case 3:
-                    partida.turnos = 50;
+                    partida.TurnosRestantes = 50;
                     break;
                 case 4:
-                    partida.turnos = 45;
+                    partida.TurnosRestantes = 45;
                     break;
                 case 5:                    
                 case 6:
-                    partida.turnos = 40;
+                    partida.TurnosRestantes = 40;
                     break;
                 case 7:
-                    partida.turnos = 35;
+                    partida.TurnosRestantes = 35;
                     break;
             }
-            iniciarDatosPartida(partida, function(err, datosPartida){
+            actualizarDatosPartida(partida, function(err, datosPartida){
                 if(err){
                     console.log(err);  
                 }
@@ -363,32 +363,40 @@ function iniciaPartida(partidas, callback){
                                                                     if(j === 0){
                                                                         n--;
                                                                         if(n === 0){
-                                                                            var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
-                                                                            var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
-                                                                            asignarRolJugador(datosRol, function(err){
-                                                                                if(err){
-                                                                                    console.log(err);
-                                                                                }
-                                                                                else{
-                                                                                    partida.Jugadores.splice(randomJugador, 1);
-                                                                                    var m = partida.Jugadores.length;
-                                                                                    partida.Jugadores.forEach(function(p){
-                                                                                       datosRol.nick = p.Nick;
-                                                                                       datosRol.tipo = 0;
-                                                                                       asignarRolJugador(datosRol, function(err){
-                                                                                            if(err){
-                                                                                                console.log(err);
-                                                                                            }
-                                                                                            else{
-                                                                                                m--;
-                                                                                                if(m === 0){
-                                                                                                    callback(null);
-                                                                                                }
-                                                                                            }
-                                                                                       });
-                                                                                    });
-                                                                                }
-                                                                            });
+                                                                            if(partida.Jugadores.length <= 4) h = 1;
+                                                                            else h = 2;
+                                                                            while(h > 0){
+                                                                                var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+                                                                                var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
+                                                                                asignarRolJugador(datosRol, function(err){
+                                                                                    if(err){
+                                                                                        console.log(err);
+                                                                                    }
+                                                                                    else{                                                                                        
+                                                                                        partida.Jugadores.splice(randomJugador, 1);
+                                                                                        h--;
+                                                                                        if(h === 0){
+                                                                                            var m = partida.Jugadores.length;
+                                                                                            partida.Jugadores.forEach(function(p){
+                                                                                               datosRol.nick = p.Nick;
+                                                                                               datosRol.tipo = 0;
+                                                                                               asignarRolJugador(datosRol, function(err){
+                                                                                                    if(err){
+                                                                                                        console.log(err);
+                                                                                                    }
+                                                                                                    else{
+                                                                                                        m--;
+                                                                                                        if(m === 0){
+                                                                                                            callback(null);
+                                                                                                        }
+                                                                                                    }
+                                                                                               });
+                                                                                            });
+                                                                                        }                                                                                        
+                                                                                    }
+                                                                                });
+                                                                            }
+                                                                            
                                                                         }
                                                                     }
                                                                 }
@@ -410,15 +418,15 @@ function iniciaPartida(partidas, callback){
     });
 }
 
-function iniciarDatosPartida(datosPartida, callback){
+function actualizarDatosPartida(datosPartida, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
     } else {
         var sql = "UPDATE Partidas SET Estado=?, TurnoDe=?, MaxJugadores=?, TurnosRestantes=?" + 
                    " WHERE Nombre=?";
-        con.query(sql, [datosPartida.estado, datosPartida.turnoDe, 
-                        datosPartida.maxJugadores, datosPartida.turnos, datosPartida.Nombre], 
+        con.query(sql, [datosPartida.Estado, datosPartida.TurnoDe, 
+                        datosPartida.MaxJugadores, datosPartida.TurnosRestantes, datosPartida.Nombre], 
             function(err, rows) {   
                 con.release();
                 if (err) {
@@ -467,6 +475,26 @@ function asignarCartaSinJugador(datosCarta, callback){
                        "VALUES (?, ?, ?, ?)";
         con.query(sql, [datosCarta.nombrePartida, 
                         datosCarta.posX, datosCarta.posY, datosCarta.valor], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
+function insertarCartaTablero(datosCarta, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "UPDATE Cartas SET PosX=?, PosY=?" + 
+                       " WHERE Id=?";
+        con.query(sql, [datosCarta.PosX, datosCarta.PosY, datosCarta.Id], 
             function(err, rows) {   
                 con.release();
                 if (err) {
@@ -584,10 +612,12 @@ module.exports = {
     asignarCartaSinJugador: asignarCartaSinJugador,
     asignarCartaJugador: asignarCartaJugador,
     asignarRolJugador: asignarRolJugador,
+    insertarCartaTablero: insertarCartaTablero,
     descartarCarta: descartarCarta,
     obtenerJugadoresPartidas: obtenerJugadoresPartidas,
     obtenerPartidasActivas: obtenerPartidasActivas,
     obtenerPartidasTerminadas: obtenerPartidasTerminadas,
     obtenerCartasDisponiblesJugadorPartida: obtenerCartasDisponiblesJugadorPartida,
-    obtenerCartasTablero: obtenerCartasTablero
+    obtenerCartasTablero: obtenerCartasTablero,
+    actualizarDatosPartida: actualizarDatosPartida
 };

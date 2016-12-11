@@ -4,6 +4,8 @@
 
 .casillaCarta{
     display: table-cell;
+    width: 80px;
+    height: 80px;
     padding: 5px;    
     background-color: #FFD000;
     border: 1px solid black;
@@ -26,12 +28,22 @@
     border: 1px solid black;
 }
 
-.casillaCartaVaciaDisponible{
+.casillaDisponible{
     display: table-cell;
     background-color: green;
     border: 1px solid black;
     width: 80px;
     height: 80px;
     padding: 0px;
-    clear: both;
+    clear: both;    
+}
+
+.botonDisponible{
+    background-color: green;
+    border: none;
+    width: 80px;
+    height: 80px;
+    padding: 0px;
+    clear: both; 
+    cursor:pointer;    
 }

@@ -28,14 +28,21 @@
                 <% for(var i = 0; i < 7; i++){ %>
                     <div id="filaCartas">
                         <% for(var j = 0; j < 7; j++){ %>                            
-                                <% if(tablero[i][j] !== undefined) { %>
-                                    <% if(tablero[i][j].Valor === -1) { %>
-                                        <div class="casillaCarta">
-                                            <div class="casillaCartaVaciaDisponible"></div> 
+                                <% if(tablero[i][j] !== undefined && tablero[i][j] !== null) { %>
+                                    <% if(tablero[i][j] === -1) { %>
+                                        <div class="casillaDisponible">
+                                            <form action="/procesar_insertar_carta" method="POST">
+                                                <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                                <input name="PosX" type="hidden" value="<%= i %>" />
+                                                <input name="PosY" type="hidden" value="<%= j %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                <input type="submit" class="botonDisponible" value=""  />
+                                            </form>
                                         </div>
                                     <% } else { %>
                                         <div class="casillaCarta">
-                                            <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
+                                            <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75px" width="75px">
                                         </div>
                                     <% } %>                                    
                                 <% } else { %>
@@ -44,16 +51,36 @@
                         <% } %>
                     </div>
                 <% } %>
-            
+
+            <h2>Tus datos</h2>	
+            <% var jugador; %>
+            <% datosPartida.Jugadores.forEach(function(p){  %>
+                <% if (p.Nick === session.nick) { %>
+                    <% jugador = p; %>
+                <% } %>
+            <% }); %>
+            <p>Tipo de jugador: 
+                <% if (jugador.TipoJugador === 1) { %>
+                    Saboteador
+                <% } else { %>
+                    Buscador
+                <% } %>
+            </p>
+            <p>Herramienta activa: 
+                <% if (jugador.Herramienta) { %>
+                    Si
+                <% } else { %>
+                    No
+                <% } %>
+            </p>
             <h2>Tus cartas</h2>	
             <div id="filaCartas">
                 <% for(var j = 0; j < cartas.length; j++){ %>
                     <% if (session.nick === datosPartida.TurnoDe) { %>
                         <div class="casillaCartaTurnoActual">
                         <form action="/procesar_carta_seleccionada" method="POST">
-                            <input name="DatosPartida" type="hidden" value="<%= datosPartida %>" />
-                            <input name="Tablero" type="hidden" value="<%= tablero %>" />
-                            <input name="Cartas" type="hidden" value="<%= cartas %>" />
+                            <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                            <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
                             <input name="Inice" type="hidden" value="<%= j %>" />
                             <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
                         </form>

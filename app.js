@@ -325,12 +325,121 @@ app.post("/procesar_mostar_partida", function(req, response){
 });
 
 app.post("/procesar_carta_seleccionada", function(req, response){
-    var tablero = req.body.Tablero;
-    logica.obtenerPosicionesPosibles(tablero, tablero[3][0], req.body.Cartas[req.body.Inice]); 
-    response.status(200);
-    console.log(tablero);
-    response.render("partida", {session: req.session, datosPartida: req.body.DatosPartida, cartas: req.body.Cartas, tablero: tablero});                
-    response.end();
+    var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+    DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
+        if(err){
+            console.log(err);
+        }
+        else{
+            var cartas = JSON.parse(req.body.Cartas.toString());
+            
+            var tablero = new Array(7);
+            for (var i = 0; i < 7; i++) {
+              tablero[i] = new Array(7);
+            }
+            cartasTablero.forEach(function(p){
+                // Ocultamos las casillas finales
+                if(p.Valor === 21 || p.Valor === 22){
+                    p.Valor = 23;
+                }
+                tablero[p.PosX][p.PosY] = p;
+            });
+                            
+            // Mostarmos las casillas finales si la ha revelado
+            // con la lupa
+            cartas.forEach(function(p){
+               if(p.Valor === 21 || p.Valor === 22){
+                   tablero[p.PosX][p.PosY] = p;
+               } 
+            });
+            logica.obtenerPosicionesPosibles(tablero, tablero[3][0], cartas[req.body.Inice]); 
+            response.status(200);
+            response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice});                
+            response.end();
+        }
+    });
+    
+});
+
+app.post("/procesar_insertar_carta", function(req, response){
+    var carta = JSON.parse(req.body.Carta.toString());
+    carta.PosX = parseInt(req.body.PosX);
+    carta.PosY = parseInt(req.body.PosY);
+    DAO.insertarCartaTablero(carta, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{
+            var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+            var encontrado = false;
+            var i = 0;
+            while(!encontrado){
+                if(datosPartida.Jugadores[i].Nick === req.session.nick){
+                    encontrado = true;
+                    if(i === datosPartida.Jugadores.length - 1){ i = -1 }
+                }
+                i++;
+            }
+            datosPartida.TurnoDe = datosPartida.Jugadores[i].Nick;
+            datosPartida.TurnosRestantes = parseInt(datosPartida.TurnosRestantes) - 1;
+            datosPartida.Estado = 1;
+            DAO.actualizarDatosPartida(datosPartida, function(err){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    var datosCartaJ = {};
+                    datosCartaJ.nombrePartida = datosPartida.Nombre;
+                    datosCartaJ.nick = req.session.nick;
+                    datosCartaJ.posX = -1;
+                    datosCartaJ.posY = -1;
+                    DAO.asignarCartaJugador(datosCartaJ, function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
+                                        if(err){
+                                            console.log(err);
+                                        }
+                                        else{
+                                            var tablero = new Array(7);
+                                            for (var i = 0; i < 7; i++) {
+                                              tablero[i] = new Array(7);
+                                            }
+                                            cartasTablero.forEach(function(p){
+                                                // Ocultamos las casillas finales
+                                                if(p.Valor === 21 || p.Valor === 22){
+                                                    p.Valor = 23;
+                                                }
+                                                tablero[p.PosX][p.PosY] = p;
+                                            });
+
+                                            // Mostarmos las casillas finales si la ha revelado
+                                            // con la lupa
+                                            cartas.forEach(function(p){
+                                               if(p.Valor === 21 || p.Valor === 22){
+                                                   tablero[p.PosX][p.PosY] = p;
+                                               } 
+                                            });
+                                            response.status(200);
+                                            response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
+                                            response.end();
+                                        }
+                                    });                                      
+                                }
+                            });                            
+                        }
+                    });                    
+                }
+            });
+        }
+    });
 });
 
 app.get("/imagen/usuario/:nick", function(request, response, next) {

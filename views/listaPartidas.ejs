@@ -13,7 +13,12 @@
         <%- include("menu") %>
 
 	<div id="panelCentral">
-	<h1>¡Bienvenid@, <%= session.nick %>!</h1>	
+        <% if(session.sexo === "hombre") { %>
+            <h1>¡Bienvenido, <%= session.nick %>!</h1>	
+        <% } else { %>
+            <h1>¡Bienvenida, <%= session.nick %>!</h1>	
+        <% } %>
+
 	<p><h2>Partidas abiertas</h2>
 	Las siguientes partidas han sido creadas por ti, pero aún están a la espera de recibir más jugadores.
 	</p>

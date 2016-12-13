@@ -123,6 +123,7 @@ app.post("/procesar_login", function(req, response) {
         else{
             if(user){
                 req.session.nick = user.Nick;
+                req.session.sexo = user.Sexo;
                 response.status(300);
                 response.redirect("/listaPartidas.html");
             } else{
@@ -460,10 +461,17 @@ app.get("/imagen/usuario/:nick", function(request, response, next) {
                 response.end(imagen);
             }
             else{
-                var urlAvatar = path.join("img", "avatarDefault.png");
-                var fichDestino = path.join("public", urlAvatar);
-                fs.createReadStream(fichDestino).pipe(response);
-            }
+                if(request.session.sexo === "hombre"){
+                    var urlAvatar = path.join("img", "avatarDefault.png");
+                    var fichDestino = path.join("public", urlAvatar);
+                    fs.createReadStream(fichDestino).pipe(response);
+                }
+                else{
+                    var urlAvatar = path.join("img", "avatarDefault.png"); // Cambiar por mujer
+                    var fichDestino = path.join("public", urlAvatar);
+                    fs.createReadStream(fichDestino).pipe(response);
+                }
+            }                
         }
      });
 });

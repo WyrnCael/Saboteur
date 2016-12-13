@@ -1,0 +1,55 @@
+#comentario{
+	clear: both;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px 0 rgba(0, 0, 0, 0.19);
+	background: rgb(0, 102, 102);
+	background: rgba(0, 102, 102, 0.85);
+	padding: 20px 30px 10px 20px;
+	border-radius: 8px;
+        display: block;
+        position:relative;
+        margin-bottom: 20px;
+}
+
+#escribirComentario{
+    color:aliceblue;
+    padding: 20px 30px 10px 20px;
+    border-radius: 8px;
+    background: rgb(0, 0, 0);
+    background: rgba(0, 0, 0, 0.85);
+}
+
+
+.fechaComentario{
+    font-style: italic;
+    font-size: 11px;
+}
+
+.nombreComentario{
+    color:maroon;
+    font-size: 20px;
+    font-style:normal;
+
+}
+
+.textoComentario{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+}
+
+div.polaroid {
+  width: 7%;
+  background-color: rgb(153, 255, 255);
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px 0 rgba(0, 0, 0, 0.19);
+  margin-bottom: 15px;
+}
+
+div.container {
+  text-align: center;
+  padding: 10px 3px;
+}
+
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}

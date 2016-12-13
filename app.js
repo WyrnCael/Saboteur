@@ -313,9 +313,16 @@ app.post("/procesar_mostar_partida", function(req, response){
                                    tablero[p.PosX][p.PosY] = p;
                                } 
                             });
-                            response.status(200);
-                            response.render("partida", {session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero});                
-                            response.end();
+                            
+                            DAO.obtenerComentariosPartida(req.body.Nombre, function(err, comentarios){
+                                if(err)
+                                    console.log(err);
+                                else{
+                                    response.status(200);
+                                    response.render("partida", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                                    response.end();
+                                }
+                            });                            
                         }
                     });
                 }
@@ -398,65 +405,42 @@ app.post("/procesar_insertar_carta", function(req, response){
                             console.log(err);
                         }
                         else{
-                            DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
+                            DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
                                 if(err){
                                     console.log(err);
                                 }
                                 else{
-                                    var tablero = new Array(7);
-                                    for (var i = 0; i < 7; i++) {
-                                      tablero[i] = new Array(7);
-                                    }
-
-                                    cartasTablero.forEach(function(p){
-                                        tablero[p.PosX][p.PosY] = p;
-                                    });
-                                    
-                                    logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
-                                       if(err){
-                                           console.log(err);
-                                       } 
-                                       else{
-                                           DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
-                                               if(err){
-                                                   console.log(err);
-                                               } 
-                                               else{
-                                                   cartasTablero.forEach(function(p){
-                                                        // Ocultamos las casillas finales
-                                                        if(p.Valor === 21 || p.Valor === 22){
-                                                            p.Valor = 23;
-                                                        }
-                                                    });
-
-                                                    // Mostarmos las casillas finales si la ha revelado
-                                                    // con la lupa o se ha llegado a ella
-                                                    cartas.forEach(function(p){
-                                                       if(p.Valor === 21 || p.Valor === 22){
-                                                          tablero[p.PosX][p.PosY] = p;
-                                                       } 
-                                                    });
-                                                    
-                                                    if(final){
-                                                        // Fin De Partida
-                                                         response.status(200);
-                                                         response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
-                                                         response.end();
-                                                    }
-                                                    else{
-                                                         
-
-                                                         response.status(200);
-                                                         response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
-                                                         response.end();
-                                                    }
-                                               }
-                                               
-                                             });
+                                    DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
+                                        if(err){
+                                            console.log(err);
                                         }
-                                    });
+                                        else{
+                                            var tablero = new Array(7);
+                                            for (var i = 0; i < 7; i++) {
+                                              tablero[i] = new Array(7);
+                                            }
+                                            cartasTablero.forEach(function(p){
+                                                // Ocultamos las casillas finales
+                                                if(p.Valor === 21 || p.Valor === 22){
+                                                    p.Valor = 23;
+                                                }
+                                                tablero[p.PosX][p.PosY] = p;
+                                            });
+
+                                            // Mostarmos las casillas finales si la ha revelado
+                                            // con la lupa
+                                            cartas.forEach(function(p){
+                                               if(p.Valor === 21 || p.Valor === 22){
+                                                   tablero[p.PosX][p.PosY] = p;
+                                               } 
+                                            });
+                                            response.status(200);
+                                            response.render("partida", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero});                
+                                            response.end();
+                                        }
+                                    });                                      
                                 }
-                            });                             
+                            });                            
                         }
                     });                    
                 }
@@ -534,6 +518,49 @@ app.get("/imagen/carta/:id", function(request, response, next) {
     
 });
 
+app.post("/procesar_insertar_comentario", function(req, res){
+    var datosComentario = {};
+    var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+    var cartas = JSON.parse(req.body.Cartas.toString());
+    var tablero = JSON.parse(req.body.Tablero.toString());
+    
+    datosComentario.nombrePartida = datosPartida.Nombre;
+    datosComentario.texto = req.body.TextoComentario;
+    datosComentario.nick = req.session.nick;
+    
+    req.checkBody("TextoComentario", "No se puede enviar un comentario sin texto.").notEmpty();
+    
+    req.getValidationResult().then(function(result) {
+        if (result.isEmpty()) {
+            DAO.insertaComentario(datosComentario, function(err){
+                if(err)
+                    console.log(err);
+                else{
+                    DAO.obtenerComentariosPartida(datosPartida.Nombre, function(err, comentarios){
+                        if(err)
+                            console.log(err);
+                        else{
+                            res.status(200);
+                            res.render("partida", {errores: undefined, session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                            res.end();
+                        }
+                    });
+                }
+            });
+        }
+        else{
+            DAO.obtenerComentariosPartida(datosPartida.Nombre, function(err, comentarios){
+                if(err)
+                    console.log(err);
+                else{
+                    res.status(200);
+                    res.render("partida", {errores: result.array(), session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                    res.end();
+                }
+            });
+        }
+    });
+});
 
 
 app.listen(config.port, function() {

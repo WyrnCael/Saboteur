@@ -192,117 +192,119 @@ function esCompatible(carta1, carta2, posicion){
 
 function comprobarFinalPartida(tablero, cartaInsertada, jugadores, callback){
     var final = false;
-    
+     
     if(cartaInsertada.PosY === 5){
-        if(cartaInsertada.PosX === 1 || cartaInsertada.PosX === 3 || cartaInsertada.PosX === 4){
-            if(tablero[cartaInsertada.PosX][6].Nick === null && tablero[cartaInsertada.PosX][6].Valor === 22){
+        if(cartaInsertada.PosX === 1 || cartaInsertada.PosX === 3 || cartaInsertada.PosX === 5){
+            if(tablero[cartaInsertada.PosX][6].Valor === 22){
                 final = true;
             }
-            DAO.obtenerJugadoresVenCarta(tablero[cartaInsertada.PosX][6], function(err, jugadoresVenCarta){
+            desbloqueaCarta(cartaInsertada.PosX, tablero[cartaInsertada.PosX][6], cartaInsertada, jugadores, function(err){
                 if(err){
-                    callback(err);
-                }else{
-                    if(jugadoresVenCarta.length < jugadores.length){
-                        // Desbloquea
-                        var n = jugadores.length;
-                        jugadores.forEach(function(j){
-                            n--;
-                            var carta = {};
-                            carta.nick = j.Nick;
-                            carta.nombrePartida = cartaInsertada.NombrePartida;
-                            carta.posX = cartaInsertada.PosX;
-                            carta.posY = 6;
-                            carta.valor = tablero[cartaInsertada.PosX][6].Valor;
-                            DAO.asignarCartaJugador(carta, function(err){
-                                if(err){
-                                    callback(err);
-                                }
-                                else{
-                                    if(n === 0){
-                                        callback(null, final);
-                                    }
-                                }
-                            });
-                        });                        
-                    }
+                    callback(err);                    
                 }
-            });            
+                else{
+                    callback(null, final);
+                }
+            });        
+        }
+        else{
+            callback(null, final);
         }
     }
     else if (cartaInsertada.PosY === 6){
-        if(cartaInsertada.PosX === 0 || cartaInsertada.PosX === 2 || cartaInsertada.PosX === 4){
-            if(tablero[cartaInsertada.PosX+1][6].Nick === null && tablero[cartaInsertada.PosX+1][6].Valor === 22){
+        if(cartaInsertada.PosX === 0){
+            if(tablero[cartaInsertada.PosX+1][6].Valor === 22){
                 final = true;
             }
-            DAO.obtenerJugadoresVenCarta(tablero[cartaInsertada.PosX+1][6], function(err, jugadoresVenCarta){
+            desbloqueaCarta(cartaInsertada.PosX+1, tablero[cartaInsertada.PosX+1][6], cartaInsertada, jugadores, function(err){
                 if(err){
-                    callback(err);
-                }else{
-                    if(jugadoresVenCarta.length < jugadores.length){
-                        // Desbloquea
-                        var n = jugadores.length;
-                        jugadores.forEach(function(j){
-                            n--;
-                            var carta = {};
-                            carta.nick = j.Nick;
-                            carta.nombrePartida = cartaInsertada.NombrePartida;
-                            carta.posX = cartaInsertada.PosX+1;
-                            carta.posY = 6;
-                            carta.valor = tablero[cartaInsertada.PosX+1][6].Valor;
-                            DAO.asignarCartaJugador(carta, function(err){
-                                if(err){
-                                    callback(err);
-                                }
-                                else{
-                                    if(n === 0){
-                                        callback(null, final);
-                                    }
-                                }
-                            });
-                        });                        
-                    }
+                    callback(err);                    
+                }
+                else{
+                    callback(null, final);
                 }
             });
         }
-        if(cartaInsertada.PosX === 2 || cartaInsertada.PosX === 4 || cartaInsertada.PosX === 6){
-            if(tablero[cartaInsertada.PosX-1][6].Nick === null && tablero[cartaInsertada.PosX-1][6].Valor === 22){
+        else if(cartaInsertada.PosX === 6){
+            if(tablero[cartaInsertada.PosX-1][6].Valor === 22){
                 final = true;
             }
-            // Desbloquea
-            DAO.obtenerJugadoresVenCarta(tablero[cartaInsertada.PosX-1][6], function(err, jugadoresVenCarta){
+            desbloqueaCarta(cartaInsertada.PosX-1, tablero[cartaInsertada.PosX-1][6], cartaInsertada, jugadores, function(err){
                 if(err){
-                    callback(err);
-                }else{
-                    if(jugadoresVenCarta.length < jugadores.length){
-                        // Desbloquea
-                        var n = jugadores.length;
-                        jugadores.forEach(function(j){
-                            n--;
-                            var carta = {};
-                            carta.nick = j.Nick;
-                            carta.nombrePartida = cartaInsertada.NombrePartida;
-                            carta.posX = cartaInsertada.PosX-1;
-                            carta.posY = 6;
-                            carta.valor = tablero[cartaInsertada.PosX-1][6].Valor;
-                            DAO.asignarCartaJugador(carta, function(err){
-                                if(err){
-                                    callback(err);
-                                }
-                                else{
-                                    if(n === 0){
-                                        callback(null, final);
-                                    }
-                                }
-                            });
-                        });                        
-                    }
+                    callback(err);                    
+                }
+                else{
+                    callback(null, final);
                 }
             });
-        }        
+        } 
+        else if(cartaInsertada.PosX === 2 || cartaInsertada.PosX === 4){
+            if(tablero[cartaInsertada.PosX+1][6].Valor === 22){
+                final = true;
+            }
+            if(tablero[cartaInsertada.PosX-1][6].Valor === 22){
+                final = true;
+            }       
+            desbloqueaCarta(cartaInsertada.PosX+1, tablero[cartaInsertada.PosX+1][6], cartaInsertada, jugadores, function(err){
+                if(err){
+                    callback(err);
+                    
+                }
+                else{
+                    desbloqueaCarta(cartaInsertada.PosX-1, tablero[cartaInsertada.PosX-1][6], cartaInsertada, jugadores, function(err){
+                        if(err){
+                            callback(err);                    
+                        }
+                        else{
+                            callback(null, final);
+                        }
+                    });
+                }
+            });
+            
+        }
+        else{
+            callback(null, final);
+        }
     }
     else{
         callback(null, final);
     }
+}
+
+function desbloqueaCarta(x, carta, cartaInsertada, jugadores, callback){
+    DAO.obtenerJugadoresVenCarta(carta, function(err, jugadoresVenCarta){
+        if(err){
+            callback(err);
+        }else{
+            if(jugadoresVenCarta.length < jugadores.length){
+                // Desbloquea
+                var n = jugadores.length;
+                jugadores.forEach(function(j){                    
+                    var cartaDesbloqueada = {};
+                    cartaDesbloqueada.nick = j.Nick;
+                    cartaDesbloqueada.nombrePartida = cartaInsertada.NombrePartida;
+                    cartaDesbloqueada.posX = x;
+                    cartaDesbloqueada.posY = 6;
+                    cartaDesbloqueada.valor = carta.Valor;
+                    DAO.asignarCartaJugador(cartaDesbloqueada, function(err){
+                        n--;
+                        if(err){
+                            callback(err);
+                        }
+                        else{
+                            if(n === 0){
+                                callback(null);
+                            }
+                        }
+                    });
+                });                        
+            }
+            else{
+                callback(null);
+            }
+        }
+    });
 }
 
 module.exports = {

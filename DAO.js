@@ -442,17 +442,17 @@ function actualizarDatosPartida(datosPartida, callback){
 
 function asignarCartaJugador(datosCarta, callback){
     pool.getConnection(function(err, con) {
-    if (err) {
-        callback(err);
-    } else {
-        if(datosCarta.valor === undefined){
-            datosCarta.valor = obtenerCartaAleatoria();
-        }
-        var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
-                       "VALUES (?, ?, ?, ?, ?)";
-        con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
-                        datosCarta.posX, datosCarta.posY, datosCarta.valor], 
-            function(err, rows) {   
+        if (err) {
+            callback(err);
+        } else {
+            if(datosCarta.valor === undefined){
+                datosCarta.valor = obtenerCartaAleatoria();
+            }
+            var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
+                           " VALUES (?, ?, ?, ?, ?)";
+            con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
+                            datosCarta.posX, datosCarta.posY, datosCarta.valor], 
+                            function(err, rows) {   
                 con.release();
                 if (err) {
                     callback(err);

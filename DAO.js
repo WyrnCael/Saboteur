@@ -529,6 +529,7 @@ function asignarCartaJugador(datosCarta, callback){
                             datosCarta.posX, datosCarta.posY, datosCarta.valor], 
                             function(err, rows) {   
                 con.release();
+                
                 if (err) {
                     callback(err);
                 } else { 

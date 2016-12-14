@@ -20,7 +20,7 @@
             <h1>¡Carta seleccionada!</h1>
             <p>A continuación puedes desechar la carta seleccionada, insertarla en el tablero o elegir otra carta.</p>            	
             <h2>Desechar carta:</h2>
-            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75"></div></p>
+            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div></p>
                 <form action="/procesar_desechar_carta" method="POST">
                     <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
                     <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
@@ -42,6 +42,22 @@
                                                 <input name="PosY" type="hidden" value="<%= j %>" />
                                                 <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
                                                 <input type="submit" class="botonDisponible" value=""  />
+                                            </form>
+                                        </div>
+                                    <% } else if(cartas[indCartaSeleccionada].Valor === 16  && tablero[i][j].Valor !== 20 && tablero[i][j].Valor !== 21 && tablero[i][j].Valor !== 22 && tablero[i][j].Valor !== 23) { %>
+                                        <div class="casillaBomba">
+                                            <form action="/procesar_bomba" method="POST">
+                                                <input name="Nombre" type="hidden" value="<%= datosPartida.Nombre %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
+                                            </form>
+                                        </div>
+                                    <% } else if(cartas[indCartaSeleccionada].Valor === 17  && tablero[i][j].Valor === 23) { %>
+                                        <div class="casillaLupa">
+                                            <form action="/procesar_lupa" method="POST">
+                                                <input name="Nombre" type="hidden" value="<%= datosPartida.Nombre %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="Desvelar" title="Desvelar" height="75" width="75">
                                             </form>
                                         </div>
                                     <% } else { %>

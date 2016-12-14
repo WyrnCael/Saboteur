@@ -30,7 +30,7 @@
                 <% for(var i = 0; i < 7; i++){ %>
                     <div id="filaCartas">
                         <% for(var j = 0; j < 7; j++){ %>                            
-                                <% if(tablero[i][j] !== undefined && tablero[i][j] !== null) { %>
+                                <% if(tablero[i][j] !== undefined) { %>
                                     <% if(tablero[i][j] === -1) { %>
                                         <div class="casillaDisponible">
                                             <form action="/procesar_insertar_carta" method="POST">
@@ -38,7 +38,6 @@
                                                 <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
                                                 <input name="PosX" type="hidden" value="<%= i %>" />
                                                 <input name="PosY" type="hidden" value="<%= j %>" />
-                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
                                                 <input type="submit" class="botonDisponible" value=""  />
                                             </form>
                                         </div>
@@ -78,18 +77,20 @@
             <h2>Tus cartas</h2>	
             <div id="filaCartas">
                 <% for(var j = 0; j < cartas.length; j++){ %>
-                    <% if (session.nick === datosPartida.TurnoDe) { %>
-                        <div class="casillaCartaTurnoActual">
-                        <form action="/procesar_carta_seleccionada" method="POST">
-                            <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                            <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
-                            <input name="Inice" type="hidden" value="<%= j %>" />
-                            <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
-                        </form>
-                    <% } else { %>
-                        <div class="casillaCarta"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
-                    <% } %>                          
-                    </div>
+                    <% if (cartas[j].PosX === -1 && cartas[j].PosY === -1) { %>
+                         <% if (session.nick === datosPartida.TurnoDe) { %>                        
+                             <div class="casillaCartaTurnoActual">
+                             <form action="/procesar_carta_seleccionada" method="POST">
+                                 <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                 <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                 <input name="Inice" type="hidden" value="<%= j %>" />
+                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                             </form>
+                         <% } else { %>
+                             <div class="casillaCarta"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                         <% } %>                          
+                         </div>
+                     <% } %> 
                 <% } %>
             </div>
             <% if (session.nick === datosPartida.TurnoDe) { %>

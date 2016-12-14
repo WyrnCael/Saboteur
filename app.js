@@ -431,6 +431,11 @@ app.post("/procesar_insertar_carta", function(req, response){
                             console.log(err);
                         }
                         else{
+                            DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
                             DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
                                 if(err){
                                     console.log(err);

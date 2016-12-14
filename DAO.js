@@ -21,7 +21,7 @@ function altaUsuario(datosUsuario, callback){
         callback(err);
     } else {
         con.query("INSERT INTO Usuarios(Nick, Contraseña, Nombre, Sexo, Imagen, Nacimiento)" + 
-                       "VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario.usuario, datosUsuario.contraseña,
+                       " VALUES (?, ?, ?, ?, ?, ?)", [datosUsuario.usuario, datosUsuario.contraseña,
                         datosUsuario.nombre, datosUsuario.sexo, datosUsuario.foto, datosUsuario.nacimiento],
             function(err, rows) { 
                 con.release();
@@ -83,7 +83,7 @@ function crearPartida(datosPartida, callback){
         callback(err);
     } else {
         con.query("INSERT INTO Partidas(Nombre, NickCreador, FechaCreacion, Estado, MaxJugadores)" + 
-                       "VALUES (?, ?, NOW(), ?, ?)", [datosPartida.nombre, datosPartida.creador, 0, datosPartida.maxJugadores],
+                       " VALUES (?, ?, NOW(), ?, ?)", [datosPartida.nombre, datosPartida.creador, 0, datosPartida.maxJugadores],
             function(err, rows) { 
                 con.release();
                 if (err) {
@@ -121,14 +121,33 @@ function obtenerPartida(nombre, callback){
     });
 }
 
+function finalizarPartida(datosPartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        con.query("UPDATE Partidas SET Estado=2, Ganador=? WHERE Nombre=?",
+                [datosPartida.Ganador, datosPartida.Nombre],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {
+                   callback(null);      
+                }                
+            });
+        }
+    });
+}
+
 function insertJugadorEnPartida(NickJugador, NickPartida, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
     } else {
         con.query("INSERT INTO JugadoresEnPartida(Nick, Nombre, Herramienta)" + 
-                       "VALUES (?, ?, TRUE)", [NickJugador, NickPartida],
-            function(err) { 
+                       " VALUES (?, ?, TRUE)", [NickJugador, NickPartida],
+            function(err, rows) { 
                 con.release();
                 if (err) {
                     callback(err);
@@ -195,8 +214,7 @@ function obtenerPartidasTerminadas(nickJugador, callback){
         var sql = "SELECT * FROM Partidas" + 
                     " INNER JOIN jugadoresenpartida" +
                     " ON partidas.Nombre = jugadoresenpartida.Nombre" +
-                    " GROUP BY partidas.Nombre" +
-                    " HAVING jugadoresenpartida.Nick = ? AND partidas.Estado = 2";
+                    " HAVING jugadoresenpartida.Nick = ? AND partidas.Estado=2";
         con.query(sql, [nickJugador], 
             function(err, rows) {   
                 con.release();
@@ -240,11 +258,9 @@ function obtenerJugadoresPartidas(partidas, callback){
     if (err) {
         callback(err);
     } else {
-        var n = partidas.length;
-        
-        if(n === 0) callback(null, partidas);
+        if(partidas.length === 0) callback(null, partidas);
         else{
-            partidas.forEach(function(p){
+            partidas.forEach(function(p, index, array){
                 var sql = " SELECT * " +
                       " FROM jugadoresenpartida" +
                       " WHERE jugadoresenpartida.Nombre = ? ";
@@ -255,8 +271,8 @@ function obtenerJugadoresPartidas(partidas, callback){
                             callback(err);
                         } else {  
                             partidas[partidas.indexOf(p)].Jugadores = rows;
-                            n--;                        
-                            if(n === 0){
+                            if(index === array.length - 1){
+                                con.release();
                                 callback(null, partidas);
                             }
                         }
@@ -264,6 +280,28 @@ function obtenerJugadoresPartidas(partidas, callback){
             });    
         }            
     }
+    });
+}
+
+function obtenerSaboteadores(nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+        if (err) {
+            callback(err);
+        } else {
+            var sql = " SELECT * " +
+                          " FROM jugadoresenpartida" +
+                          " WHERE jugadoresenpartida.Nombre = ? AND TipoJugador=1";
+            con.query(sql, [nombrePartida],
+                function(err, rows) {
+                    con.release();
+                    if (err) {                            
+                        callback(err);
+                    } else {  
+                        callback(null, rows);
+                    }
+            });
+
+        }
     });
 }
 
@@ -335,19 +373,15 @@ function iniciaPartida(partidas, callback){
                                 } 
                                 else{
                                     destinos.splice(randomDestino, 1);
-                                    var n = 2;
-                                    destinos.forEach(function(p){
+                                    destinos.forEach(function(p, indexDest, arrayDest){
                                          asignarCartaSinJugador(p, function(err){
                                             if(err){
                                                 console.log(err);
                                             } 
                                             else{                                                
-                                                n--;
-                                                if(n === 0){
+                                                if(indexDest === arrayDest.length - 1){
                                                     // Generar cartas para jugadores
-                                                    n = partida.Jugadores.length;
-                                                    partida.Jugadores.forEach(function(p){
-                                                    var j = 6;
+                                                    partida.Jugadores.forEach(function(p, indexJug, arrayJug){
                                                         for(var i = 0; i < 6; i++){
                                                             var datosCartaJ = {};
                                                             datosCartaJ.nombrePartida = partida.Nombre;
@@ -359,45 +393,38 @@ function iniciaPartida(partidas, callback){
                                                                     console.log(err);
                                                                 }
                                                                 else{
-                                                                    j--;
-                                                                    if(j === 0){
-                                                                        n--;
-                                                                        if(n === 0){
-                                                                            var h;
-                                                                            if(partida.Jugadores.length <= 4) h = 1;
-                                                                            else h = 2;
-                                                                            while(h > 0){
-                                                                                var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
-                                                                                var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
-                                                                                h--;
-                                                                                asignarRolJugador(datosRol, function(err){                                                                                    
-                                                                                    if(err){
-                                                                                        console.log(err);
-                                                                                    }
-                                                                                    else{                                                                                  
-                                                                                        partida.Jugadores.splice(randomJugador, 1);                                                                                          
-                                                                                        if(h === 0){
-                                                                                            var m = partida.Jugadores.length;
-                                                                                            partida.Jugadores.forEach(function(p){
-                                                                                               datosRol.nick = p.Nick;
-                                                                                               datosRol.tipo = 0;
-                                                                                               asignarRolJugador(datosRol, function(err){
-                                                                                                    if(err){
-                                                                                                        console.log(err);
+                                                                    if(indexJug === arrayJug - 1 && i === 5){
+                                                                        var h;
+                                                                        if(partida.Jugadores.length <= 4) h = 1;
+                                                                        else h = 2;
+                                                                        while(h > 0){
+                                                                            var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+                                                                            var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
+                                                                            h--;
+                                                                            asignarRolJugador(datosRol, function(err){                                                                                    
+                                                                                if(err){
+                                                                                    console.log(err);
+                                                                                }
+                                                                                else{                                                                                  
+                                                                                    partida.Jugadores.splice(randomJugador, 1);                                                                                          
+                                                                                    if(h === 0){
+                                                                                        partida.Jugadores.forEach(function(p, indexJ, arrayJ){
+                                                                                           datosRol.nick = p.Nick;
+                                                                                           datosRol.tipo = 0;
+                                                                                           asignarRolJugador(datosRol, function(err){
+                                                                                                if(err){
+                                                                                                    console.log(err);
+                                                                                                }
+                                                                                                else{
+                                                                                                    if(indexJ === arrayJ.length){
+                                                                                                        callback(null);
                                                                                                     }
-                                                                                                    else{
-                                                                                                        m--;
-                                                                                                        if(m === 0){
-                                                                                                            callback(null);
-                                                                                                        }
-                                                                                                    }
-                                                                                               });
-                                                                                            });
-                                                                                        }                                                                                        
-                                                                                    }
-                                                                                });
-                                                                            }
-                                                                            
+                                                                                                }
+                                                                                           });
+                                                                                        });
+                                                                                    }                                                                                        
+                                                                                }
+                                                                            });
                                                                         }
                                                                     }
                                                                 }
@@ -442,17 +469,17 @@ function actualizarDatosPartida(datosPartida, callback){
 
 function asignarCartaJugador(datosCarta, callback){
     pool.getConnection(function(err, con) {
-    if (err) {
-        callback(err);
-    } else {
-        if(datosCarta.valor === undefined){
-            datosCarta.valor = obtenerCartaAleatoria();
-        }
-        var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
-                       "VALUES (?, ?, ?, ?, ?)";
-        con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
-                        datosCarta.posX, datosCarta.posY, datosCarta.valor], 
-            function(err, rows) {   
+        if (err) {
+            callback(err);
+        } else {
+            if(datosCarta.valor === undefined){
+                datosCarta.valor = obtenerCartaAleatoria();
+            }
+            var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
+                           " VALUES (?, ?, ?, ?, ?)";
+            con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
+                            datosCarta.posX, datosCarta.posY, datosCarta.valor], 
+                            function(err, rows) {   
                 con.release();
                 if (err) {
                     callback(err);
@@ -473,7 +500,7 @@ function asignarCartaSinJugador(datosCarta, callback){
             datosCarta.valor = obtenerCartaAleatoria();
         }
         var sql = "INSERT INTO Cartas(NombrePartida, PosX, PosY, Valor)" + 
-                       "VALUES (?, ?, ?, ?)";
+                       " VALUES (?, ?, ?, ?)";
         con.query(sql, [datosCarta.nombrePartida, 
                         datosCarta.posX, datosCarta.posY, datosCarta.valor], 
             function(err, rows) {   
@@ -508,6 +535,27 @@ function insertarCartaTablero(datosCarta, callback){
     });
 }
 
+function obtenerJugadoresVenCarta(carta, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Cartas WHERE NombrePartida=?"+
+                    " AND PosX=? AND PosY=?";
+        con.query(sql, [carta.NombrePartida, 
+                        carta.PosX, carta.PosY], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
 function asignarRolJugador(datosRol, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -528,28 +576,21 @@ function asignarRolJugador(datosRol, callback){
     });
 }
 
-function descartarCarta(datosCarta, callback){
+function descartarCarta(carta, callback){
     pool.getConnection(function(err, con) {
     if (err) {
         callback(err);
     } else {
-        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=-1 AND PosY=-1" + 
-                       "AND Valor=?";
-        con.query(sql, [datosCarta.nick, datosCarta.nombrePartida, 
-                        datosCarta.posX, datosCarta.posY, datosCarta.valor], 
-            function(err, rows) {                   
-                if (err) {
-                    con.release();
+        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=? AND PosY=?" + 
+                       " AND Valor=?";
+        con.query(sql, [carta.Nick, carta.NombrePartida, 
+                        carta.PosX, carta.PosY, carta.Valor], 
+            function(err, rows) { 
+                con.release();
+                if (err) {                    
                     callback(err);
                 } else {            
-                    asignarCarta(datosCarta, function(err, datos) {
-                       if(err){
-                           callback(err);
-                       } 
-                       else{
-                           callback(null, datos);
-                       }
-                    });
+                    callback(null);
                 }
             });
         }
@@ -562,7 +603,7 @@ function obtenerCartasDisponiblesJugadorPartida(nick, nombrePartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "SELECT * FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=-1 AND PosY=-1";
+        var sql = "SELECT * FROM Cartas WHERE Nick=? AND NombrePartida=?";
         con.query(sql, [nick, nombrePartida], 
             function(err, rows) {  
                 con.release();
@@ -596,7 +637,7 @@ function obtenerCartasTablero(nombrePartida, callback){
 }
 
 function obtenerCartaAleatoria(){
-    var randomCard = Math.floor(Math.random() * (15 - 1 + 1)) + 1;
+    var randomCard = Math.floor(Math.random() * (19 - 1 + 1)) + 1;
     return randomCard;
 }
 
@@ -625,7 +666,7 @@ function insertaComentario(datosComentario, callback){
         callback(err);
     } else {
         con.query("INSERT INTO Comentarios(Fecha, Nick, NombrePartida, Texto)" + 
-                       "VALUES (NOW(), ?, ?, ?)", [datosComentario.nick, datosComentario.nombrePartida, datosComentario.texto],
+                       " VALUES (NOW(), ?, ?, ?)", [datosComentario.nick, datosComentario.nombrePartida, datosComentario.texto],
             function(err, rows) { 
                 con.release();
                 if (err) {
@@ -644,6 +685,7 @@ module.exports = {
     obtenerImagenUsuario: obtenerImagenUsuario,
     crearPartida: crearPartida,
     obtenerPartida: obtenerPartida,
+    finalizarPartida: finalizarPartida,
     obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
     obtenerPartidasAbiertas: obtenerPartidasAbiertas,
     insertJugadorEnPartida: insertJugadorEnPartida,
@@ -654,6 +696,8 @@ module.exports = {
     insertarCartaTablero: insertarCartaTablero,
     descartarCarta: descartarCarta,
     obtenerJugadoresPartidas: obtenerJugadoresPartidas,
+    obtenerSaboteadores: obtenerSaboteadores,
+    obtenerJugadoresVenCarta: obtenerJugadoresVenCarta,
     obtenerPartidasActivas: obtenerPartidasActivas,
     obtenerPartidasTerminadas: obtenerPartidasTerminadas,
     obtenerCartasDisponiblesJugadorPartida: obtenerCartasDisponiblesJugadorPartida,

@@ -279,8 +279,7 @@ function desbloqueaCarta(x, carta, cartaInsertada, jugadores, callback){
         }else{
             if(jugadoresVenCarta.length < jugadores.length){
                 // Desbloquea
-                var n = jugadores.length;
-                jugadores.forEach(function(j){                    
+                jugadores.forEach(function(j, index, array){                    
                     var cartaDesbloqueada = {};
                     cartaDesbloqueada.nick = j.Nick;
                     cartaDesbloqueada.nombrePartida = cartaInsertada.NombrePartida;
@@ -288,12 +287,11 @@ function desbloqueaCarta(x, carta, cartaInsertada, jugadores, callback){
                     cartaDesbloqueada.posY = 6;
                     cartaDesbloqueada.valor = carta.Valor;
                     DAO.asignarCartaJugador(cartaDesbloqueada, function(err){
-                        n--;
                         if(err){
                             callback(err);
                         }
                         else{
-                            if(n === 0){
+                            if(index === array.length - 1){
                                 callback(null);
                             }
                         }

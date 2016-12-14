@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+        <%- include("menu") %>
+
+	<div id="panelCentral">
+		<p><h1>Error interno del servidor</h1></p>
+                <p>Se ha producido el siguiente error: <% err.mensaje %></p>
+                <p><% err.detalle %></p>
+	</div>
+        <%- include("pie") %>
+</div>
+</body>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<link rel="stylesheet" href="./css/infoPartida.css" />
+<link rel="stylesheet" href="./css/comentarios.css" />
+<link rel="stylesheet" href="./css/formularios.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+        <%- include("menu") %>
+
+	<div id="panelCentral">
+            <h1>¡Carta seleccionada!</h1>
+            <p>A continuación puedes desechar la carta seleccionada, insertarla en el tablero o elegir otra carta.</p>            	
+            <h2>Desechar carta:</h2>
+            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75"></div></p>
+                <form action="/procesar_desechar_carta" method="POST">
+                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                    <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                    <input type="submit" value="Desechar y pasar turno"  />
+                </form>
+            <h2>Insertar Carta</h2>
+                <p>Se muestran en verde, si existen, las casillas donde puede ser insertada la carta.</p>
+                <p>
+                <% for(var i = 0; i < 7; i++){ %>
+                    <div id="filaCartas">
+                        <% for(var j = 0; j < 7; j++){ %>                            
+                                <% if(tablero[i][j] !== undefined) { %>
+                                    <% if(tablero[i][j] === -1) { %>
+                                        <div class="casillaDisponible">
+                                            <form action="/procesar_insertar_carta" method="POST">
+                                                <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                                <input name="PosX" type="hidden" value="<%= i %>" />
+                                                <input name="PosY" type="hidden" value="<%= j %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                <input type="submit" class="botonDisponible" value=""  />
+                                            </form>
+                                        </div>
+                                    <% } else { %>
+                                        <div class="casillaCarta">
+                                            <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75px" width="75px">
+                                        </div>
+                                    <% } %>                                    
+                                <% } else { %>
+                                    <div class="casillaCartaVacia"></div>                                    
+                                <% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+
+            <h2>Tus datos</h2>	
+            <% var jugador; %>
+            <% datosPartida.Jugadores.forEach(function(p){  %>
+                <% if (p.Nick === session.nick) { %>
+                    <% jugador = p; %>
+                <% } %>
+            <% }); %>
+            <p>Tipo de jugador: 
+                <% if (jugador.TipoJugador === 1) { %>
+                    Saboteador
+                <% } else { %>
+                    Buscador
+                <% } %>
+            </p>
+            <p>Herramienta activa: 
+                <% if (jugador.Herramienta) { %>
+                    Si
+                <% } else { %>
+                    No
+                <% } %>
+            </p>
+            <h2>Seleccionar otra carta:</h2>	
+            <p>Seleciona otra carta:</p>
+            <div id="filaCartas">
+                <% for(var j = 0; j < cartas.length; j++){ %>
+                    <% if (cartas[j].PosX === -1 && cartas[j].PosY === -1) { %>
+                         <% if (session.nick === datosPartida.TurnoDe) { %>                        
+                             <div class="casillaCartaTurnoActual">
+                             <form action="/procesar_carta_seleccionada" method="POST">
+                                 <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                 <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                 <input name="Inice" type="hidden" value="<%= j %>" />
+                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                             </form>
+                         <% } else { %>
+                             <div class="casillaCarta"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                         <% } %>                          
+                         </div>
+                     <% } %> 
+                <% } %>
+            </div>
+           
+
+
+	</div>
+        <%- include("pie") %>
+</div>
+</body>
+</html>

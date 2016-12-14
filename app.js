@@ -436,100 +436,102 @@ app.post("/procesar_insertar_carta", function(req, response){
                                     console.log(err);
                                 }
                                 else{
-                            DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
-                                if(err){
-                                    console.log(err);
-                                }
-                                else{
-                                    var tablero = new Array(7);
-                                    for (var i = 0; i < 7; i++) {
-                                      tablero[i] = new Array(7);
-                                    }
+                                    DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
+                                        if(err){
+                                            console.log(err);
+                                        }
+                                        else{
+                                            var tablero = new Array(7);
+                                            for (var i = 0; i < 7; i++) {
+                                              tablero[i] = new Array(7);
+                                            }
 
-                                    cartasTablero.forEach(function(p){
-                                        tablero[p.PosX][p.PosY] = p;
-                                    });
-                                    
-                                    logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
-                                       if(err){
-                                           console.log(err);
-                                       } 
-                                       else{
-                                           DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
-                                               if(err){
+                                            cartasTablero.forEach(function(p){
+                                                tablero[p.PosX][p.PosY] = p;
+                                            });
+
+                                            logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
+                                                if(err){
                                                    console.log(err);
-                                               } 
-                                               else{
-                                                   cartasTablero.forEach(function(p){
-                                                        // Ocultamos las casillas finales
-                                                        if(p.Valor === 21 || p.Valor === 22){
-                                                            p.Valor = 23;
-                                                        }
-                                                    });
-
-                                                    // Mostarmos las casillas finales si la ha revelado
-                                                    // con la lupa o se ha llegado a ella
-                                                    cartas.forEach(function(p){
-                                                       if(p.Valor === 21 || p.Valor === 22){
-                                                          tablero[p.PosX][p.PosY] = p;
+                                                } 
+                                                else{
+                                                   DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, datosPartida.Nombre, function(err, cartas){
+                                                       if(err){
+                                                           console.log(err);
                                                        } 
-                                                    });
-                                                    
-                                                    if(final){
-                                                        var datosPartidaFin = {};
-                                                        datosPartidaFin.Ganador = req.session.nick;
-                                                        datosPartidaFin.Nombre = datosPartida.Nombre;
-                                                        DAO.finalizarPartida(datosPartidaFin, function(err){
-                                                           if(err){
-                                                                console.log(err);
-                                                           }
-                                                           else{
-                                                                response.status(300);
-                                                                response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                                                                response.end();
-                                                           }
-                                                        });                                                         
-                                                    }
-                                                    else{
-                                                        if (datosPartida.TurnosRestantes === 0){
-                                                            DAO.obtenerSaboteadores(datosPartida.Nombre, function(err, saboteadores){
-                                                                if(err){
-                                                                    console.log(err);
+                                                       else{
+                                                           cartasTablero.forEach(function(p){
+                                                                // Ocultamos las casillas finales
+                                                                if(p.Valor === 21 || p.Valor === 22){
+                                                                    p.Valor = 23;
+                                                                }
+                                                            });
+
+                                                            // Mostarmos las casillas finales si la ha revelado
+                                                            // con la lupa o se ha llegado a ella
+                                                            cartas.forEach(function(p){
+                                                               if(p.Valor === 21 || p.Valor === 22){
+                                                                  tablero[p.PosX][p.PosY] = p;
+                                                               } 
+                                                            });
+
+                                                            if(final){
+                                                                var datosPartidaFin = {};
+                                                                datosPartidaFin.Ganador = req.session.nick;
+                                                                datosPartidaFin.Nombre = datosPartida.Nombre;
+                                                                DAO.finalizarPartida(datosPartidaFin, function(err){
+                                                                   if(err){
+                                                                        console.log(err);
+                                                                   }
+                                                                   else{
+                                                                        response.status(300);
+                                                                        response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                                                        response.end();
+                                                                   }
+                                                                });                                                         
+                                                            }
+                                                            else{
+                                                                if (datosPartida.TurnosRestantes === 0){
+                                                                    DAO.obtenerSaboteadores(datosPartida.Nombre, function(err, saboteadores){
+                                                                        if(err){
+                                                                            console.log(err);
+                                                                        }
+                                                                        else{
+                                                                            var ganador = "";
+                                                                            // Si habia dos saboteadores, ganan los dos.
+                                                                            saboteadores.forEach(function(p){
+                                                                                ganador += p.Nick;
+                                                                            });
+                                                                            var datosPartidaFin = {};
+                                                                            datosPartidaFin.Ganador = ganador;
+                                                                            datosPartidaFin.Nombre = datosPartida.Nombre;
+                                                                            DAO.finalizarPartida(datosPartidaFin, function(err){
+                                                                               if(err){
+                                                                                    console.log(err);
+                                                                               }
+                                                                               else{
+                                                                                    response.status(300);
+                                                                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                                                                    response.end();
+                                                                               }
+                                                                            });    
+                                                                        }   
+                                                                    });
                                                                 }
                                                                 else{
-                                                                    var ganador = "";
-                                                                    // Si habia dos saboteadores, ganan los dos.
-                                                                    saboteadores.forEach(function(p){
-                                                                        ganador += p.Nick;
-                                                                    });
-                                                                    var datosPartidaFin = {};
-                                                                    datosPartidaFin.Ganador = ganador;
-                                                                    datosPartidaFin.Nombre = datosPartida.Nombre;
-                                                                    DAO.finalizarPartida(datosPartidaFin, function(err){
-                                                                       if(err){
-                                                                            console.log(err);
-                                                                       }
-                                                                       else{
-                                                                            response.status(300);
-                                                                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                                                                            response.end();
-                                                                       }
-                                                                    });    
-                                                                }   
-                                                            });
-                                                        }
-                                                        else{
-                                                            response.status(200);
-                                                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);   
-                                                            response.end();
-                                                        }                                                        
-                                                    }
-                                                }                                               
-                                             });
+                                                                    response.status(200);
+                                                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);   
+                                                                    response.end();
+                                                                }                                                        
+                                                            }
+                                                        }                                               
+                                                    });
+                                                }
+                                            });
                                         }
                                     });
                                 }
-                            });                             
+                            });
                         }
                     });                    
                 }
@@ -595,16 +597,15 @@ app.get("/imagen/usuario/:nick", function(request, response, next) {
                 response.end(imagen);
             }
             else{
+                var urlAvatar;
                 if(request.session.sexo === "hombre"){
-                    var urlAvatar = path.join("img", "avatarDefault.png");
-                    var fichDestino = path.join("public", urlAvatar);
-                    fs.createReadStream(fichDestino).pipe(response);
+                    urlAvatar = path.join("img", "avatarDefaultMan.png");
                 }
                 else{
-                    var urlAvatar = path.join("img", "avatarDefault.png"); // Cambiar por mujer
-                    var fichDestino = path.join("public", urlAvatar);
-                    fs.createReadStream(fichDestino).pipe(response);
+                    urlAvatar = path.join("img", "avatarDefaultWoman.png");
                 }
+                var fichDestino = path.join("public", urlAvatar);
+                 fs.createReadStream(fichDestino).pipe(response);
             }                
         }
      });

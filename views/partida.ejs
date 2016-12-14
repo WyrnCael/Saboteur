@@ -3,6 +3,7 @@
     <!-- Página HTML -->
 <head>
 <title>Saboteur</title>
+<link rel="shortcut icon" href="./img/icono.ico" />
 <link rel="stylesheet" href="./css/estiloGeneral.css" />
 <link rel="stylesheet" href="./css/infoPartida.css" />
 <link rel="stylesheet" href="./css/comentarios.css" />
@@ -39,7 +40,7 @@
                                                 <input name="PosX" type="hidden" value="<%= i %>" />
                                                 <input name="PosY" type="hidden" value="<%= j %>" />
                                                 <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                                                <input type="submit" class="botonDisponible" value=""  />
+                                                <input type="submit" class="botonDisponible" id="submit" value=""  />
                                             </form>
                                         </div>
                                     <% } else { %>
@@ -135,7 +136,7 @@
                     <input type="hidden" name="Tablero" value="<%= JSON.stringify(tablero) %>" > 
                     
                     <p><textarea name="TextoComentario" rows="8" cols="80"></textarea></p>
-                    <p><input type="submit" value="Enviar"></p>
+                    <p><input type="submit" id="submit" value="Enviar"></p>
                 </form>
 
             </div></p>

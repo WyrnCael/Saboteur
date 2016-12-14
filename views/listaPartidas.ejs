@@ -3,6 +3,7 @@
     <!-- Página HTML -->
 <head>
 <title>Saboteur</title>
+<link rel="shortcut icon" href="./img/icono.ico" />
 <link rel="stylesheet" href="./css/estiloGeneral.css" />
 <meta charset="utf-8"/>
 </head>
@@ -38,7 +39,7 @@
                 <% if(datosPartida[i].NumJugadores >= 3) { %>
                     <form action="/procesar_cerrar_partida" method="POST">
                         <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
-                        <td><input type="submit" value="Cerrar"></td>
+                        <td><input type="submit"  id="submit" value="Cerrar"></td>
                     </form>
                 <% } else { %>
                     <td>Min. 3 jugadores</td>

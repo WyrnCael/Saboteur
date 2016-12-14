@@ -20,24 +20,27 @@ body{
 	float: left;
 }
 
-#datosUsuario{
-	float: right;
-	background: rgb(0, 102, 102);
-	background: rgba(0, 102, 102, 0.75);
-	border-radius: 8px;
-	padding: 5px 10px 5px 10px;
-        margin-right: 40px;
+#fotoUsuario{
+    float:left;
+    margin-right: 10px;
 }
 
-#datosUsuario img{
-    border: 1px solid black;
+#datosUsuario{
+	float: right;
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px 0 rgba(0, 0, 0, 0.19);
+	background: rgb(153, 255, 255);
+	background: rgba(153, 255, 255, 0.75);
+	border-radius: 14px 14px 14px 0px;
+	padding: 5px 10px 5px 10px;
+        margin: 20px;
 }
 
 #infoConectado{
-	text-align: center;
-	padding-bottom: 10px;
-	color: white;
+	text-align: right;
+	padding-bottom: 5px;
+	color: rgb(0, 51, 51);
 	font-weight: bold;
+        font-size: 20px;
 }
 
 #botonLogin{
@@ -48,15 +51,15 @@ body{
 #botonNuevoUser{
 	padding-top: 5px;
 	float: right;
+        
 }
 
 #menu{
     clear: both;
     margin: 0 auto;
-    vertical-align: initial;
-    background: rgb(0, 102, 102);
-    background: rgba(0, 102, 102, 0.75);     
+    vertical-align: initial;  
     margin-right: 40px;
+    text-align: center;
 }
 
 #panelCentral{
@@ -94,22 +97,45 @@ table, th, td{
         text-align: center;
 }
 
-.boton {
-    background-color: #FFD000;
-    border: none;
-    color: black;
-    font-weight: bold;
-    padding: 8px 25px;
-    text-align: center;
+.botonMenu {
+    font-size: 23px;
+    text-shadow: 0px 1px rgba(0, 0, 0, 0.2);
+    text-align:center;
     text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 5px 0px 5px 5px;
+    font-family: 'Helvetica Neue', Helvetica, sans-serif;
+    display:inline-block;
+    color: #FFF;
+    background: rgb(179, 107, 0);
+    padding: 7px 20px;
+    white-space: nowrap;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 100px;
+    margin: 10px 5px;
+    -webkit-transition: all 0.2s ease-in-out;
+    -ms-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    -o-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
 }
 
-.boton:hover, .botonPartida:hover{
+.botonMenu:hover, .botonPartida:hover{
 	cursor: pointer;
-        background-color: #FFC000;
+        background-color: rgb(102, 61, 0);
+}
+
+#submit {
+     font-weight: bold;
+    cursor: pointer;
+    padding: 5px;
+    margin: 0 10px 20px 0;
+    border: 1px solid #ccc;
+    background: #eee;
+    border-radius: 8px 8px 8px 8px;
+}
+
+#submit:hover {
+    background: rgb(204, 122, 0);
 }
 
 .botonPartida{
@@ -124,6 +150,3 @@ table, th, td{
 .turnoDeJugador{
     background-color: #FFD000;
 }
-
-
-

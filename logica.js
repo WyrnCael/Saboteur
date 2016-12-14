@@ -273,35 +273,23 @@ function comprobarFinalPartida(tablero, cartaInsertada, jugadores, callback){
 }
 
 function desbloqueaCarta(x, carta, cartaInsertada, jugadores, callback){
-    DAO.obtenerJugadoresVenCarta(carta, function(err, jugadoresVenCarta){
-        if(err){
-            callback(err);
-        }else{
-            if(jugadoresVenCarta.length < jugadores.length){
-                // Desbloquea
-                jugadores.forEach(function(j, index, array){                    
-                    var cartaDesbloqueada = {};
-                    cartaDesbloqueada.nick = j.Nick;
-                    cartaDesbloqueada.nombrePartida = cartaInsertada.NombrePartida;
-                    cartaDesbloqueada.posX = x;
-                    cartaDesbloqueada.posY = 6;
-                    cartaDesbloqueada.valor = carta.Valor;
-                    DAO.asignarCartaJugador(cartaDesbloqueada, function(err){
-                        if(err){
-                            callback(err);
-                        }
-                        else{
-                            if(index === array.length - 1){
-                                callback(null);
-                            }
-                        }
-                    });
-                });                        
+    jugadores.forEach(function(j, index, array){                    
+        var cartaDesbloqueada = {};
+        cartaDesbloqueada.nick = j.Nick;
+        cartaDesbloqueada.nombrePartida = cartaInsertada.NombrePartida;
+        cartaDesbloqueada.posX = x;
+        cartaDesbloqueada.posY = 6;
+        cartaDesbloqueada.valor = carta.Valor;
+        DAO.desbloquearCartaFinalesJugador(j, cartaDesbloqueada, function(err){                        
+            if(err){
+                callback(err);
             }
             else{
-                callback(null);
+                if(index === array.length - 1){
+                    callback(null);
+                }
             }
-        }
+        });
     });
 }
 

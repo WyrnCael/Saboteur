@@ -88,6 +88,7 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
             }
             else{
                 req.session.nick = datos.usuario;
+                req.session.sexo = datos.sexo;
                 response.status(300);
                 response.redirect("/listaPartidas.html");  
                 response.end();
@@ -212,26 +213,22 @@ app.get("/unirsePartida.html", function(req, response) {
             console.log(err);
         }
         else{
-            // Recorremos las partidas abiertas
-            for(var i = 0; i < partidasAbiertas.length; i++){
-               var j = 0;
-                var incluido = false;
-                // Mientras el usuario actual no esté en la partida, seguimos
-                // buscando.
-                while(!incluido && j < partidasAbiertas[i].Jugadores.length){
-                    // Si el jugador esta en la partida, la eliminamos y 
-                    // seguimos con la siguiente partida.
-                    if(partidasAbiertas[i].Jugadores[j].Nick === req.session.nick){
-                        partidasAbiertas.splice(i, 1);
-                        incluido = true;
-                        i--;
+            partidasAbiertas.filter(function(p){
+                p.Jugadores.forEach(function(j, indexJ, arrayJ){
+                    var encontrado = false;
+                    if(j.Nick === req.session.nick){
+                       encontrado = true;
                     }
-                    j++;
-                }
-            }
+                    if(indexJ === arrayJ.length - 1){
+                         return encontrado;
+                    }
+                });
+            });
             response.status(200);
             response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
-            response.end();   
+            response.end();  
+            
+            
         }
     });
     
@@ -409,7 +406,7 @@ app.post("/procesar_insertar_carta", function(req, response){
             while(!encontrado){
                 if(datosPartida.Jugadores[i].Nick === req.session.nick){
                     encontrado = true;
-                    if(i === datosPartida.Jugadores.length - 1){ i = -1 }
+                    if(i === datosPartida.Jugadores.length - 1){ i = -1; }
                 }
                 i++;
             }
@@ -447,7 +444,9 @@ app.post("/procesar_insertar_carta", function(req, response){
                                             }
 
                                             cartasTablero.forEach(function(p){
-                                                tablero[p.PosX][p.PosY] = p;
+                                                if(p.Valor !== 23){
+                                                    tablero[p.PosX][p.PosY] = p;
+                                                }
                                             });
 
                                             logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
@@ -558,28 +557,28 @@ app.post("/procesar_desechar_carta", function(req, response){
                 }
                 else{
                     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-                    var encontrado = false;
-                    var i = 0;
-                    while(!encontrado){
-                        if(datosPartida.Jugadores[i].Nick === req.session.nick){
-                            encontrado = true;
-                            if(i === datosPartida.Jugadores.length - 1){ i = -1 }
+                    var indice = 0;
+                    datosPartida.Jugadores.forEach(function(p, ind, arr){
+                        if(p.Nick === req.session.nick){
+                            indice = ind + 1;
                         }
-                        i++;
-                    }
-                    datosPartida.TurnoDe = datosPartida.Jugadores[i].Nick;
-                    datosPartida.TurnosRestantes = parseInt(datosPartida.TurnosRestantes) - 1;
-                    datosPartida.Estado = 1;
-                    DAO.actualizarDatosPartida(datosPartida, function(err){
-                        if(err){
-                            console.log(err);
+                        if(ind === arr.length - 1){
+                            if(indice > arr.length - 1) indice = 0;
+                            datosPartida.TurnoDe = datosPartida.Jugadores[indice].Nick;
+                            datosPartida.TurnosRestantes = parseInt(datosPartida.TurnosRestantes) - 1;
+                            datosPartida.Estado = 1;
+                            DAO.actualizarDatosPartida(datosPartida, function(err){
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    response.status(300);
+                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                    response.end();
+                                }
+                            });     
                         }
-                        else{
-                            response.status(300);
-                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                            response.end();
-                        }
-                    });                    
+                    });                                   
                 }
             });
         }
@@ -605,7 +604,7 @@ app.get("/imagen/usuario/:nick", function(request, response, next) {
                     urlAvatar = path.join("img", "avatarDefaultWoman.png");
                 }
                 var fichDestino = path.join("public", urlAvatar);
-                 fs.createReadStream(fichDestino).pipe(response);
+                fs.createReadStream(fichDestino).pipe(response);
             }                
         }
      });

@@ -7,14 +7,15 @@
                     <% if(session.nick) { %>
                         <div id="infoConectado">
                                 <div id = "fotoUsuario"><img src="/imagen/usuario/<%= session.nick %>" alt="Imagen de usuario" height="60" width="60"></div>
-                                 <%= session.nick %>
-                        </div>    
-                        <div>
-                            <form action="/logout" method="GET"> 
-                                <div id="botonDesconectar">
-                                        <input type="submit" value="Logout" id="submit" />
-                                </div>
-                            </form>
+                                 <div id = "estiloNickLogout">
+                                    <%= session.nick %>
+                        
+                                    <form action="/logout" method="GET"> 
+                                      
+                                                <input type="submit" value="Logout" id="submit" />
+                                     
+                                    </form>
+                                  </div>
                         </div>
                     <% } else { %>
                         <div id="infoConectado">

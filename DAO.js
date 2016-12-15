@@ -679,6 +679,8 @@ function insertaComentario(datosComentario, callback){
     });
 }
 
+
+
 module.exports = {
     altaUsuario: altaUsuario,
     login: login,

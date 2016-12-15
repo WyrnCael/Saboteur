@@ -90,7 +90,10 @@
             </tr>
             <% for(var i = 0; i < partidasTerminadas.length; i++){ %>
                 <tr>
-                    <td><%= partidasTerminadas[i].Nombre %></td>
+                    <td><form action="/partidaTerminada.html" method="GET">
+                        <input name="Nombre" type="hidden" value= "<%= partidasTerminadas[i].Nombre %>" />
+                        <input type="submit" class="botonPartida" value="<%= partidasTerminadas[i].Nombre %>">
+                    </form></td>
                     <td><%= partidasTerminadas[i].NickCreador %></td>
                     <% if (partidasTerminadas[i].Ganador === partidasTerminadas[i].Nick) { %>
                         <td>Si</td>

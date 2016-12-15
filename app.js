@@ -354,6 +354,32 @@ app.get("/partida.html", function(req, response){
    });    
 });
 
+app.get("/partidaTerminada.html", function(req, res){
+    DAO.obtenerPartida(req.query.Nombre, function(err, datosPartida){
+        if(err)
+            console.log(err);
+        else{
+            var jugadorEnPartida = false;
+            datosPartida[0].Jugadores.forEach(function(p, index, array){
+                if(p.Nick === req.session.nick){ jugadorEnPartida = true; }
+                if(index === array.length - 1){
+                    if(jugadorEnPartida){
+                        res.status(200);
+                        res.render("partidaTerminada", {session: req.session, datosPartida: datosPartida[0]});                
+                        res.end();
+                    } 
+                    else{
+                        // Si el usuario no pertenece a la partida no se le muestra.
+                        res.status(404);
+                        res.render("404", {errores: undefined, session: req.session});
+                        res.end(); 
+                    }
+                }
+            });
+        }
+    });
+});
+
 app.post("/procesar_carta_seleccionada", function(req, response){
     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
     DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){

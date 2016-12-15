@@ -820,6 +820,86 @@ function obtenerCartaAleatoria(){
     return randomCard;
 }
 
+function obtenerJugadoresHerramientaActiva(nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT Nick FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=1";
+        con.query(sql, [nombrePartida], 
+            function(err, rows) {  
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });   
+}
+
+function rompeHerramienta(nick, nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "UPDATE JugadoresEnPartida SET Herramienta=0 WHERE Nick=? AND Nombre=? ";
+        
+        con.query(sql, [ nick, nombrePartida], 
+            function(err, rows) { 
+                con.release();
+                if (err) {                    
+                    callback(err);
+                } else {            
+                    callback(null);
+                }
+            });
+        }
+       
+    });
+}
+
+function obtenerJugadoresHerramientaRota(nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = " SELECT Nick FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=0 ";
+        con.query(sql, [nombrePartida], 
+            function(err, rows) {  
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {                      
+                    callback(null, rows);
+                }
+            });
+        }
+    });   
+}
+
+function arreglaHerramienta(nick, nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "UPDATE JugadoresEnPartida SET Herramienta=1 WHERE Nick=? AND Nombre=? ";
+        
+        con.query(sql, [ nick, nombrePartida], 
+            function(err, rows) { 
+                con.release();
+                if (err) {                    
+                    callback(err);
+                } else {            
+                    callback(null);
+                }
+            });
+        }
+       
+    });
+}
+
 module.exports = {
     altaUsuario: altaUsuario,
     login: login,
@@ -848,5 +928,9 @@ module.exports = {
     obtenerCartasTablero: obtenerCartasTablero,
     actualizarDatosPartida: actualizarDatosPartida,
     obtenerComentariosPartida: obtenerComentariosPartida,
-    insertaComentario: insertaComentario
+    insertaComentario: insertaComentario,
+    rompeHerramienta: rompeHerramienta,
+    arreglaHerramienta: arreglaHerramienta,
+    obtenerJugadoresHerramientaActiva: obtenerJugadoresHerramientaActiva,
+    obtenerJugadoresHerramientaRota: obtenerJugadoresHerramientaRota    
 };

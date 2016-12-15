@@ -411,7 +411,29 @@ app.post("/procesar_carta_seleccionada", function(req, response){
             logica.obtenerPosicionesPosibles(tablero, tablero[3][0], cartas[req.body.Inice]);
             
             response.status(200);
-            response.render("partidaCartaSeleccionada", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice});                
+            
+            if(cartas[req.body.Inice].Valor === 18) { 
+                
+                DAO.obtenerJugadoresHerramientaRota(datosPartida.Nombre, function(err, jugadores){
+                    if(err)
+                        console.log(err);
+                    else{
+                        console.log(jugadores[1].Nick);
+                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores });
+                        
+                    }
+                });
+                
+            }else if(cartas[req.body.Inice].Valor === 19){
+                DAO.obtenerJugadoresHerramientaActiva(datosPartida.Nombre, function(err, jugadores){
+                    if(err)
+                        console.log(err);
+                    else
+                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores });
+                });
+            }else{       
+                response.render("partidaCartaSeleccionada", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice});                
+            }
             response.end();
         }
     });
@@ -488,42 +510,54 @@ app.post("/procesar_bomba", function(req, response){
     });
 });
 
-app.post("/procesar_lupa", function(req, response){  
-    var cartaLupa = JSON.parse(req.body.CartaLupa.toString());
+app.post("/procesar_pico_roto", function(req, response){  
+    var nickObjetivo = JSON.parse(req.body.nick.toString());
     var carta = JSON.parse(req.body.Carta.toString());
-    DAO.obtenerCartaTablero(cartaLupa, function(err, cartaTablero){
-        if(err){
-            console.log(err);
-        }
-        else{
-            DAO.desvelarCarta(cartaTablero, req.session.nick, function(err){
-                if(err){
-                    console.log(err);
-                }
-                else{
-                    DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
-                        if(err){
-                            console.log(err);
-                        }
-                        else{
-                            var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-                            partida.pasarTurno(datosPartida, req.session.nick, function(err){
-                                if(err){
-                                    console.log(err);
-                                }
-                                else{
-                                    response.status(300);
-                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                                    response.end();
-                                }
-                            });     
-                        }
-                    });
-                    
-                }        
-            });
-        }
-    });    
+    DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
+        var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+        DAO.rompeHerramienta(nickObjetivo, datosPartida, function(err){            
+            if(err){
+                console.log(err);
+            }
+            else{                
+                partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        response.status(300);
+                        response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                        response.end();
+                    }
+                });     
+            }
+        });  
+    });
+});
+
+app.post("/procesar_pico_arreglado", function(req, response){  
+    var nickObjetivo = JSON.parse(req.body.nick.toString());
+    var carta = JSON.parse(req.body.Carta.toString());
+    DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
+        var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+        DAO.arreglaHerramienta(nickObjetivo, datosPartida, function(err){            
+            if(err){
+                console.log(err);
+            }
+            else{                
+                partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                    if(err){
+                        console.log(err);
+                    }
+                    else{
+                        response.status(300);
+                        response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                        response.end();
+                    }
+                });     
+            }
+        });  
+    });
 });
 
 app.get("/imagen/usuario/:nick", function(request, response, next) {

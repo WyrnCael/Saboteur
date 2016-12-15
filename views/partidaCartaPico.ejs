@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="es">
+    <!-- Página HTML -->
+<head>
+<title>Saboteur</title>
+<link rel="shortcut icon" href="./img/icono.ico" />
+<link rel="stylesheet" href="./css/estiloGeneral.css" />
+<link rel="stylesheet" href="./css/infoPartida.css" />
+<link rel="stylesheet" href="./css/comentarios.css" />
+<link rel="stylesheet" href="./css/formularios.css" />
+<meta charset="utf-8"/>
+</head>
+	
+<body>
+<div id="all">
+	<%- include("cabecera") %>
+        <%- include("menu") %>
+
+	<div id="panelCentral">
+            <h1>¡Carta seleccionada!</h1>
+            <p>A continuación puedes desechar la carta seleccionada, usarla o elegir otra carta.</p>            	
+            <h2>Desechar carta:</h2>
+            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div></p>
+                <form action="/procesar_desechar_carta" method="POST">
+                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                    <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                    <input type="submit" value="Desechar y pasar turno"  />
+                </form>
+            <h2>Usar Carta</h2>
+                <p>Estos son los jugadores disponibles con los que puedes usar esta carta: </p>
+                <% jugadoresDisponibles.forEach(j){ %>
+                        <% if(cartas[indCartaSeleccionada].Valor === 18 ){ %>
+                                <form action="/procesar_pico_arreglado" method="POST">
+                                <input name="Nick" type="hidden" value= "<% j.Nick %>" />
+                                <input type="submit" class="botonPartida" value="<% j.Nick %>">
+                                </form>
+                        <% }else{ %>
+                                <% if( j.Nick !== session.nick ){ %>
+                                <form action="/procesar_pico_roto" method="POST">
+                                <input name="Nick" type="hidden" value= "<% j.Nick %>" />
+                                <input type="submit" class="botonPartida" value="<% j.Nick %>">
+                                </form> 
+                                <% } %>
+                        <% } %>
+                <% } %>
+
+            <h2>Tus datos</h2>	
+            <% var jugador; %>
+            <% datosPartida.Jugadores.forEach(function(p){  %>
+                <% if (p.Nick === session.nick) { %>
+                    <% jugador = p; %>
+                <% } %>
+            <% }); %>
+            <p>Tipo de jugador: 
+                <% if (jugador.TipoJugador === 1) { %>
+                    Saboteador
+                <% } else { %>
+                    Buscador
+                <% } %>
+            </p>
+            <p>Herramienta activa: 
+                <% if (jugador.Herramienta) { %>
+                    Si
+                <% } else { %>
+                    No
+                <% } %>
+            </p>
+            <h2>Seleccionar otra carta:</h2>	
+            <p>Seleciona otra carta:</p>
+            <div id="filaCartas">
+                <% for(var j = 0; j < cartas.length; j++){ %>
+                    <% if (cartas[j].PosX === -1 && cartas[j].PosY === -1) { %>
+                         <% if (session.nick === datosPartida.TurnoDe) { %>                        
+                             <div class="casillaCartaTurnoActual">
+                             <form action="/procesar_carta_seleccionada" method="POST">
+                                 <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                 <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                 <input name="Inice" type="hidden" value="<%= j %>" />
+                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                             </form>
+                         <% } else { %>
+                             <div class="casillaCarta"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                         <% } %>                          
+                         </div>
+                     <% } %> 
+                <% } %>
+            </div>
+           
+
+
+	</div>
+        <%- include("pie") %>
+</div>
+</body>
+</html>

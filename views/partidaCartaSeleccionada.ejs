@@ -47,16 +47,18 @@
                                     <% } else if(cartas[indCartaSeleccionada].Valor === 16  && tablero[i][j].Valor !== 20 && tablero[i][j].Valor !== 21 && tablero[i][j].Valor !== 22 && tablero[i][j].Valor !== 23) { %>
                                         <div class="casillaBomba">
                                             <form action="/procesar_bomba" method="POST">
-                                                <input name="Nombre" type="hidden" value="<%= datosPartida.Nombre %>" />
-                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                <input name="CartaBomba" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
                                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
                                             </form>
                                         </div>
                                     <% } else if(cartas[indCartaSeleccionada].Valor === 17  && tablero[i][j].Valor === 23) { %>
                                         <div class="casillaLupa">
                                             <form action="/procesar_lupa" method="POST">
-                                                <input name="Nombre" type="hidden" value="<%= datosPartida.Nombre %>" />
-                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                <input name="CartaLupa" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
                                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="Desvelar" title="Desvelar" height="75" width="75">
                                             </form>
                                         </div>

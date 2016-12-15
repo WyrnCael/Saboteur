@@ -438,17 +438,35 @@ app.post("/procesar_insertar_carta", function(req, response){
 
 app.post("/procesar_desechar_carta", function(req, response){  
     var carta = JSON.parse(req.body.carta.toString());
-    DAO.descartarCarta(carta, function(err){
+    DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
+        if(err){
+            console.log(err);
+        }
+        else{            
+            var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+            partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                if(err){
+                    console.log(err);
+                }
+                else{
+                    response.status(300);
+                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                    response.end();
+                }
+            });  
+        }
+    });
+});
+
+app.post("/procesar_bomba", function(req, response){  
+    var cartaBomba = JSON.parse(req.body.CartaBomba.toString());
+    var carta = JSON.parse(req.body.Carta.toString());
+    DAO.descartarCarta(cartaBomba, function(err){
         if(err){
             console.log(err);
         }
         else{
-            var datosCartaN = {};
-            datosCartaN.nombrePartida = carta.NombrePartida;
-            datosCartaN.nick = req.session.nick;
-            datosCartaN.posX = -1;
-            datosCartaN.posY = -1;
-            DAO.asignarCartaJugador(datosCartaN, function(err){
+            DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
                 if(err){
                     console.log(err);
                 }
@@ -463,33 +481,49 @@ app.post("/procesar_desechar_carta", function(req, response){
                             response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
                             response.end();
                         }
-                    });                                     
+                    });    
                 }
             });
-        }
+        }        
     });
 });
 
-app.post("/procesar_bomba", function(req, response){  
+app.post("/procesar_lupa", function(req, response){  
+    var cartaLupa = JSON.parse(req.body.CartaLupa.toString());
     var carta = JSON.parse(req.body.Carta.toString());
-    DAO.descartarCarta(carta, function(err){
+    DAO.obtenerCartaTablero(cartaLupa, function(err, cartaTablero){
         if(err){
             console.log(err);
         }
         else{
-            var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-            partida.pasarTurno(datosPartida, req.session.nick, function(err){
+            DAO.desvelarCarta(cartaTablero, req.session.nick, function(err){
                 if(err){
                     console.log(err);
                 }
                 else{
-                    response.status(300);
-                    response.redirect("/partida.html?Nombre=" + req.body.Nombre);                
-                    response.end();
-                }
-            });     
-        }        
-    });
+                    DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
+                        if(err){
+                            console.log(err);
+                        }
+                        else{
+                            var datosPartida = JSON.parse(req.body.DatosPartida.toString());
+                            partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                                if(err){
+                                    console.log(err);
+                                }
+                                else{
+                                    response.status(300);
+                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                    response.end();
+                                }
+                            });     
+                        }
+                    });
+                    
+                }        
+            });
+        }
+    });    
 });
 
 app.get("/imagen/usuario/:nick", function(request, response, next) {

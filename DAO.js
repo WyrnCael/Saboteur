@@ -596,27 +596,6 @@ function insertarCartaTablero(datosCarta, callback){
     });
 }
 
-function obtenerJugadoresVenCarta(carta, callback){
-    pool.getConnection(function(err, con) {
-    if (err) {
-        callback(err);
-    } else {
-        var sql = "SELECT * FROM Cartas WHERE NombrePartida=?"+
-                    " AND PosX=? AND PosY=?";
-        con.query(sql, [carta.NombrePartida, 
-                        carta.PosX, carta.PosY], 
-            function(err, rows) {   
-                con.release();
-                if (err) {
-                    callback(err);
-                } else {                      
-                    callback(null, rows);
-                }
-            });
-        }
-    });
-}
-
 function asignarRolJugador(datosRol, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -689,6 +668,55 @@ function descartarCarta(carta, callback){
     });
 }
 
+function descartarCartaYAsignar(carta, nick, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=? AND PosY=?" + 
+                       " AND Valor=?";
+        con.query(sql, [carta.Nick, carta.NombrePartida, 
+                        carta.PosX, carta.PosY, carta.Valor], 
+            function(err, rows) { 
+                con.release();
+                if (err) {                    
+                    callback(err);
+                } else {
+                    var datosCartaJ = {};
+                    datosCartaJ.nombrePartida = carta.NombrePartida;
+                    datosCartaJ.nick = nick;
+                    datosCartaJ.posX = -1;
+                    datosCartaJ.posY = -1;
+                    asignarCartaJugador(datosCartaJ, callback);
+                }
+            });
+        }
+       
+    });
+}
+
+function desvelarCarta(carta, nick, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "UPDATE Cartas SET Valor=? WHERE Nick=? AND NombrePartida=? AND PosX=?" + 
+                       " AND PosY=?";
+        con.query(sql, [carta.Valor, nick, carta.NombrePartida, 
+                        carta.PosX, carta.PosY], 
+            function(err, rows) { 
+                con.release();
+                if (err) {                    
+                    callback(err);
+                } else {            
+                    callback(null);
+                }
+            });
+        }
+       
+    });
+}
+
 function obtenerCartasDisponiblesJugadorPartida(nick, nombrePartida, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -719,7 +747,7 @@ function obtenerCartasTablero(nombrePartida, callback){
                 con.release();
                 if (err) {
                     callback(err);
-                } else {                      
+                } else {        
                     callback(null, rows);
                 }
             });
@@ -727,9 +755,26 @@ function obtenerCartasTablero(nombrePartida, callback){
     });
 }
 
-function obtenerCartaAleatoria(){
-    var randomCard = Math.floor(Math.random() * (19 - 1 + 1)) + 1;
-    return randomCard;
+
+function obtenerCartaTablero(carta, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "SELECT * FROM Cartas WHERE NombrePartida=?"+
+                    " AND PosX=? AND PosY=? AND Nick IS NULL";
+        con.query(sql, [carta.NombrePartida, 
+                        carta.PosX, carta.PosY], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {   
+                    callback(null, rows[0]);
+                }
+            });
+        }
+    });
 }
 
 function obtenerComentariosPartida(nombrePartida, callback){
@@ -770,7 +815,10 @@ function insertaComentario(datosComentario, callback){
     });
 }
 
-
+function obtenerCartaAleatoria(){
+    var randomCard = Math.floor(Math.random() * (19 - 1 + 1)) + 1;
+    return randomCard;
+}
 
 module.exports = {
     altaUsuario: altaUsuario,
@@ -789,9 +837,11 @@ module.exports = {
     asignarRolJugador: asignarRolJugador,
     insertarCartaTablero: insertarCartaTablero,
     descartarCarta: descartarCarta,
+    descartarCartaYAsignar: descartarCartaYAsignar,
+    desvelarCarta: desvelarCarta,
     obtenerJugadoresPartidas: obtenerJugadoresPartidas,
     obtenerSaboteadores: obtenerSaboteadores,
-    obtenerJugadoresVenCarta: obtenerJugadoresVenCarta,
+    obtenerCartaTablero: obtenerCartaTablero,
     obtenerPartidasActivas: obtenerPartidasActivas,
     obtenerPartidasTerminadas: obtenerPartidasTerminadas,
     obtenerCartasDisponiblesJugadorPartida: obtenerCartasDisponiblesJugadorPartida,

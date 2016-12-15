@@ -258,7 +258,10 @@ function obtenerJugadoresPartidas(partidas, callback){
     if (err) {
         callback(err);
     } else {
-        if(partidas.length === 0) callback(null, partidas);
+        if(partidas.length === 0){
+            con.release();
+            callback(null, partidas);
+        }
         else{
             partidas.forEach(function(p, index, array){
                 var sql = " SELECT * " +
@@ -309,10 +312,10 @@ function iniciaPartida(partidas, callback){
     // Obtenemos la lista de jugadores
     obtenerJugadoresPartidas(partidas, function(err, datosPartida){
         if(err){
-            console.log(err);  
+            callback(err);  
         }
         else{
-            var partida = partidas[0];    
+            var partida = datosPartida[0];    
             // Iniciamos la partidas poniendo los valores por defecto y generando
             // los valores aleatorios:
             partida.Estado = 1; // Partida iniciada
@@ -337,7 +340,7 @@ function iniciaPartida(partidas, callback){
             }
             actualizarDatosPartida(partida, function(err, datosPartida){
                 if(err){
-                    console.log(err);  
+                    callback(err);  
                 }
                 else{
                     // Carta inicial
@@ -348,7 +351,7 @@ function iniciaPartida(partidas, callback){
                     datosCarta.valor = 20;
                     asignarCartaSinJugador(datosCarta, function(err, datosPartida){
                         if(err){
-                            console.log(err);  
+                            callback(err);  
                         }
                         else{
                             // Cartas en destino
@@ -367,69 +370,68 @@ function iniciaPartida(partidas, callback){
                              destinos[2].valor = 21;
                              var randomDestino = Math.floor(Math.random() * (3 - 1 + 1));
                              destinos[randomDestino].valor = 22;
+                             var destinosFinales = destinos.slice(0);
                              asignarCartaSinJugador(destinos[randomDestino], function(err){
                                 if(err){
-                                    console.log(err);
+                                    callback(err);
                                 } 
                                 else{
                                     destinos.splice(randomDestino, 1);
                                     destinos.forEach(function(p, indexDest, arrayDest){
                                          asignarCartaSinJugador(p, function(err){
                                             if(err){
-                                                console.log(err);
+                                                callback(err);
                                             } 
                                             else{                                                
                                                 if(indexDest === arrayDest.length - 1){
                                                     // Generar cartas para jugadores
                                                     partida.Jugadores.forEach(function(p, indexJug, arrayJug){
-                                                        for(var i = 0; i < 6; i++){
-                                                            var datosCartaJ = {};
-                                                            datosCartaJ.nombrePartida = partida.Nombre;
-                                                            datosCartaJ.nick = p.Nick;
-                                                            datosCartaJ.posX = -1;
-                                                            datosCartaJ.posY = -1;
-                                                            asignarCartaJugador(datosCartaJ, function(err){
-                                                                if(err){
-                                                                    console.log(err);
-                                                                }
-                                                                else{
-                                                                    if(indexJug === arrayJug - 1 && i === 5){
-                                                                        var h;
-                                                                        if(partida.Jugadores.length <= 4) h = 1;
-                                                                        else h = 2;
-                                                                        while(h > 0){
-                                                                            var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
-                                                                            var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
-                                                                            h--;
-                                                                            asignarRolJugador(datosRol, function(err){                                                                                    
+                                                        var datosCartaJ = {};
+                                                        datosCartaJ.nombrePartida = partida.Nombre;
+                                                        datosCartaJ.nick = p.Nick;
+                                                        datosCartaJ.posX = -1;
+                                                        datosCartaJ.posY = -1;
+                                                        datosCartaJ.NumCartas = 6;
+                                                        asignarCartaJugador(datosCartaJ, function(err){                                                                
+                                                            if(err){
+                                                                callback(err);
+                                                            }
+                                                            else{
+                                                                asignarCartasFinalesJugador(p, destinosFinales, function(err){
+                                                                    if(err){
+                                                                        callback(err);
+                                                                    }
+                                                                    else {
+                                                                        if(indexJug === arrayJug.length - 1){
+                                                                            if(partida.Jugadores.length <= 4) partida.NumSaboteadores = 1;
+                                                                            else partida.NumSaboteadores = 2;
+                                                                            asignarSaboteadoresJugadores(partida, function(err){          
                                                                                 if(err){
-                                                                                    console.log(err);
+                                                                                    callback(err);
                                                                                 }
-                                                                                else{                                                                                  
-                                                                                    partida.Jugadores.splice(randomJugador, 1);                                                                                          
-                                                                                    if(h === 0){
-                                                                                        partida.Jugadores.forEach(function(p, indexJ, arrayJ){
-                                                                                           datosRol.nick = p.Nick;
-                                                                                           datosRol.tipo = 0;
-                                                                                           asignarRolJugador(datosRol, function(err){
-                                                                                                if(err){
-                                                                                                    console.log(err);
+                                                                                else{   
+                                                                                    partida.Jugadores.forEach(function(p, indexJ, arrayJ){
+                                                                                        var datosRol = { tipo: 0, nombre: partida.Nombre, nick: p.Nick};
+                                                                                        asignarRolJugador(datosRol, function(err){
+                                                                                            if(err){
+                                                                                                callback(err);
+                                                                                            }
+                                                                                            else{
+                                                                                                if(indexJ === arrayJ.length - 1){
+                                                                                                    callback(null);
                                                                                                 }
-                                                                                                else{
-                                                                                                    if(indexJ === arrayJ.length){
-                                                                                                        callback(null);
-                                                                                                    }
-                                                                                                }
-                                                                                           });
-                                                                                        });
-                                                                                    }                                                                                        
+                                                                                            }
+                                                                                       });
+                                                                                    });
+
                                                                                 }
                                                                             });
                                                                         }
                                                                     }
-                                                                }
-                                                            });
-                                                        }
+                                                                });                                                                
+                                                            }
+                                                        });
+                                                        
                                                     });                                                    
                                                     
                                                 }
@@ -467,6 +469,52 @@ function actualizarDatosPartida(datosPartida, callback){
     });
 }
 
+function asignarCartasFinalesJugador(jugador, destinos, callback){
+    destinos.forEach(function(d, index, array) {
+        pool.getConnection(function(err, con) {
+            if (err) {
+                callback(err);
+            } else {
+                var sql = "INSERT INTO Cartas(Nick, NombrePartida, PosX, PosY, Valor)" + 
+                               " VALUES (?, ?, ?, ?, ?)";
+                con.query(sql, [jugador.Nick, d.nombrePartida, 
+                                d.posX, d.posY, 23], 
+                                function(err, rows) {   
+                    con.release();
+                    if (err) {
+                        callback(err);
+                    } else { 
+                        if(index === array.length - 1){
+                            callback(null, rows);
+                        }
+                    }
+                });
+            }
+        });
+    });    
+}
+
+function desbloquearCartaFinalesJugador(jugador, cartaFinal, callback){
+    pool.getConnection(function(err, con) {
+        if (err) {
+            callback(err);
+        } else {
+            var sql = "UPDATE Cartas SET Valor=? WHERE Nick =? AND NombrePartida=?" + 
+                           "  AND PosX=? AND PosY=?";
+            con.query(sql, [cartaFinal.valor, jugador.Nick, cartaFinal.nombrePartida, 
+                            cartaFinal.posX, cartaFinal.posY], 
+                            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else { 
+                    callback(null, rows);
+                }
+            });
+        }
+    });    
+}
+
 function asignarCartaJugador(datosCarta, callback){
     pool.getConnection(function(err, con) {
         if (err) {
@@ -481,10 +529,23 @@ function asignarCartaJugador(datosCarta, callback){
                             datosCarta.posX, datosCarta.posY, datosCarta.valor], 
                             function(err, rows) {   
                 con.release();
+                
                 if (err) {
                     callback(err);
-                } else {                      
-                    callback(null, rows);
+                } else { 
+                    if(datosCarta.NumCartas === undefined){
+                        callback(null, rows);
+                    }
+                    else{
+                        if(datosCarta.NumCartas > 1){
+                            datosCarta.NumCartas--;
+                            datosCarta.valor = undefined;
+                            asignarCartaJugador(datosCarta, callback);
+                        }
+                        else{
+                            callback(null, rows);
+                        }
+                    }
                 }
             });
         }
@@ -570,6 +631,36 @@ function asignarRolJugador(datosRol, callback){
                     callback(err);
                 } else {                      
                     callback(null, rows);
+                }
+            });
+        }
+    });
+}
+
+function asignarSaboteadoresJugadores(partida, callback){
+    var randomJugador = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+    var datosRol = { tipo: 1, nombre: partida.Nombre, nick: partida.Jugadores[randomJugador].Nick};
+                                                                        
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        var sql = "UPDATE JugadoresEnPartida SET TipoJugador=?" + 
+                       " WHERE Nombre=? AND Nick=?";
+        con.query(sql, [datosRol.tipo, datosRol.nombre, datosRol.nick], 
+            function(err, rows) {   
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {  
+                    partida.Jugadores.splice(randomJugador, 1);                                                                             
+                    if(partida.NumSaboteadores > 1){
+                        partida.NumSaboteadores--;
+                        asignarSaboteadoresJugadores(partida, callback);
+                    }
+                    else{
+                        callback(null, rows);
+                    }                    
                 }
             });
         }
@@ -693,6 +784,7 @@ module.exports = {
     insertJugadorEnPartida: insertJugadorEnPartida,
     iniciaPartida: iniciaPartida,
     asignarCartaSinJugador: asignarCartaSinJugador,
+    desbloquearCartaFinalesJugador: desbloquearCartaFinalesJugador,
     asignarCartaJugador: asignarCartaJugador,
     asignarRolJugador: asignarRolJugador,
     insertarCartaTablero: insertarCartaTablero,

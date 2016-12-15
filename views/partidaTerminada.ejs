@@ -26,6 +26,22 @@
                 <% } %>
             <p>Ganador: <%= datosPartida.Ganador %></p>
             
+            <h2>Tablero</h2>
+                <p>Deja el ratón sobre una casilla para ver quien la ha puesto (las casilla de incio y las de destino no disponen de esta información).</p>
+                <% for(var i = 0; i < 7; i++){ %>
+                    <div id="filaCartas">
+                        <% for(var j = 0; j < 7; j++){ %>                            
+                                <% if(tablero[i][j] !== undefined) { %>
+                                    <div class="casillaCarta">
+                                        <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75px" width="75px">
+                                    </div>                                  
+                                <% } else { %>
+                                    <div class="casillaCartaVacia"></div>                                    
+                                <% } %>
+                        <% } %>
+                    </div>
+                <% } %>
+
            
             <h2>Tus datos</h2>	
             <% var jugador; %>
@@ -48,7 +64,46 @@
                     No
                 <% } %>
             </p>
-            
+        <h2>Comentarios</h2>
+            <% for(var i = 0; i < comentarios.length; i++){ %>
+                    <div id="comentario">
+                      <div class="polaroid">
+                        
+                        <img src="/imagen/usuario/<%= comentarios[i].Nick %>" alt="Imagen de "+<%= comentarios[i].Nick %> height="66" width="66"> 
+                        
+                            <div class="container">
+                                <div class="nombreComentario"><%= comentarios[i].Nick %></div>
+                                <div class="fechaComentario"><%= comentarios[i].Fecha.getDate() %>/<%= comentarios[i].Fecha.getMonth() %>/<%= comentarios[i].Fecha.getFullYear() %></div>
+                            </div>
+                        
+                      </div>
+                        <div class="clearfix"></div>
+                        <p><div class="textoComentario"><%= comentarios[i].Texto %></div></p>   
+                    </div>
+            <% } %> 
+
+            <% if (errores !== undefined) { %>
+                <div id="caja_errores_form">                           
+                    <ul>
+                        <% errores.forEach(function(error) { %>
+                        <li><%= error.msg %></li>
+                        <% }); %>
+                    </ul>                            
+                </div>
+            <% } %>
+
+            <p><div id="escribirComentario">
+                <p>Introduce aquí tu comentario:</p>
+                <form action="/procesar_insertar_comentario" method="POST">
+                    <input type="hidden" name="DatosPartida" value="<%= JSON.stringify(datosPartida) %>"  >
+                    <input type="hidden" name="Cartas" value="<%= JSON.stringify(cartas) %>" > 
+                    <input type="hidden" name="Tablero" value="<%= JSON.stringify(tablero) %>" > 
+                    
+                    <p><textarea name="TextoComentario" rows="8" cols="80"></textarea></p>
+                    <p><input type="submit" id="submit" value="Enviar"></p>
+                </form>
+
+            </div></p>
 
 
 	</div>

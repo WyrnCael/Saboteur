@@ -18,7 +18,7 @@
 
 	<div id="panelCentral">
             <h1>¡Carta seleccionada!</h1>
-            <p>A continuación puedes desechar la carta seleccionada, usarla o elegir otra carta.</p>            	
+            <p>A continuación puedes desechar la carta seleccionada, usarla con un jugador o elegir otra carta.</p>            	
             <h2>Desechar carta:</h2>
             <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div></p>
                 <form action="/procesar_desechar_carta" method="POST">
@@ -27,21 +27,30 @@
                     <input type="submit" value="Desechar y pasar turno"  />
                 </form>
             <h2>Usar Carta</h2>
-                <p>Estos son los jugadores disponibles con los que puedes usar esta carta: </p>
-                <% jugadoresDisponibles.forEach(j){ %>
-                        <% if(cartas[indCartaSeleccionada].Valor === 18 ){ %>
-                                <form action="/procesar_pico_arreglado" method="POST">
-                                <input name="Nick" type="hidden" value= "<% j.Nick %>" />
-                                <input type="submit" class="botonPartida" value="<% j.Nick %>">
+                <% if(cartas[indCartaSeleccionada].Valor === 18 && jugadoresDisponibles.length > 0){ %>
+                    <p>Estos son los jugadores a los que puedes arreglar el pico: </p>
+                    <% jugadoresDisponibles.forEach(function(j){ %>                        
+                                <form action="/procesar_arreglar_pico" method="POST">
+                                    <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                    <input name="Nick" type="hidden" value= "<%= j.Nick %>" />
+                                    <input type="submit" class="botonPartida" value="<%= j.Nick %>">
                                 </form>
-                        <% }else{ %>
+                    <% }); %>
+                <% } else if ( jugadoresDisponibles.length > 0){ %>
+                    <p>Estos son los jugadores a los que puedes romper el pico: </p>
+                    <% jugadoresDisponibles.forEach(function(j){ %>       
                                 <% if( j.Nick !== session.nick ){ %>
-                                <form action="/procesar_pico_roto" method="POST">
-                                <input name="Nick" type="hidden" value= "<% j.Nick %>" />
-                                <input type="submit" class="botonPartida" value="<% j.Nick %>">
+                                <form action="/procesar_romper_pico" method="POST">
+                                    <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                    <input name="Nick" type="hidden" value= "<%= j.Nick %>" />
+                                    <input type="submit" class="botonPartida" value="<%= j.Nick %>">
                                 </form> 
                                 <% } %>
-                        <% } %>
+                    <% }); %>
+                <% } else { %>
+                    <p>No existen jugadores con los que usar esta carta. </p>
                 <% } %>
 
             <h2>Tus datos</h2>	
@@ -59,7 +68,7 @@
                 <% } %>
             </p>
             <p>Herramienta activa: 
-                <% if (jugador.Herramienta) { %>
+                <% if (jugador.Herramienta === 1) { %>
                     Si
                 <% } else { %>
                     No

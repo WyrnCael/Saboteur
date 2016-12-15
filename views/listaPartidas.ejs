@@ -32,7 +32,7 @@
                 <th>Cerrar partida</th>
             </tr>
             <% for(var i = 0; i < datosPartida.length; i++){ %>
-            <tr>
+            <tr class="trNormal">
                 <td><%= datosPartida[i].Nombre %></td>
                 <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
                 <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
@@ -65,7 +65,7 @@
                 <% if (partidasActivas[i].Nick === partidasActivas[i].TurnoDe) { %>
                     <tr class="turnoDeJugador">
                 <% } else { %>
-                    <tr>
+                    <tr class="trNormal">
                 <% } %>
                     <td><form action="/partida.html" method="GET">
                         <input name="Nombre" type="hidden" value= "<%= partidasActivas[i].Nombre %>" />
@@ -81,6 +81,7 @@
         </p>
 	<p><h2>Partidas terminadas</h2>
 	</p>
+        <p>Haz clic en el nombre de la partida para ver como terminó. </p>
 	<p>
 	<table> 
             <tr>
@@ -89,7 +90,7 @@
                 <th>¿Has ganado?</th>
             </tr>
             <% for(var i = 0; i < partidasTerminadas.length; i++){ %>
-                <tr>
+                <tr class="trNormal">
                     <td><form action="/partidaTerminada.html" method="GET">
                         <input name="Nombre" type="hidden" value= "<%= partidasTerminadas[i].Nombre %>" />
                         <input type="submit" class="botonPartida" value="<%= partidasTerminadas[i].Nombre %>">

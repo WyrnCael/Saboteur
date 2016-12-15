@@ -135,9 +135,7 @@ border-radius: 0 6px 0 0;
 
 
 
-tr:hover {
-  background-color: rgb(163, 202, 193);    
-} 
+ 
 
 .botonMenu {
     font-family: 'Tillana', cursive;
@@ -192,4 +190,12 @@ tr:hover {
 }
 .turnoDeJugador{
     background-color: #FFD000;
+}
+
+.turnoDeJugador:hover{
+    background-color: #FFF000;
+}
+
+.trNormal:hover {
+  background-color: rgb(163, 202, 193);    
 }

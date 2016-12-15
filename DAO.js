@@ -651,10 +651,8 @@ function descartarCarta(carta, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=? AND PosY=?" + 
-                       " AND Valor=?";
-        con.query(sql, [carta.Nick, carta.NombrePartida, 
-                        carta.PosX, carta.PosY, carta.Valor], 
+        var sql = "DELETE FROM Cartas WHERE Id=?";
+        con.query(sql, [carta.Id], 
             function(err, rows) { 
                 con.release();
                 if (err) {                    
@@ -673,10 +671,8 @@ function descartarCartaYAsignar(carta, nick, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "DELETE FROM Cartas WHERE Nick=? AND NombrePartida=? AND PosX=? AND PosY=?" + 
-                       " AND Valor=?";
-        con.query(sql, [carta.Nick, carta.NombrePartida, 
-                        carta.PosX, carta.PosY, carta.Valor], 
+        var sql = "DELETE FROM Cartas WHERE Id=?";
+        con.query(sql, [carta.Id], 
             function(err, rows) { 
                 con.release();
                 if (err) {                    
@@ -825,13 +821,13 @@ function obtenerJugadoresHerramientaActiva(nombrePartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = "SELECT Nick FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=1";
+        var sql = "SELECT * FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=1";
         con.query(sql, [nombrePartida], 
             function(err, rows) {  
                 con.release();
                 if (err) {
                     callback(err);
-                } else {                      
+                } else { 
                     callback(null, rows);
                 }
             });
@@ -865,13 +861,13 @@ function obtenerJugadoresHerramientaRota(nombrePartida, callback){
     if (err) {
         callback(err);
     } else {
-        var sql = " SELECT Nick FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=0 ";
+        var sql = " SELECT * FROM JugadoresEnPartida WHERE Nombre=? AND Herramienta=0 ";
         con.query(sql, [nombrePartida], 
             function(err, rows) {  
                 con.release();
                 if (err) {
                     callback(err);
-                } else {                      
+                } else {          
                     callback(null, rows);
                 }
             });

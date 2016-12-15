@@ -17,7 +17,34 @@ function pasarTurno(datosPartida, nick, callback){
                     callback(err);
                 }
                 else{
-                    callback(null);
+                    if (datosPartida.TurnosRestantes <= 0){
+                        DAO.obtenerSaboteadores(datosPartida.Nombre, function(err, saboteadores){
+                            if(err){
+                                console.log(err);
+                            }
+                            else{
+                                var ganador = "";
+                                // Si habia dos saboteadores, ganan los dos.
+                                saboteadores.forEach(function(p){
+                                    ganador += p.Nick;
+                                });
+                                var datosPartidaFin = {};
+                                datosPartidaFin.Ganador = ganador;
+                                datosPartidaFin.Nombre = datosPartida.Nombre;
+                                DAO.finalizarPartida(datosPartidaFin, function(err){
+                                   if(err){
+                                        callback(err);
+                                   }
+                                   else{
+                                        callback(null);
+                                   }
+                                });    
+                            }   
+                        });
+                    }
+                    else{
+                        callback(null);
+                    }
                 }
             });     
         }
@@ -142,6 +169,8 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
         }
     });
 }
+
+
 
 module.exports = {
     pasarTurno: pasarTurno,

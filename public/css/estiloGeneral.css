@@ -104,8 +104,8 @@ h1, h2{
 
 
 th{
-	background-color: rgb(255, 145, 0);
-	color:darkblue;
+	background-color:darkblue;
+	color:azure;
 }
 
 table, th, td{
@@ -116,7 +116,7 @@ table, th, td{
 
 
 td{
-    border: 1px solid rgb(255, 145, 0);
+    border: 1px solid darkblue;
     
 }     
 table{
@@ -171,8 +171,8 @@ border-radius: 0 6px 0 0;
 }
 
 #submit {
-     font-weight: bold;
-   font-family: 'Tillana', cursive;
+    font-weight: bold;
+    font-family: 'Tillana', cursive;
     cursor: pointer;
     padding: 5px;
     margin: 6.5px;
@@ -182,8 +182,7 @@ border-radius: 0 6px 0 0;
 }
 
 #submit:hover {
-    background:blue;
-    color:rgb(255, 145, 0);
+    background:rgb(204, 204, 204);
 }
 
 .botonPartida{
@@ -196,11 +195,11 @@ border-radius: 0 6px 0 0;
   font-size:inherit;
 }
 .turnoDeJugador{
-    background-color: #FFD000;
+    background-color: rgb(255, 145, 0);
 }
 
 .turnoDeJugador:hover{
-    background-color: #FFF000;
+    background-color: rgb(255, 178, 77);
 }
 
 .trNormal{

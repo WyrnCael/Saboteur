@@ -86,6 +86,7 @@ body{
         display: block;
         position:relative;        
         font-size: 18.5px;
+        min-width: 580px;
 }
 
 #pie{

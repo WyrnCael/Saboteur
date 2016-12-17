@@ -80,45 +80,46 @@
                 <% } %>
             </p>
         <h2>Comentarios</h2>
-            <% for(var i = 0; i < comentarios.length; i++){ %>
-                    <div id="comentario">
-                      <div class="polaroid">
-                        
-                        <img src="/imagen/usuario/<%= comentarios[i].Nick %>" alt="Imagen de "+<%= comentarios[i].Nick %> height="66" width="66"> 
-                        
-                            <div class="container">
-                                <div class="nombreComentario"><%= comentarios[i].Nick %></div>
-                                <div class="fechaComentario"><%= comentarios[i].Fecha.getDate() %>/<%= comentarios[i].Fecha.getMonth() %>/<%= comentarios[i].Fecha.getFullYear() %></div>
-                            </div>
-                        
-                      </div>
-                        <div class="clearfix"></div>
-                        <p><div class="textoComentario"><%= comentarios[i].Texto %></div></p>   
+            <div id="cajaComentarios">
+                <% for(var i = 0; i < comentarios.length; i++){ %>
+                        <div id="comentario">
+                          <div class="polaroid">
+                            
+                                <img src="/imagen/usuario/<%= comentarios[i].Nick %>" alt="Imagen de "+<%= comentarios[i].Nick %> height="66" width="66"> 
+
+                                    <div class="container">
+                                        <div class="nombreComentario"><%= comentarios[i].Nick %></div>
+                                        <div class="fechaComentario"><%= comentarios[i].Fecha.getDate() %>/<%= comentarios[i].Fecha.getMonth() %>/<%= comentarios[i].Fecha.getFullYear() %> <%= comentarios[i].Fecha.getHours() %>:<%= comentarios[i].Fecha.getMinutes() %></div>
+                                    </div>
+
+                          </div>
+                            <div class="clearfix"></div>
+                            <p><div class="textoComentario"><%= comentarios[i].Texto %></div></p>   
+                        </div>
+                <% } %> 
+
+                <% if (errores !== undefined) { %>
+                    <div id="caja_errores_form">                           
+                        <ul>
+                            <% errores.forEach(function(error) { %>
+                            <li><%= error.msg %></li>
+                            <% }); %>
+                        </ul>                            
                     </div>
-            <% } %> 
+                <% } %>
 
-            <% if (errores !== undefined) { %>
-                <div id="caja_errores_form">                           
-                    <ul>
-                        <% errores.forEach(function(error) { %>
-                        <li><%= error.msg %></li>
-                        <% }); %>
-                    </ul>                            
-                </div>
-            <% } %>
+                <p><div id="escribirComentario">
+                    <p>Introduce aquí tu comentario:</p>
+                    <form action="/procesar_insertar_comentario" method="POST">
+                        <input type="hidden" name="DatosPartida" value="<%= JSON.stringify(datosPartida) %>"  >
+                        <input type="hidden" name="Cartas" value="<%= JSON.stringify(cartas) %>" > 
+                        <input type="hidden" name="Tablero" value="<%= JSON.stringify(tablero) %>" > 
 
-            <p><div id="escribirComentario">
-                <p>Introduce aquí tu comentario:</p>
-                <form action="/procesar_insertar_comentario" method="POST">
-                    <input type="hidden" name="DatosPartida" value="<%= JSON.stringify(datosPartida) %>"  >
-                    <input type="hidden" name="Cartas" value="<%= JSON.stringify(cartas) %>" > 
-                    <input type="hidden" name="Tablero" value="<%= JSON.stringify(tablero) %>" > 
-                    
-                    <p><textarea name="TextoComentario" rows="8" cols="80"></textarea></p>
-                    <p><input type="submit" id="submit" value="Enviar"></p>
-                </form>
+                        <p><textarea class="cajaComentario" rows="8" name="TextoComentario"></textarea></p>
+                        <p><input type="submit" id="submit" value="Enviar"></p>
+                    </form>
 
-            </div></p>
+                </div></p>
 
 
 	</div>

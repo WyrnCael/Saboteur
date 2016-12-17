@@ -87,3 +87,19 @@
 #submitDesechar:hover {
     background:rgb(204, 204, 204);
 }
+
+.botonPico{
+    border:none;
+    outline:none;
+    background:none;
+    cursor:pointer;
+    padding:0;
+    color: darkslategrey;
+    font-size:inherit;
+    font-weight: bold;
+    margin-left: 35px;
+}
+
+botonPico:hover{
+    color:darkblue;
+}

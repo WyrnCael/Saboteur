@@ -38,7 +38,13 @@
                 <% if (jugador.Herramienta === 0 && cartas[indCartaSeleccionada].Valor <= 15) { %>
                     <p>Tienes el pico (herramienta) roto, no podras colocar cartas en el tablero hasta que lo repares.</p>
                 <% } else { %>
-                    <p>Se muestran en verde, si existen, las casillas donde puede ser insertada la carta.</p>
+                    <% if(cartas[indCartaSeleccionada].Valor === 16)  { %>
+                        <p>Se muestran en rojo, si existen, las casillas que puede eliminar con la bomba.</p>
+                    <% } else if(cartas[indCartaSeleccionada].Valor === 17)  { %>
+                        <p>Seleccione una casilla de destino para desvelar su contenido.</p>
+                    <% } else { %>
+                        <p>Se muestran en verde, si existen, las casillas donde puede ser insertada la carta.</p>
+                    <% } %>                    
                     <p>
                     <div id="tablero">
                         <% for(var i = 0; i < 7; i++){ %>

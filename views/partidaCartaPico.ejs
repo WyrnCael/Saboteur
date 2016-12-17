@@ -19,12 +19,15 @@
             <h1>¡Carta seleccionada!</h1>
             <p>A continuación puedes desechar la carta seleccionada, usarla con un jugador o elegir otra carta.</p>            	
             <h2>Desechar carta:</h2>
-            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div></p>
-                <form action="/procesar_desechar_carta" method="POST">
-                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                    <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                    <input type="submit" value="Desechar y pasar turno"  />
-                </form>
+            <div id="desechar">
+                <div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div>
+                <div class="botonDesechar"><form action="/procesar_desechar_carta" method="POST">
+                        <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                        <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                        <input type="submit" id="submitDesechar" value="Desechar y pasar turno"  />
+                    </form>
+                </div>
+            </div><p></p>
             <h2>Usar Carta</h2>
                 <% if(cartas[indCartaSeleccionada].Valor === 18 && jugadoresDisponibles.length > 0){ %>
                     <p>Estos son los jugadores a los que puedes arreglar el pico: </p>
@@ -33,7 +36,7 @@
                                     <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
                                     <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
                                     <input name="Nick" type="hidden" value= "<%= j.Nick %>" />
-                                    <input type="submit" class="botonPartida" value="<%= j.Nick %>">
+                                    <input type="submit" class="botonPico" value="<%= j.Nick %>">
                                 </form>
                     <% }); %>
                 <% } else if ( jugadoresDisponibles.length > 0){ %>
@@ -44,7 +47,7 @@
                                     <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
                                     <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
                                     <input name="Nick" type="hidden" value= "<%= j.Nick %>" />
-                                    <input type="submit" class="botonPartida" value="<%= j.Nick %>">
+                                    <input type="submit" class="botonPico" value="<%= j.Nick %>">
                                 </form> 
                                 <% } %>
                     <% }); %>

@@ -95,7 +95,13 @@
                         <input type="submit" class="botonPartida" value="<%= partidasTerminadas[i].Nombre %>">
                     </form></td>
                     <td><%= partidasTerminadas[i].NickCreador %></td>
-                    <% if (partidasTerminadas[i].Ganador === partidasTerminadas[i].Nick) { %>
+                    <% var jugador; %>
+                    <% partidasTerminadas[i].Jugadores.forEach(function(p){  %>
+                        <% if (p.Nick === session.nick) { %>
+                            <% jugador = p; %>
+                        <% } %>
+                    <% }); %>
+                    <% if (jugador.Ganador === 1) { %>
                         <td>Si</td>
                     <% } else { %>
                         <td>No</td>

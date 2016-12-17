@@ -163,13 +163,13 @@ function pasarTurno(datosPartida, nick, callback){
                                 callback(err);
                             }
                             else{
-                                var ganador = "";
+                                var ganadores = [];
                                 // Si habia dos saboteadores, ganan los dos.
-                                saboteadores.forEach(function(p){
-                                    ganador += p.Nick;
+                                saboteadores.forEach(function(p, indexSabo, araySabo){
+                                    ganadores[indexSabo] = p.Nick;
                                 });
                                 var datosPartidaFin = {};
-                                datosPartidaFin.Ganador = ganador;
+                                datosPartidaFin.Ganadores = ganadores;
                                 datosPartidaFin.Nombre = datosPartida.Nombre;
                                 DAO.finalizarPartida(datosPartidaFin, function(err){
                                    if(err){
@@ -255,7 +255,7 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
 
                                                     if(final){
                                                         var datosPartidaFin = {};
-                                                        datosPartidaFin.Ganador = nick;
+                                                        datosPartidaFin.Ganadores = [nick];
                                                         datosPartidaFin.Nombre = datosPartida.Nombre;
                                                         DAO.finalizarPartida(datosPartidaFin, function(err){
                                                            if(err){
@@ -273,13 +273,13 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                                                                     callback(err);
                                                                 }
                                                                 else{
-                                                                    var ganador = "";
+                                                                    var ganadores = [];
                                                                     // Si habia dos saboteadores, ganan los dos.
-                                                                    saboteadores.forEach(function(p){
-                                                                        ganador += p.Nick;
+                                                                    saboteadores.forEach(function(p, indexSabo, araySabo){
+                                                                        ganadores[indexSabo] = p.Nick;
                                                                     });
                                                                     var datosPartidaFin = {};
-                                                                    datosPartidaFin.Ganador = ganador;
+                                                                    datosPartidaFin.Ganadores = ganadores;
                                                                     datosPartidaFin.Nombre = datosPartida.Nombre;
                                                                     DAO.finalizarPartida(datosPartidaFin, function(err){
                                                                        if(err){

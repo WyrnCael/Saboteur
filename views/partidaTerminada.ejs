@@ -23,7 +23,16 @@
                 <% for(var j = 1; j < datosPartida.Jugadores.length; j++){ %>
                     , <%= datosPartida.Jugadores[j].Nick %>
                 <% } %>
-            <p>Ganador: <%= datosPartida.Ganador %></p>
+            <p>Ganador: 
+                <% var ganadores = datosPartida.Jugadores.filter(function(j) { %>
+                   <% return j.Ganador === 1; %>
+                <% }); %>
+                <%= ganadores[0].Nick; %>
+                <% ganadores.splice(0,1); %>
+                <% ganadores.forEach(function(g) { %>
+                    , <%= g.Nick %>
+                <% }); %>
+            </p>
             
             <h2>Tablero</h2>
                 <p>Deja el ratón sobre una casilla para ver quien la ha puesto (las casilla de incio y las de destino no disponen de esta información).</p>

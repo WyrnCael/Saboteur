@@ -126,14 +126,39 @@ function finalizarPartida(datosPartida, callback){
     if (err) {
         callback(err);
     } else {
-        con.query("UPDATE Partidas SET Estado=2, Ganador=? WHERE Nombre=?",
-                [datosPartida.Ganador, datosPartida.Nombre],
+        con.query("UPDATE Partidas SET Estado=2 WHERE Nombre=?",
+                [datosPartida.Nombre],
             function(err, rows) { 
                 con.release();
                 if (err) {
                     callback(err);
                 } else {
-                   callback(null);      
+                   marcarGanadores(datosPartida.Ganadores, datosPartida.Nombre, callback); 
+                }                
+            });
+        }
+    });
+}
+
+function marcarGanadores(nicks, nombrePartida, callback){
+    pool.getConnection(function(err, con) {
+    if (err) {
+        callback(err);
+    } else {
+        con.query("UPDATE JugadoresEnPartida SET Ganador=TRUE WHERE Nick=? AND Nombre=?",
+                [nicks[0], nombrePartida],
+            function(err, rows) { 
+                con.release();
+                if (err) {
+                    callback(err);
+                } else {
+                    nicks.splice(0, 1);
+                    if(nicks.length > 0){
+                        marcarGanadores(nicks, nombrePartida, callback);
+                    }
+                    else{
+                        callback(null);      
+                    }                   
                 }                
             });
         }
@@ -221,7 +246,7 @@ function obtenerPartidasTerminadas(nickJugador, callback){
                 if (err) {
                     callback(err);
                 } else {  
-                    callback(null, rows);
+                    obtenerJugadoresPartidas(rows, callback);
                 }
             });
         }

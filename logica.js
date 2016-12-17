@@ -9,7 +9,7 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
         if(tablero[x][y].Visitada === undefined || !cartaActual.Visitada ){ 
             tablero[x][y].Visitada = true;
             if(x > 0){
-                if(tablero[x-1][y] === undefined){
+                if(tablero[x-1][y] === undefined || tablero[x-1][y] === -1){
                     if(esPosible(cartaInsertar, cartaActual, 1)){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x-1, y)) tablero[x-1][y] = -1;
                     }
@@ -20,7 +20,7 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                 }
             }
             if(y > 0){
-                if(tablero[x][y-1] === undefined){
+                if(tablero[x][y-1] === undefined || tablero[x][y-1] === -1){
                     if(esPosible(cartaInsertar, cartaActual, 4)){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x, y-1)) tablero[x][y-1] = -1;
                     }
@@ -31,7 +31,7 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                 }
             }
             if(x < 6){
-                if(tablero[x+1][y] === undefined){
+                if(tablero[x+1][y] === undefined || tablero[x+1][y] === -1){
                     if(esPosible(cartaInsertar, cartaActual, 3)){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x+1, y)) tablero[x+1][y] = -1;
                     }
@@ -42,7 +42,7 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                 }
             }
             if(y < 6){
-                if(tablero[x][y+1] === undefined){
+                if(tablero[x][y+1] === undefined || tablero[x][y+1] === -1){
                     if(esPosible(cartaInsertar, cartaActual, 2)){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x, y+1)) tablero[x][y+1] = -1;
                     }

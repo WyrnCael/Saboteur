@@ -11,7 +11,7 @@ function iniciaPartida(partidas, callback){
         }
         else{
             var partida = datosPartida[0];    
-            // Iniciamos la partidas poniendo los valores por defecto y generando
+            // Iniciamos la partida poniendo los valores por defecto y generando
             // los valores aleatorios:
             partida.Estado = 1; // Partida iniciada
             // Generamos un turno aleatorio:
@@ -92,38 +92,42 @@ function iniciaPartida(partidas, callback){
                                                                 callback(err);
                                                             }
                                                             else{
-                                                                DAO.asignarCartasFinalesJugador(p, destinosFinales, function(err){
-                                                                    if(err){
-                                                                        callback(err);
-                                                                    }
-                                                                    else {
-                                                                        if(indexJug === arrayJug.length - 1){
-                                                                            if(partida.Jugadores.length <= 4) partida.NumSaboteadores = 1;
-                                                                            else partida.NumSaboteadores = 2;
-                                                                            DAO.asignarSaboteadoresJugadores(partida, function(err){          
-                                                                                if(err){
-                                                                                    callback(err);
-                                                                                }
-                                                                                else{   
-                                                                                    partida.Jugadores.forEach(function(p, indexJ, arrayJ){
-                                                                                        var datosRol = { tipo: 0, nombre: partida.Nombre, nick: p.Nick};
-                                                                                        DAO.asignarRolJugador(datosRol, function(err){
-                                                                                            if(err){
-                                                                                                callback(err);
-                                                                                            }
-                                                                                            else{
-                                                                                                if(indexJ === arrayJ.length - 1){
-                                                                                                    callback(null);
-                                                                                                }
-                                                                                            }
-                                                                                       });
-                                                                                    });
+                                                                if(indexJug === arrayJug.length - 1){
+                                                                    partida.Jugadores.forEach(function(p, indexJu, arrayJu){
+                                                                        DAO.asignarCartasFinalesJugador(p, destinosFinales, function(err){
+                                                                            if(err){
+                                                                                callback(err);
+                                                                            }
+                                                                            else {
+                                                                                if(indexJu === arrayJu.length - 1){
+                                                                                    if(partida.Jugadores.length <= 4) partida.NumSaboteadores = 1;
+                                                                                    else partida.NumSaboteadores = 2;
+                                                                                    DAO.asignarSaboteadoresJugadores(partida, function(err){          
+                                                                                        if(err){
+                                                                                            callback(err);
+                                                                                        }
+                                                                                        else{   
+                                                                                            partida.Jugadores.forEach(function(p, indexJ, arrayJ){
+                                                                                                var datosRol = { tipo: 0, nombre: partida.Nombre, nick: p.Nick};
+                                                                                                DAO.asignarRolJugador(datosRol, function(err){
+                                                                                                    if(err){
+                                                                                                        callback(err);
+                                                                                                    }
+                                                                                                    else{
+                                                                                                        if(indexJ === arrayJ.length - 1){
+                                                                                                            callback(null);
+                                                                                                        }
+                                                                                                    }
+                                                                                               });
+                                                                                            });
 
+                                                                                        }
+                                                                                    });
                                                                                 }
-                                                                            });
-                                                                        }
-                                                                    }
-                                                                });                                                                
+                                                                            }
+                                                                        }); 
+                                                                    });                                                                    
+                                                                }
                                                             }
                                                         });
                                                         

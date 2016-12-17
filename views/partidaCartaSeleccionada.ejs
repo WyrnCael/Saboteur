@@ -25,62 +25,67 @@
             <h1>¡Carta seleccionada!</h1>
             <p>A continuación puedes desechar la carta seleccionada, insertarla en el tablero o elegir otra carta.</p>            	
             <h2>Desechar carta:</h2>
-            <p><div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div></p>
-                <form action="/procesar_desechar_carta" method="POST">
-                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                    <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                    <input type="submit" value="Desechar y pasar turno"  />
-                </form>
+            <div id="desechar">
+                <div class="casillaCartaDesechar"><img src="/imagen/carta/<%= cartas[indCartaSeleccionada].Valor %>" alt="Carta seleccionada" title="Carta seleccionada" height="75" width="75"></div>
+                <div class="botonDesechar"><form action="/procesar_desechar_carta" method="POST">
+                        <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                        <input name="carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                        <input type="submit" id="submitDesechar" value="Desechar y pasar turno"  />
+                    </form>
+                </div>
+            </div><p></p>
             <h2>Insertar Carta</h2>
                 <% if (jugador.Herramienta === 0 && cartas[indCartaSeleccionada].Valor <= 15) { %>
                     <p>Tienes el pico (herramienta) roto, no podras colocar cartas en el tablero hasta que lo repares.</p>
                 <% } else { %>
                     <p>Se muestran en verde, si existen, las casillas donde puede ser insertada la carta.</p>
                     <p>
-                    <% for(var i = 0; i < 7; i++){ %>
-                        <div id="filaCartas">
-                            <% for(var j = 0; j < 7; j++){ %>                            
-                                    <% if(tablero[i][j] !== undefined) { %>
-                                        <% if(tablero[i][j] === -1) { %>
-                                            <div class="casillaDisponible">
-                                                <form action="/procesar_insertar_carta" method="POST">
-                                                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                                                    <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
-                                                    <input name="PosX" type="hidden" value="<%= i %>" />
-                                                    <input name="PosY" type="hidden" value="<%= j %>" />
-                                                    <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                                                    <input type="submit" class="botonDisponible" value=""  />
-                                                </form>
-                                            </div>
-                                        <% } else if(cartas[indCartaSeleccionada].Valor === 16  && tablero[i][j].Valor !== 20 && tablero[i][j].Valor !== 21 && tablero[i][j].Valor !== 22 && tablero[i][j].Valor !== 23) { %>
-                                            <div class="casillaBomba">
-                                                <form action="/procesar_bomba" method="POST">
-                                                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                                                    <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                                                    <input name="CartaBomba" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
-                                                    <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
-                                                </form>
-                                            </div>
-                                        <% } else if(cartas[indCartaSeleccionada].Valor === 17  && tablero[i][j].Valor === 23) { %>
-                                            <div class="casillaLupa">
-                                                <form action="/procesar_lupa" method="POST">
-                                                    <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                                                    <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
-                                                    <input name="CartaLupa" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
-                                                    <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="Desvelar" title="Desvelar" height="75" width="75">
-                                                </form>
-                                            </div>
+                    <div id="tablero">
+                        <% for(var i = 0; i < 7; i++){ %>
+                            <div id="filaCartas">
+                                <% for(var j = 0; j < 7; j++){ %>                            
+                                        <% if(tablero[i][j] !== undefined) { %>
+                                            <% if(tablero[i][j] === -1) { %>
+                                                <div class="casillaDisponible">
+                                                    <form action="/procesar_insertar_carta" method="POST">
+                                                        <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                        <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                                        <input name="PosX" type="hidden" value="<%= i %>" />
+                                                        <input name="PosY" type="hidden" value="<%= j %>" />
+                                                        <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                        <input type="submit" class="botonDisponible" value=""  />
+                                                    </form>
+                                                </div>
+                                            <% } else if(cartas[indCartaSeleccionada].Valor === 16  && tablero[i][j].Valor !== 20 && tablero[i][j].Valor !== 21 && tablero[i][j].Valor !== 22 && tablero[i][j].Valor !== 23) { %>
+                                                <div class="casillaBomba">
+                                                    <form action="/procesar_bomba" method="POST">
+                                                        <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                        <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                        <input name="CartaBomba" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                        <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75" width="75">
+                                                    </form>
+                                                </div>
+                                            <% } else if(cartas[indCartaSeleccionada].Valor === 17  && tablero[i][j].Valor === 23) { %>
+                                                <div class="casillaLupa">
+                                                    <form action="/procesar_lupa" method="POST">
+                                                        <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                                        <input name="Carta" type="hidden" value="<%= JSON.stringify(cartas[indCartaSeleccionada]) %>" />
+                                                        <input name="CartaLupa" type="hidden" value="<%= JSON.stringify(tablero[i][j]) %>" />
+                                                        <input type="image" class="botonPartida" src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="Desvelar" title="Desvelar" height="75" width="75">
+                                                    </form>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="casillaCarta">
+                                                    <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75px" width="75px">
+                                                </div>
+                                            <% } %>                                    
                                         <% } else { %>
-                                            <div class="casillaCarta">
-                                                <img src="/imagen/carta/<%= tablero[i][j].Valor %>" alt="<%= tablero[i][j].Nick %>" title="<%= tablero[i][j].Nick %>" height="75px" width="75px">
-                                            </div>
-                                        <% } %>                                    
-                                    <% } else { %>
-                                        <div class="casillaCartaVacia"></div>                                    
-                                    <% } %>
-                            <% } %>
-                        </div>
-                    <% } %>
+                                            <div class="casillaCartaVacia"></div>                                    
+                                        <% } %>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
                 <% } %>
                 
 
@@ -100,24 +105,26 @@
                 <% } %>
             </p>
             <h2>Seleccionar otra carta:</h2>	
-            <p>Seleciona otra carta:</p>
-            <div id="filaCartas">
-                <% for(var j = 0; j < cartas.length; j++){ %>
-                    <% if (cartas[j].PosX === -1 && cartas[j].PosY === -1) { %>
-                         <% if (session.nick === datosPartida.TurnoDe) { %>                        
-                             <div class="casillaCartaTurnoActual">
-                             <form action="/procesar_carta_seleccionada" method="POST">
-                                 <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
-                                 <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
-                                 <input name="Inice" type="hidden" value="<%= j %>" />
-                                 <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
-                             </form>
-                         <% } else { %>
-                             <div class="casillaCarta"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
-                         <% } %>                          
-                         </div>
-                     <% } %> 
-                <% } %>
+            <p>Si lo desea, puede seleccionar otra carta.</p>
+            <div id="cartasPropias">
+                <div id="filaCartas">
+                    <% for(var j = 0; j < cartas.length; j++){ %>
+                        <% if (cartas[j].PosX === -1 && cartas[j].PosY === -1) { %>
+                             <% if (session.nick === datosPartida.TurnoDe) { %>                        
+                                 <div class="casillaCartaTurnoActual">
+                                 <form action="/procesar_carta_seleccionada" method="POST">
+                                     <input name="DatosPartida" type="hidden" value="<%= JSON.stringify(datosPartida) %>" />
+                                     <input name="Cartas" type="hidden" value="<%= JSON.stringify(cartas) %>" />
+                                     <input name="Inice" type="hidden" value="<%= j %>" />
+                                     <input type="image" class="botonPartida" src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                                 </form>
+                             <% } else { %>
+                                 <div class="casillaCartaPropia"><img src="/imagen/carta/<%= cartas[j].Valor %>" alt="Carta disponible" title="Carta disponible" height="75" width="75">
+                             <% } %>                          
+                             </div>
+                         <% } %> 
+                    <% } %>
+                </div>
             </div>
            
 

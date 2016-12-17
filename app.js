@@ -50,7 +50,7 @@ app.get("/index.html", function(req, response) {
   }
   else{
       response.status(200);
-      response.render("index", {session: req.session });
+      response.render("index", {session: req.session, pagina: "index"  });
   
   }
    response.end();
@@ -58,13 +58,13 @@ app.get("/index.html", function(req, response) {
 
 app.get("/login.html", function(req, response) {
   response.status(200);
-  response.render("login", {errores: undefined, datosNuevoUsuario: {}, session: req.session });
+  response.render("login", {errores: undefined, datosNuevoUsuario: {}, session: req.session, pagina: "login"});
   response.end();
 });
 
 app.get("/registro.html", function(req, response) {
   response.status(200);
-  response.render("registro", {errores: undefined, datosNuevoUsuario: {}, session: req.session });
+  response.render("registro", {errores: undefined, datosNuevoUsuario: {}, session: req.session, pagina: "registro" });
   response.end();
 });
 
@@ -89,7 +89,7 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
         DAO.altaUsuario(datos, function(err){
             if(err){
                 response.status(300);
-                response.render("registro", {errores: [{ msg: "Nombre de usuario no disponible."}], datosNuevoUsuario: datos, session: req.session });
+                response.render("registro", {errores: [{ msg: "Nombre de usuario no disponible."}], datosNuevoUsuario: datos, session: req.session, pagina: "registro" });
                 response.end();
             }
             else{
@@ -102,7 +102,7 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
         });       
     } else {
         response.status(200);
-        response.render("registro", {errores: result.array(), datosNuevoUsuario: datos, session: req.session  });
+        response.render("registro", {errores: result.array(), datosNuevoUsuario: datos, session: req.session, pagina: "registro"  });
         response.end();
     }
   });  
@@ -110,8 +110,8 @@ app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, r
 
 app.get("/logout", function(request, response) {
    request.session.destroy();
-   response.status(200);
-    response.render("index", {session: {} });
+   response.status(300);
+    response.redirect("/index.html");
     response.end();
 });
 
@@ -119,7 +119,7 @@ app.post("/procesar_login", function(req, response) {
     DAO.login(req.body, function(err, user){
         if(err){
             response.status(500);
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             if(user){
@@ -130,7 +130,7 @@ app.post("/procesar_login", function(req, response) {
             } else{
                 // Login incorrecto
                 response.status(200);
-                response.render("login", {session: req.session, errores: [{ msg: "Usuario o contraseña incorrectos."}]  });
+                response.render("login", {session: req.session, errores: [{ msg: "Usuario o contraseña incorrectos."}], pagina: "login"  });
             }
         }
         response.end();
@@ -139,25 +139,35 @@ app.post("/procesar_login", function(req, response) {
 
 app.get("/listaPartidas.html", function(req, response) {
     if(req.session.nick){
-        DAO.obtenerPartidasCreadasPor(req.session.nick, function(error, datosPartida){
+        DAO.obtenerPartidasAbiertas(req.session.nick, function(error, datosPartida){
             if(error){
-                console.log(error);
+                response.status(500); 
+                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
             }
             else{
+                var partidas = datosPartida.filter(function(p){
+                    var encontrado = false;
+                    p.Jugadores.forEach(function(j, indexJ, arrayJ){
+                        if(j.Nick === req.session.nick){
+                           encontrado = true;
+                        }
+                    });
+                    return encontrado;
+                });
                 DAO.obtenerPartidasActivas(req.session.nick, function(err, partidasActivas){
                     if(err){
                         response.status(500); 
-                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                     }
                     else{
                         DAO.obtenerPartidasTerminadas(req.session.nick, function(err, partidasTerminadas){
                             if(err){
                                 response.status(500); 
-                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                             }
                             else{
                                 response.status(200);
-                                response.render("listaPartidas", {session: req.session, datosPartida: datosPartida, partidasActivas: partidasActivas, partidasTerminadas: partidasTerminadas });
+                                response.render("listaPartidas", {session: req.session, datosPartida: partidas, partidasActivas: partidasActivas, partidasTerminadas: partidasTerminadas, pagina: "listaPartidas" });
                                 response.end();
                             }
                         });
@@ -168,7 +178,7 @@ app.get("/listaPartidas.html", function(req, response) {
         });
     }else{
         response.status(404);
-        response.render("404", {errores: undefined, session: req.session});
+        response.render("404", {errores: undefined, session: req.session, pagina: "404"});
         response.end();
     }
     
@@ -177,7 +187,7 @@ app.get("/listaPartidas.html", function(req, response) {
 
 app.get("/creaPartida.html", function(req, response) {
     response.status(200);
-    response.render("creaPartida", {errores: undefined, session: req.session });
+    response.render("creaPartida", {errores: undefined, session: req.session, pagina: "crearPartida" });
     response.end();
 });
 
@@ -193,7 +203,7 @@ app.post("/procesar_creacion_partida", function(req, response) {
             DAO.crearPartida(datosPartida, function(err, user){
                 if(err){
                     response.status(200);
-                    response.render("creaPartida", {errores: [{ msg: "El nombre de partida no está disponible."}], session: req.session });
+                    response.render("creaPartida", {errores: [{ msg: "El nombre de partida no está disponible."}], session: req.session, pagina: "crearPartida" });
                 }
                 else{
                     response.status(300);
@@ -204,7 +214,7 @@ app.post("/procesar_creacion_partida", function(req, response) {
         }
         else{
             response.status(200);
-            response.render("creaPartida", {errores: result.array(), session: req.session });
+            response.render("creaPartida", {errores: result.array(), session: req.session, pagina: "crearPartida" });
         }    
     });
 });
@@ -213,22 +223,24 @@ app.get("/unirsePartida.html", function(req, response) {
     DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
-            partidasAbiertas.filter(function(p){
-                p.Jugadores.forEach(function(j, indexJ, arrayJ){
-                    var encontrado = false;
+            var partidas = partidasAbiertas.filter(function(p){
+                var encontrado = false;
+                p.Jugadores.forEach(function(j, indexJ, arrayJ){                    
                     if(j.Nick === req.session.nick){
                        encontrado = true;
                     }
-                    if(indexJ === arrayJ.length - 1){
-                         return encontrado;
-                    }
                 });
+                if(encontrado)
+                    return false;
+                else
+                    return true;
             });
+            
             response.status(200);
-            response.render("unirsePartida", {session: req.session, datosPartida: partidasAbiertas});
+            response.render("unirsePartida", {session: req.session, datosPartida: partidas, pagina: "unirsePartida"});
             response.end();  
             
             
@@ -243,7 +255,7 @@ app.post("/procesar_unirse_partida", function(req, response){
     DAO.insertJugadorEnPartida(req.session.nick, req.body.Nombre, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });  
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });  
         }
         else{
             if(parseInt(req.body.NumJugadores) + 1 === parseInt(req.body.MaxJugadores)){
@@ -253,7 +265,7 @@ app.post("/procesar_unirse_partida", function(req, response){
                 partida.iniciaPartida(partidas, function(err){
                     if(err){
                         response.status(500); 
-                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                     }
                     else{
                         response.status(300);
@@ -279,7 +291,7 @@ app.post("/procesar_cerrar_partida", function(req, response){
     partida.iniciaPartida(partidas, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             response.status(300);
@@ -293,7 +305,7 @@ app.get("/partida.html", function(req, response){
    DAO.obtenerPartida(req.query.Nombre, function(err, datosPartida){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         } 
         else{
             var jugadorEnPartida = false;
@@ -304,13 +316,13 @@ app.get("/partida.html", function(req, response){
                         DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, req.query.Nombre, function(err, cartas){
                             if(err){
                                 response.status(500); 
-                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                             }
                             else{
                                 DAO.obtenerCartasTablero(req.query.Nombre, function(err, cartasTablero){
                                     if(err){
                                         response.status(500); 
-                                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                                     }
                                     else{
                                         var tablero = new Array(7);
@@ -336,10 +348,10 @@ app.get("/partida.html", function(req, response){
                                         DAO.obtenerComentariosPartida(req.query.Nombre, function(err, comentarios){
                                             if(err){
                                                 response.status(500); 
-                                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                                response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                                             } else{
                                                 response.status(200);
-                                                response.render("partida", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                                                response.render("partida", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios, pagina: "partida"});                
                                                 response.end();
                                             }
                                         });                            
@@ -351,7 +363,7 @@ app.get("/partida.html", function(req, response){
                     else{
                         // Si el usuario no pertenece a la partida no se le muestra.
                         response.status(404);
-                        response.render("404", {errores: undefined, session: req.session});
+                        response.render("404", {errores: undefined, session: req.session, pagina: "404"});
                         response.end();
                     }                    
                 }
@@ -365,7 +377,7 @@ app.get("/partidaTerminada.html", function(req, res){
     DAO.obtenerPartida(req.query.Nombre, function(err, datosPartida){
         if(err){
             rese.status(500); 
-            res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }else{
             var jugadorEnPartida = false;
             datosPartida[0].Jugadores.forEach(function(p, index, array){
@@ -375,13 +387,13 @@ app.get("/partidaTerminada.html", function(req, res){
                         DAO.obtenerCartasDisponiblesJugadorPartida(req.session.nick, req.query.Nombre, function(err, cartas){
                             if(err){
                                 res.status(500); 
-                                res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                             }
                             else{
                                 DAO.obtenerCartasTablero(req.query.Nombre, function(err, cartasTablero){
                                     if(err){
                                         res.status(500); 
-                                        res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                        res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                                     }
                                     else{
                                         var tablero = new Array(7);
@@ -407,10 +419,10 @@ app.get("/partidaTerminada.html", function(req, res){
                                         DAO.obtenerComentariosPartida(req.query.Nombre, function(err, comentarios){
                                             if(err){
                                                 res.status(500); 
-                                                res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                                res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                                             } else{
                                                 res.status(200);
-                                                res.render("partidaTerminada", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                                                res.render("partidaTerminada", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios, pagina: "partida"});                
                                                 res.end();
                                             }
                                         });                            
@@ -422,7 +434,7 @@ app.get("/partidaTerminada.html", function(req, res){
                     else{
                         // Si el usuario no pertenece a la partida no se le muestra.
                         res.status(404);
-                        res.render("404", {errores: undefined, session: req.session});
+                        res.render("404", {errores: undefined, session: req.session, pagina: "404"});
                         res.end(); 
                     }
                 }
@@ -436,7 +448,7 @@ app.post("/procesar_carta_seleccionada", function(req, response){
     DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             var cartas = JSON.parse(req.body.Cartas.toString());
@@ -470,10 +482,10 @@ app.post("/procesar_carta_seleccionada", function(req, response){
                 DAO.obtenerJugadoresHerramientaRota(datosPartida.Nombre, function(err, jugadores){
                     if(err){
                         response.status(500); 
-                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                     } else{
                         response.status(200);
-                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores });
+                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores, pagina: "partida" });
                         response.end();
                         
                     }
@@ -483,15 +495,15 @@ app.post("/procesar_carta_seleccionada", function(req, response){
                 DAO.obtenerJugadoresHerramientaActiva(datosPartida.Nombre, function(err, jugadores){
                     if(err){
                         response.status(500); 
-                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                        response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                     } else
                         response.status(200);
-                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores });
+                        response.render("partidaCartaPico", { session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, jugadoresDisponibles: jugadores, pagina: "partida" });
                         response.end();
                 });
             }else{   
                 response.status(200);    
-                response.render("partidaCartaSeleccionada", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice});                
+                response.render("partidaCartaSeleccionada", {session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, indCartaSeleccionada: req.body.Inice, pagina: "partida"});                
                 response.end();
             }            
         }
@@ -508,7 +520,7 @@ app.post("/procesar_insertar_carta", function(req, response){
     partida.insertarCartaTablero(carta, datosPartida, req.session.nick, function(err){
         if(err){
            response.status(500); 
-           response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+           response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             response.status(300);
@@ -523,14 +535,14 @@ app.post("/procesar_desechar_carta", function(req, response){
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{            
             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
             partida.pasarTurno(datosPartida, req.session.nick, function(err){
                 if(err){
                     response.status(500); 
-                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 }
                 else{
                     response.status(300);
@@ -548,20 +560,20 @@ app.post("/procesar_bomba", function(req, response){
     DAO.descartarCarta(cartaBomba, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
                 if(err){
                     response.status(500); 
-                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 }
                 else{
                     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
                     partida.pasarTurno(datosPartida, req.session.nick, function(err){
                         if(err){
                             response.status(500); 
-                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                         }
                         else{
                             response.status(300);
@@ -581,26 +593,26 @@ app.post("/procesar_lupa", function(req, response){
     DAO.obtenerCartaTablero(cartaLupa, function(err, cartaTablero){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             DAO.desvelarCarta(cartaTablero, req.session.nick, function(err){
                 if(err){
                     response.status(500); 
-                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 }
                 else{
                     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
                         if(err){
                             response.status(500); 
-                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                         }
                         else{
                             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
                             partida.pasarTurno(datosPartida, req.session.nick, function(err){
                                 if(err){
                                     response.status(500); 
-                                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                                 }
                                 else{
                                     response.status(300);
@@ -623,20 +635,20 @@ app.post("/procesar_romper_pico", function(req, response){
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
             DAO.rompeHerramienta(nickObjetivo, datosPartida.Nombre, function(err){            
                 if(err){
                     response.status(500); 
-                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 }
                 else{                
                     partida.pasarTurno(datosPartida, req.session.nick, function(err){
                         if(err){
                             response.status(500); 
-                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                         }
                         else{
                             response.status(300);
@@ -656,20 +668,20 @@ app.post("/procesar_arreglar_pico", function(req, response){
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
         if(err){
             response.status(500); 
-            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
         }
         else{
             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
             DAO.arreglaHerramienta(nickObjetivo, datosPartida.Nombre, function(err){            
                 if(err){
                     response.status(500); 
-                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 }
                 else{                
                     partida.pasarTurno(datosPartida, req.session.nick, function(err){
                         if(err){
                             response.status(500); 
-                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                            response.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                         }
                         else{
                             response.status(300);
@@ -775,7 +787,7 @@ app.post("/procesar_insertar_comentario", function(req, res){
             DAO.insertaComentario(datosComentario, function(err){
                 if(err){
                     res.status(500); 
-                    res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 } else{
                     res.status(300);
                     res.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
@@ -787,10 +799,10 @@ app.post("/procesar_insertar_comentario", function(req, res){
             DAO.obtenerComentariosPartida(datosPartida.Nombre, function(err, comentarios){
                 if(err){
                     res.status(500); 
-                    res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }  });
+                    res.render("500", {session: req.session, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
                 } else{
                     res.status(200);
-                    res.render("partida", {errores: result.array(), session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, comentarios: comentarios});                
+                    res.render("partida", {errores: result.array(), session: req.session, datosPartida: datosPartida, cartas: cartas, tablero: tablero, comentarios: comentarios, pagina: "partida"});                
                     res.end();
                 }
             });

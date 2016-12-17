@@ -44,15 +44,41 @@
     </div>	
 
     <div id="menu">
-
         <% if(session.nick) { %>
-            <a href="/index.html"><input type="submit" class="botonMenu" value="Inicio"></a>
-             <a href="/unirsePartida.html"><input type="submit" class="botonMenu" value="Unirse a partida"></a>
-             <a href="/creaPartida.html"><input type="submit" class="botonMenu" value="Crear Partida"></a>
+            <% if(pagina === "listaPartidas") { %>
+                <a href="/index.html"><input type="submit" class="botonMenuActual" value="Panel Usuario"></a>
+            <% } else { %>
+                <a href="/index.html"><input type="submit" class="botonMenu" value="Panel Usuario"></a>
+            <% } %>
+            <% if(pagina === "unirsePartida") { %>
+                <a href="/unirsePartida.html"><input type="submit" class="botonMenuActual" value="Unirse a partida"></a>
+            <% } else { %>
+                <a href="/unirsePartida.html"><input type="submit" class="botonMenu" value="Unirse a partida"></a>
+            <% } %>
+            <% if(pagina === "crearPartida") { %>
+                <a href="/creaPartida.html"><input type="submit" class="botonMenuActual" value="Crear Partida"></a>
+            <% } else { %>
+                <a href="/creaPartida.html"><input type="submit" class="botonMenu" value="Crear Partida"></a>
+            <% } %>
+             <% if(pagina === "partida") { %>
+                <a href="/partida.html?Nombre=<%= datosPartida.Nombre %>"><input type="submit" class="botonMenuActual" value="Partida"></a>
+            <% } %>
         <% } else { %>
-            <a href="/index.html"><input type="submit" class="botonMenu" value="Inicio"></a>
-             <a href="/login.html"><input type="submit" class="botonMenu" value="Login"></a>
-             <a href="/registro.html"><input type="submit" class="botonMenu" value="Nuevo Usuario"></a>
+            <% if(pagina === "index") { %>
+                <a href="/index.html"><input type="submit" class="botonMenuActual" value="Inicio"></a>
+            <% } else { %>
+                <a href="/index.html"><input type="submit" class="botonMenu" value="Inicio"></a>
+            <% } %>
+            <% if(pagina === "login") { %>
+                <a href="/login.html"><input type="submit" class="botonMenuActual" value="Login"></a>
+            <% } else { %>
+                <a href="/login.html"><input type="submit" class="botonMenu" value="Login"></a>
+            <% } %>
+            <% if(pagina === "registro") { %>
+                <a href="/registro.html"><input type="submit" class="botonMenuActual" value="Nuevo Usuario"></a>
+            <% } else { %>
+                <a href="/registro.html"><input type="submit" class="botonMenu" value="Nuevo Usuario"></a>
+            <% } %>
         <% } %>
 
     </div>

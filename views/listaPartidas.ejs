@@ -20,32 +20,47 @@
         <% } %>
 
 	<p><h2>Partidas abiertas</h2>
-	Las siguientes partidas han sido creadas por ti, pero aún están a la espera de recibir más jugadores.
+        <p>Estas son las partidas en las que estas apuntado y aún están a la espera de recibir mas jugadores.</p>
+	<p>Las partidas resaltadas han sido creadas por ti y podrás iniciarlas si hay 3 o más jugadores apuntados.</p>
 	</p>
 	<p>
-	<table> 
-            <tr>
-                <th>Nombre</th>
-                <th>Fecha</th>
-                <th>Número de jugadores</th>
-                <th>Cerrar partida</th>
-            </tr>
-            <% for(var i = 0; i < datosPartida.length; i++){ %>
-            <tr class="trNormal">
-                <td><%= datosPartida[i].Nombre %></td>
-                <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
-                <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
-                <% if(datosPartida[i].NumJugadores >= 3) { %>
-                    <form action="/procesar_cerrar_partida" method="POST">
-                        <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
-                        <td><input type="submit"  id="submit" value="Cerrar"></td>
-                    </form>
-                <% } else { %>
-                    <td>Min. 3 jugadores</td>
+        <% if (datosPartida.length > 0) { %>
+            <table> 
+                <tr>
+                    <th>Nombre</th>
+                    <th>Fecha</th>
+                    <th>Número de jugadores</th>
+                    <th>Cerrar partida</th>
+                </tr>
+                <% for(var i = 0; i < datosPartida.length; i++){ %>
+                    <% if (datosPartida[i].NickCreador === session.nick) { %>
+                        <tr class="turnoDeJugador">
+                            <td><%= datosPartida[i].Nombre %></td>
+                            <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
+                            <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
+                            <% if(datosPartida[i].NumJugadores >= 3) { %>
+                                <form action="/procesar_cerrar_partida" method="POST">
+                                    <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
+                                    <td><input type="submit"  id="submit" value="Cerrar"></td>
+                                </form>
+                            <% } else { %>
+                                <td>Minimo 3 jugadores</td>
+                            <% } %>
+                        </tr>
+                    <% } else { %>
+                        <tr class="trNormal">
+                            <td><%= datosPartida[i].Nombre %></td>
+                            <td><%= datosPartida[i].FechaCreacion.getDate() %>/<%= datosPartida[i].FechaCreacion.getMonth() + 1 %>/<%= datosPartida[i].FechaCreacion.getFullYear() %></td>
+                            <td><%= datosPartida[i].NumJugadores %>/<%= datosPartida[i].MaxJugadores %></td>
+                            <td>No eres el creador</td>
+                        </tr>
+                    <% } %>                    
                 <% } %>
-            </tr>
-            <% } %>
-        </table>
+            </table>
+        <% } else { %>
+            <div class="sinPartidas"><p>No está unido a ninguna partida abierta.</p></div>
+        <% } %>
+	
 	</p>
 	<p><h2>Partidas activas</h2></p>
 	<p>Haz clic en el nombre de la partida para ver su estado actual.	
@@ -53,62 +68,70 @@
 	<p>Se marcan resaltadas las partidas en las que es tu turno.
 	</p>
 	<p>
-	<table> 
-            <tr>
-                <th>Nombre</th>
-                <th>Usuario creador</th>
-                <th>Fecha</th>
-                <th>Turno</th>
-            </tr>
-            <% for(var i = 0; i < partidasActivas.length; i++){ %>
-                <% if (partidasActivas[i].Nick === partidasActivas[i].TurnoDe) { %>
-                    <tr class="turnoDeJugador">
-                <% } else { %>
-                    <tr class="trNormal">
-                <% } %>
-                    <td><form action="/partida.html" method="GET">
-                        <input name="Nombre" type="hidden" value= "<%= partidasActivas[i].Nombre %>" />
-                        <input type="submit" class="botonPartida" value="<%= partidasActivas[i].Nombre %>">
-                    </form></td>
-                    <td><%= partidasActivas[i].NickCreador %></td>           
-                    <td><%= partidasActivas[i].FechaCreacion.getDate() %>/<%= partidasActivas[i].FechaCreacion.getMonth() + 1 %>/<%= partidasActivas[i].FechaCreacion.getFullYear() %></td>
-                    <td><%= partidasActivas[i].TurnoDe %></td>
+        <% if (partidasActivas.length > 0) { %>
+            <table> 
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario creador</th>
+                    <th>Fecha</th>
+                    <th>Turno</th>
                 </tr>
-            <% } %>
-        </table>
-        
+                <% for(var i = 0; i < partidasActivas.length; i++){ %>
+                    <% if (partidasActivas[i].Nick === partidasActivas[i].TurnoDe) { %>
+                        <tr class="turnoDeJugador">
+                    <% } else { %>
+                        <tr class="trNormal">
+                    <% } %>
+                        <td><form action="/partida.html" method="GET">
+                            <input name="Nombre" type="hidden" value= "<%= partidasActivas[i].Nombre %>" />
+                            <input type="submit" class="botonPartida" value="<%= partidasActivas[i].Nombre %>">
+                        </form></td>
+                        <td><%= partidasActivas[i].NickCreador %></td>           
+                        <td><%= partidasActivas[i].FechaCreacion.getDate() %>/<%= partidasActivas[i].FechaCreacion.getMonth() + 1 %>/<%= partidasActivas[i].FechaCreacion.getFullYear() %></td>
+                        <td><%= partidasActivas[i].TurnoDe %></td>
+                    </tr>
+                <% } %>
+            </table>
+        <% } else { %>
+            <div class="sinPartidas"><p>No está unido a ninguna partida activa.</p></div>
+        <% } %>
+
         </p>
 	<p><h2>Partidas terminadas</h2>
 	</p>
         <p>Haz clic en el nombre de la partida para ver como terminó. </p>
 	<p>
-	<table> 
-            <tr>
-                <th>Nombre</th>
-                <th>Usuario creador</th>
-                <th>¿Has ganado?</th>
-            </tr>
-            <% for(var i = 0; i < partidasTerminadas.length; i++){ %>
-                <tr class="trNormal">
-                    <td><form action="/partidaTerminada.html" method="GET">
-                        <input name="Nombre" type="hidden" value= "<%= partidasTerminadas[i].Nombre %>" />
-                        <input type="submit" class="botonPartida" value="<%= partidasTerminadas[i].Nombre %>">
-                    </form></td>
-                    <td><%= partidasTerminadas[i].NickCreador %></td>
-                    <% var jugador; %>
-                    <% partidasTerminadas[i].Jugadores.forEach(function(p){  %>
-                        <% if (p.Nick === session.nick) { %>
-                            <% jugador = p; %>
-                        <% } %>
-                    <% }); %>
-                    <% if (jugador.Ganador === 1) { %>
-                        <td>Si</td>
-                    <% } else { %>
-                        <td>No</td>
-                    <% } %>
+	<% if (partidasTerminadas.length > 0) { %>
+            <table> 
+                <tr>
+                    <th>Nombre</th>
+                    <th>Usuario creador</th>
+                    <th>¿Has ganado?</th>
                 </tr>
-            <% } %>
-        </table>
+                <% for(var i = 0; i < partidasTerminadas.length; i++){ %>
+                    <tr class="trNormal">
+                        <td><form action="/partidaTerminada.html" method="GET">
+                            <input name="Nombre" type="hidden" value= "<%= partidasTerminadas[i].Nombre %>" />
+                            <input type="submit" class="botonPartida" value="<%= partidasTerminadas[i].Nombre %>">
+                        </form></td>
+                        <td><%= partidasTerminadas[i].NickCreador %></td>
+                        <% var jugador; %>
+                        <% partidasTerminadas[i].Jugadores.forEach(function(p){  %>
+                            <% if (p.Nick === session.nick) { %>
+                                <% jugador = p; %>
+                            <% } %>
+                        <% }); %>
+                        <% if (jugador.Ganador === 1) { %>
+                            <td>Si</td>
+                        <% } else { %>
+                            <td>No</td>
+                        <% } %>
+                    </tr>
+                <% } %>
+            </table>
+        <% } else { %>
+            <div class="sinPartidas"><p>No dispone de partidas terminadas.</p></div>
+        <% } %>
 
 	</p>
 

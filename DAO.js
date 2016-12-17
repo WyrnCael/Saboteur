@@ -184,31 +184,6 @@ function insertJugadorEnPartida(NickJugador, NickPartida, callback){
     });
 }
 
-function obtenerPartidasCreadasPor(nombreUsuario, callback){
-    pool.getConnection(function(err, con) {
-    if (err) {
-        callback(err);
-    } else {
-        var sql = "SELECT Partidas.Nombre, Partidas.NickCreador, Partidas.MaxJugadores, FechaCreacion, COUNT(*) AS NumJugadores" +
-                  " FROM Partidas" + 
-                  " INNER JOIN jugadoresenpartida" +
-                          " ON partidas.Nombre = jugadoresenpartida.Nombre" + 
-                          " AND partidas.NickCreador = ?" +
-                  " GROUP BY partidas.Nombre" +
-                  " HAVING partidas.MaxJugadores > NumJugadores";
-          con.query(sql, [nombreUsuario],
-            function(err, rows) {   
-                con.release();
-                if (err) {
-                    callback(err);
-                } else {                      
-                    callback(null, rows);
-                }
-            });
-        }
-    });
-}
-
 function obtenerPartidasActivas(nickJugador, callback){
     pool.getConnection(function(err, con) {
     if (err) {
@@ -263,9 +238,9 @@ function obtenerPartidasAbiertas(nickJugador, callback){
                   " FROM Partidas" +
                   " INNER JOIN jugadoresenpartida" +
                           " ON partidas.Nombre = jugadoresenpartida.Nombre" +
-                  " GROUP BY partidas.Nombre" +
-                  " HAVING partidas.MaxJugadores > NumJugadores AND Partidas.NickCreador != ?";
-        con.query(sql, [nickJugador], 
+                  " GROUP BY jugadoresenpartida.Nombre" +
+                  " HAVING partidas.MaxJugadores > NumJugadores";
+        con.query(sql, [], 
             function(err, rows) {   
                 con.release();
                 if (err) {
@@ -669,7 +644,7 @@ function obtenerComentariosPartida(nombrePartida, callback){
                 con.release();
                 if (err) {
                     callback(err);
-                } else {                      
+                } else {        
                     callback(null, rows);
                 }
             });
@@ -788,7 +763,6 @@ module.exports = {
     crearPartida: crearPartida,
     obtenerPartida: obtenerPartida,
     finalizarPartida: finalizarPartida,
-    obtenerPartidasCreadasPor: obtenerPartidasCreadasPor,
     obtenerPartidasAbiertas: obtenerPartidasAbiertas,
     insertJugadorEnPartida: insertJugadorEnPartida,
     asignarCartaSinJugador: asignarCartaSinJugador,

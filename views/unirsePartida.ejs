@@ -17,15 +17,17 @@
 		<p>A continuación se muestra una lista con las partidas abiertas que admiten jugadores.</p>
 		
 		<p>
-                	<table> 
+                    <% if (datosPartida.length > 0) { %>
+                        <table> 
 		            <tr>
 		                <th>Nombre</th>
 		                <th>Fecha</th>
 		                <th>Máximo de jugadores</th>
 		                <th>Jugadores apuntados</th>
+                                <th>¿Unirse?</th>
 		            </tr>
 		             <% for(var i = 0; i < datosPartida.length; i++){ %>
-                            <tr>
+                            <tr class="trNormal">
                             <form action="/procesar_unirse_partida" method="POST">
                                 <td>
                                     <input name="Nombre" type="hidden" value= "<%= datosPartida[i].Nombre %>" />
@@ -53,6 +55,9 @@
                             </tr>
                             <% } %>
 		    </table>
+                    <% } else { %>
+                        <div class="sinPartidas"><p>No hay partidas disponibles.</p></div>
+                    <% } %>
 		</p>
                
 		<p><a HREF="listaPartidas.html">Volver a la página de usuario</a></p>

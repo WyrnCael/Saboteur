@@ -1,21 +1,31 @@
+#cajaComentarios{
+    display: block;
+}
+
 #comentario{
 	clear: both;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px 0 rgba(0, 0, 0, 0.19);
-	background: rgb(0, 102, 102);
-	background: rgba(0, 102, 102, 0.85);
-	padding: 20px 30px 10px 20px;
+	background-color: lemonchiffon;
+	padding: 5px 10px 5px 10px;
 	border-radius: 8px;
         display: block;
         position:relative;
         margin-bottom: 20px;
+        width: 40%;
+        margin-left: 35px;  
 }
 
 #escribirComentario{
-    color:aliceblue;
-    padding: 20px 30px 10px 20px;
+    color: black;
+    padding: 5px 10px 5px 10px;
     border-radius: 8px;
-    background: rgb(0, 0, 0);
-    background: rgba(0, 0, 0, 0.85);
+    background-color: navajowhite;
+    width: 40%;
+    margin-left: 35px;
+}
+
+#escribirComentario p{
+    padding: 5px 10px 5px 10px;
 }
 
 
@@ -34,18 +44,29 @@
 .textoComentario{
     font-family: "Times New Roman", Times, serif;
     font-size: 20px;
+    padding-left: 20px;
 }
 
-div.polaroid {
-  width: 7%;
-  background-color: rgb(153, 255, 255);
+.cajaComentario{
+    font-family: "Times New Roman", Times, serif;
+    font-size: 20px;
+    width: 100%;
+}
+
+.polaroid {
+  background-color: navajowhite;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 2px 0 rgba(0, 0, 0, 0.19);
-  margin-bottom: 2px;
+  border-radius: 8px;
 }
 
-div.container {
-  text-align: center;
-  padding: 10px 3px;
+.polaroid img {
+    padding: 5px 10px 5px 10px;
+    float: left;
+}
+
+.container {
+  text-align: left;
+  padding: 10px 10px 30px 10px;
 }
 
 .clearfix:after {

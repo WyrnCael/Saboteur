@@ -1,12 +1,20 @@
+#tablero, #cartasPropias, #desechar{    
+    margin-left: 35px;
+}
+
 #filaCartas{
     display: table-row;
 }
 
 .casillaCarta{
     display: table-cell;
-    width: 80px;
-    height: 80px;
-    padding: 5px;    
+    background-color: #FFD000;
+    border: 1px solid black;
+}
+
+.casillaCartaPropia{
+    display: table-cell;
+    padding: 5px; 
     background-color: #FFD000;
     border: 1px solid black;
 }
@@ -15,10 +23,7 @@
     display: table-cell;
     background-color: #FFD000;
     border: 1px solid black;
-    width: 80px;
-    height: 80px;
-    padding: 0px;
-    clear: both;
+    padding: 75px 75px 0px 0px; 
 }
 
 .casillaCartaTurnoActual{
@@ -31,20 +36,14 @@
 .casillaDisponible{
     display: table-cell;
     background-color: green;
-    border: 1px solid black;
-    width: 80px;
-    height: 80px;
-    padding: 0px;
-    clear: both;    
+    border: 1px solid black; 
 }
 
 .botonDisponible{
     background-color: green;
     border: none;
-    width: 80px;
-    height: 80px;
-    padding: 0px;
-    clear: both; 
+    width: 75px;
+    height: 75px;
     cursor:pointer;    
 }
 
@@ -55,24 +54,36 @@
     padding: 5px;    
     background-color: indianred;
     border: 1px solid black;
+    float: left;
+    margin-right: 15px;
 }
 
 .casillaBomba{
     display: table-cell;
     background-color: indianred;
     border: 1px solid black;
-    width: 80px;
-    height: 80px;
-    padding: 0px;
-    clear: both;    
 }
 
 .casillaLupa{
     display: table-cell;
     background-color: gainsboro;
     border: 1px solid black;
-    width: 80px;
-    height: 80px;
-    padding: 0px;
-    clear: both;    
+}
+
+.botonDesechar{
+    padding: 30px 0px 25px 15px;
+}
+
+#submitDesechar {
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px;
+    margin: 6.5px;
+    border: 1px solid #ccc;
+    background-color: salmon;
+    border-radius: 8px 8px 8px 8px;
+}
+
+#submitDesechar:hover {
+    background:rgb(204, 204, 204);
 }

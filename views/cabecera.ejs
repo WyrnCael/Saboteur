@@ -1,45 +1,60 @@
 <cabecera>
 <div id="cabecera">
-		<div id="logo">
-			<a href="/index.html"><img src="./img/Logo.png"></a>
-		</div>
-		<div id="datosUsuario">			
-                    <% if(session.nick) { %>
-                        <div id="infoConectado">
-                                <div id = "fotoUsuario"><img src="/imagen/usuario/<%= session.nick %>" alt="Imagen de usuario" height="60" width="60"></div>
-                                 <div id = "estiloNickLogout">
-                                    <%= session.nick %>
-                        
-                                    <form action="/logout" method="GET"> 
-                                      
-                                                <input type="submit" value="Logout" id="submit" />
-                                     
-                                    </form>
-                                  </div>
-                        </div>
-                    <% } else { %>
-                        <div id="infoConectado">
-                                No estás conectado.
-                        </div>
-                        <div>
+    <div id="logo">
+            <a href="/index.html"><img src="./img/Logo.png"></a>
+    </div>               
 
-                            <form action="procesar_login" method="POST"> 
-                                <div><input type="text"  name="user" onblur="if (this.value == '') {this.value = 'Usuario';}"
-                                                                                onfocus="if (this.value == 'Usuario') {this.value = '';}" 
-                                                                                value="Usuario"></div>
-                                <div><input type="password" name="password" onblur="if (this.value == '') {this.value = 'Contraseña';}"
-                                                                                onfocus="if (this.value == 'Contraseña') {this.value = '';}" 
-                                                                                value="Contraseña"></div>
-                                <div id="botonLogin">
-                                        <input type="submit" value="Login" id="submit" >
-                                </div>
-                                <div id="botonNuevoUser">
-                                        <input type="button" id="submit" onclick="location.href='registro.html';" value="Nuevo Usuario" />
-                                </div>
-                            </form>
-                        </div>
-                    <% } %>
-			
-		</div>		
+    <div id="datosUsuario">			
+        <% if(session.nick) { %>
+            <div id="infoConectado">
+                    <div id = "fotoUsuario"><img src="/imagen/usuario/<%= session.nick %>" alt="Imagen de usuario" height="60" width="60"></div>
+                     <div id = "estiloNickLogout">
+                        <%= session.nick %>
+
+                        <form action="/logout" method="GET"> 
+
+                                    <input type="submit" value="Logout" id="submit" />
+
+                        </form>
+                      </div>
+            </div>
+        <% } else { %>
+            <div id="infoConectado">
+                    No estás conectado.
+            </div>
+            <div>
+
+                <form action="procesar_login" method="POST"> 
+                    <div><input type="text"  name="user" onblur="if (this.value == '') {this.value = 'Usuario';}"
+                                                                    onfocus="if (this.value == 'Usuario') {this.value = '';}" 
+                                                                    value="Usuario"></div>
+                    <div><input type="password" name="password" onblur="if (this.value == '') {this.value = 'Contraseña';}"
+                                                                    onfocus="if (this.value == 'Contraseña') {this.value = '';}" 
+                                                                    value="Contraseña"></div>
+                    <div id="botonLogin">
+                            <input type="submit" value="Login" id="submit" >
+                    </div>
+                    <div id="botonNuevoUser">
+                            <input type="button" id="submit" onclick="location.href='registro.html';" value="Nuevo Usuario" />
+                    </div>
+                </form>
+            </div>
+        <% } %>
+
+    </div>	
+
+    <div id="menu">
+
+        <% if(session.nick) { %>
+            <a href="/index.html"><input type="submit" class="botonMenu" value="Inicio"></a>
+             <a href="/unirsePartida.html"><input type="submit" class="botonMenu" value="Unirse a partida"></a>
+             <a href="/creaPartida.html"><input type="submit" class="botonMenu" value="Crear Partida"></a>
+        <% } else { %>
+            <a href="/index.html"><input type="submit" class="botonMenu" value="Inicio"></a>
+             <a href="/login.html"><input type="submit" class="botonMenu" value="Login"></a>
+             <a href="/registro.html"><input type="submit" class="botonMenu" value="Nuevo Usuario"></a>
+        <% } %>
+
+    </div>
 </div>
 </cabecera>

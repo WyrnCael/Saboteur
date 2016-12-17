@@ -3,6 +3,146 @@
 var DAO = require('./DAO.js');
 var logica = require('./logica.js');
 
+function iniciaPartida(partidas, callback){
+    // Obtenemos la lista de jugadores
+    DAO.obtenerJugadoresPartidas(partidas, function(err, datosPartida){
+        if(err){
+            callback(err);  
+        }
+        else{
+            var partida = datosPartida[0];    
+            // Iniciamos la partidas poniendo los valores por defecto y generando
+            // los valores aleatorios:
+            partida.Estado = 1; // Partida iniciada
+            // Generamos un turno aleatorio:
+            var randomTurn = Math.floor(Math.random() * (partida.Jugadores.length - 1 + 1));
+            partida.TurnoDe = partida.Jugadores[randomTurn].Nick;
+            partida.MaxJugadores = partida.Jugadores.length; // Jugadores actuales
+            switch(partida.MaxJugadores){ // Numero de turnos.
+                case 3:
+                    partida.TurnosRestantes = 50;
+                    break;
+                case 4:
+                    partida.TurnosRestantes = 45;
+                    break;
+                case 5:                    
+                case 6:
+                    partida.TurnosRestantes = 40;
+                    break;
+                case 7:
+                    partida.TurnosRestantes = 35;
+                    break;
+            }
+            DAO.actualizarDatosPartida(partida, function(err, datosPartida){
+                if(err){
+                    callback(err);  
+                }
+                else{
+                    // Carta inicial
+                    var datosCarta = {};
+                    datosCarta.nombrePartida = partida.Nombre;
+                    datosCarta.posX = 3;
+                    datosCarta.posY = 0;
+                    datosCarta.valor = 20;
+                    DAO.asignarCartaSinJugador(datosCarta, function(err, datosPartida){
+                        if(err){
+                            callback(err);  
+                        }
+                        else{
+                            // Cartas en destino
+                             var destinos = [{}, {}, {}];                             
+                             destinos[0].nombrePartida = partida.Nombre;
+                             destinos[0].posX = 1;
+                             destinos[0].posY = 6;
+                             destinos[0].valor = 21;
+                             destinos[1].nombrePartida = partida.Nombre;
+                             destinos[1].posX = 3;
+                             destinos[1].posY = 6;
+                             destinos[1].valor = 21;
+                             destinos[2].nombrePartida = partida.Nombre;
+                             destinos[2].posX = 5;
+                             destinos[2].posY = 6;
+                             destinos[2].valor = 21;
+                             var randomDestino = Math.floor(Math.random() * (3 - 1 + 1));
+                             destinos[randomDestino].valor = 22;
+                             var destinosFinales = destinos.slice(0);
+                             DAO.asignarCartaSinJugador(destinos[randomDestino], function(err){
+                                if(err){
+                                    callback(err);
+                                } 
+                                else{
+                                    destinos.splice(randomDestino, 1);
+                                    destinos.forEach(function(p, indexDest, arrayDest){
+                                        DAO.asignarCartaSinJugador(p, function(err){
+                                            if(err){
+                                                callback(err);
+                                            } 
+                                            else{                                                
+                                                if(indexDest === arrayDest.length - 1){
+                                                    // Generar cartas para jugadores
+                                                    partida.Jugadores.forEach(function(p, indexJug, arrayJug){
+                                                        var datosCartaJ = {};
+                                                        datosCartaJ.nombrePartida = partida.Nombre;
+                                                        datosCartaJ.nick = p.Nick;
+                                                        datosCartaJ.posX = -1;
+                                                        datosCartaJ.posY = -1;
+                                                        datosCartaJ.NumCartas = 6;
+                                                        DAO.asignarCartaJugador(datosCartaJ, function(err){                                                                
+                                                            if(err){
+                                                                callback(err);
+                                                            }
+                                                            else{
+                                                                DAO.asignarCartasFinalesJugador(p, destinosFinales, function(err){
+                                                                    if(err){
+                                                                        callback(err);
+                                                                    }
+                                                                    else {
+                                                                        if(indexJug === arrayJug.length - 1){
+                                                                            if(partida.Jugadores.length <= 4) partida.NumSaboteadores = 1;
+                                                                            else partida.NumSaboteadores = 2;
+                                                                            DAO.asignarSaboteadoresJugadores(partida, function(err){          
+                                                                                if(err){
+                                                                                    callback(err);
+                                                                                }
+                                                                                else{   
+                                                                                    partida.Jugadores.forEach(function(p, indexJ, arrayJ){
+                                                                                        var datosRol = { tipo: 0, nombre: partida.Nombre, nick: p.Nick};
+                                                                                        DAO.asignarRolJugador(datosRol, function(err){
+                                                                                            if(err){
+                                                                                                callback(err);
+                                                                                            }
+                                                                                            else{
+                                                                                                if(indexJ === arrayJ.length - 1){
+                                                                                                    callback(null);
+                                                                                                }
+                                                                                            }
+                                                                                       });
+                                                                                    });
+
+                                                                                }
+                                                                            });
+                                                                        }
+                                                                    }
+                                                                });                                                                
+                                                            }
+                                                        });
+                                                        
+                                                    });                                                    
+                                                    
+                                                }
+                                            }
+                                        });
+                                    });
+                                }
+                             });
+                        }
+                    });
+                }
+            });          
+        }
+    });
+}
+
 function pasarTurno(datosPartida, nick, callback){
     datosPartida.Jugadores.forEach(function(p, ind, arr){
         if(p.Nick === nick){
@@ -20,7 +160,7 @@ function pasarTurno(datosPartida, nick, callback){
                     if (datosPartida.TurnosRestantes <= 0){
                         DAO.obtenerSaboteadores(datosPartida.Nombre, function(err, saboteadores){
                             if(err){
-                                console.log(err);
+                                callback(err);
                             }
                             else{
                                 var ganador = "";
@@ -54,12 +194,12 @@ function pasarTurno(datosPartida, nick, callback){
 function insertarCartaTablero(carta, datosPartida, nick, callback){
     DAO.insertarCartaTablero(carta, function(err){
         if(err){
-            console.log(err);
+            callback(err);
         }
         else{
             pasarTurno(datosPartida, nick, function(err){
                 if(err){
-                    console.log(err);
+                    callback(err);
                 }
                 else{
                     var datosCartaJ = {};
@@ -69,12 +209,12 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                     datosCartaJ.posY = -1;
                     DAO.asignarCartaJugador(datosCartaJ, function(err){
                         if(err){
-                            console.log(err);
+                            callback(err);
                         }
                         else{
                             DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
                                 if(err){
-                                    console.log(err);
+                                    callback(err);
                                 }
                                 else{
                                     var tablero = new Array(7);
@@ -90,12 +230,12 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
 
                                     logica.comprobarFinalPartida(tablero, carta, datosPartida.Jugadores, function(err, final){
                                         if(err){
-                                           console.log(err);
+                                           callback(err);
                                         } 
                                         else{
                                            DAO.obtenerCartasDisponiblesJugadorPartida(nick, datosPartida.Nombre, function(err, cartas){
                                                if(err){
-                                                   console.log(err);
+                                                   callback(err);
                                                } 
                                                else{
                                                    cartasTablero.forEach(function(p){
@@ -119,7 +259,7 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                                                         datosPartidaFin.Nombre = datosPartida.Nombre;
                                                         DAO.finalizarPartida(datosPartidaFin, function(err){
                                                            if(err){
-                                                                console.log(err);
+                                                                callback(err);
                                                            }
                                                            else{
                                                                 callback(null);
@@ -130,7 +270,7 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                                                         if (datosPartida.TurnosRestantes === 0){
                                                             DAO.obtenerSaboteadores(datosPartida.Nombre, function(err, saboteadores){
                                                                 if(err){
-                                                                    console.log(err);
+                                                                    callback(err);
                                                                 }
                                                                 else{
                                                                     var ganador = "";
@@ -174,5 +314,6 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
 
 module.exports = {
     pasarTurno: pasarTurno,
-    insertarCartaTablero: insertarCartaTablero
+    insertarCartaTablero: insertarCartaTablero,
+    iniciaPartida: iniciaPartida
 };

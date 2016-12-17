@@ -1,5 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Chewy|Lobster+Two|Luckiest+Guy|Shadows+Into+Light+Two|Shrikhand|Rancho|Tillana|Source+Sans+Pro|Mirza');
- 
+
 
 #all{
 	padding: 5px 50px 5px 50px;
@@ -86,6 +86,7 @@ body{
 	border-radius: 8px;
         display: block;
         position:relative;
+        
         font-size: 18.5px;
 }
 

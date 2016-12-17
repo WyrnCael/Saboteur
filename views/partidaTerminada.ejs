@@ -16,7 +16,7 @@
 	<%- include("cabecera") %>
 
 	<div id="panelCentral">
-            <h1>Partida: <%= datosPartida.Nombre %></h1>	
+            <h1>Partida terminada: <%= datosPartida.Nombre %></h1>	
             <p>Creada por: <%= datosPartida.NickCreador %></p>
             <p>Jugadores: 
                 <%= datosPartida.Jugadores[0].Nick %>
@@ -72,13 +72,7 @@
                     Buscador
                 <% } %>
             </p>
-            <p>Herramienta activa: 
-                <% if (jugador.Herramienta) { %>
-                    Si
-                <% } else { %>
-                    No
-                <% } %>
-            </p>
+
         <h2>Comentarios</h2>
             <div id="cajaComentarios">
                 <% for(var i = 0; i < comentarios.length; i++){ %>

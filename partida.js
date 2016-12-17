@@ -180,14 +180,14 @@ function pasarTurno(datosPartida, nick, callback){
                                         callback(err);
                                    }
                                    else{
-                                        callback(null);
+                                        callback(null, true);
                                    }
                                 });    
                             }   
                         });
                     }
                     else{
-                        callback(null);
+                        callback(null, false);
                     }
                 }
             });     
@@ -266,7 +266,7 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                                                                 callback(err);
                                                            }
                                                            else{
-                                                                callback(null);
+                                                                callback(null, true);
                                                            }
                                                         });                                                         
                                                     }
@@ -290,14 +290,14 @@ function insertarCartaTablero(carta, datosPartida, nick, callback){
                                                                             callback(err);
                                                                        }
                                                                        else{
-                                                                            callback(null);
+                                                                            callback(null, true);
                                                                        }
                                                                     });    
                                                                 }   
                                                             });
                                                         }
                                                         else{
-                                                            callback(null);
+                                                            callback(null, false);
                                                         }                                                        
                                                     }
                                                 }                                               

@@ -447,7 +447,7 @@ app.get("/partidaTerminada.html", function(req, res){
                                                 next(err);
                                             } else{
                                                 res.status(200);
-                                                res.render("partidaTerminada", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios, pagina: "partida"});                
+                                                res.render("partidaTerminada", {errores: undefined, session: req.session, datosPartida: datosPartida[0], cartas: cartas, tablero: tablero, comentarios: comentarios, pagina: "partidaTerminada"});                
                                                 res.end();
                                             }
                                         });                            
@@ -539,14 +539,21 @@ app.post("/procesar_insertar_carta", function(req, response){
     carta.PosY = parseInt(req.body.PosY);    
     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
     
-    partida.insertarCartaTablero(carta, datosPartida, req.session.nick, function(err){
+    partida.insertarCartaTablero(carta, datosPartida, req.session.nick, function(err, final){
         if(err){
            next(err);
         }
         else{
-            response.status(300);
-            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-            response.end();
+            if(final){
+                response.status(300);
+                response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                response.end();
+            }
+            else{
+                response.status(300);
+                response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                response.end();
+            }
         }
     });   
 });
@@ -559,14 +566,21 @@ app.post("/procesar_desechar_carta", function(req, response){
         }
         else{            
             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-            partida.pasarTurno(datosPartida, req.session.nick, function(err){
+            partida.pasarTurno(datosPartida, req.session.nick, function(err, final){
                 if(err){
                     next(err);
                 }
                 else{
-                    response.status(300);
-                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                    response.end();
+                    if(final){
+                        response.status(300);
+                        response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                        response.end();
+                    }
+                    else{
+                        response.status(300);
+                        response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                        response.end();
+                    }
                 }
             });  
         }
@@ -587,14 +601,21 @@ app.post("/procesar_bomba", function(req, response){
                 }
                 else{
                     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-                    partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                    partida.pasarTurno(datosPartida, req.session.nick, function(err, final){
                         if(err){
                             next(err);
                         }
                         else{
-                            response.status(300);
-                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                            response.end();
+                            if(final){
+                                response.status(300);
+                                response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
+                            else{
+                                response.status(300);
+                                response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
                         }
                     });    
                 }
@@ -622,14 +643,21 @@ app.post("/procesar_lupa", function(req, response){
                         }
                         else{
                             var datosPartida = JSON.parse(req.body.DatosPartida.toString());
-                            partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                            partida.pasarTurno(datosPartida, req.session.nick, function(err, final){
                                 if(err){
                                     next(err);
                                 }
                                 else{
-                                    response.status(300);
-                                    response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                                    response.end();
+                                    if(final){
+                                        response.status(300);
+                                        response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                                        response.end();
+                                    }
+                                    else{
+                                        response.status(300);
+                                        response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                        response.end();
+                                    }
                                 }
                             });     
                         }
@@ -655,14 +683,21 @@ app.post("/procesar_romper_pico", function(req, response){
                     next(err);
                 }
                 else{                
-                    partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                    partida.pasarTurno(datosPartida, req.session.nick, function(err, final){
                         if(err){
                             next(err);
                         }
                         else{
-                            response.status(300);
-                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                            response.end();
+                            if(final){
+                                response.status(300);
+                                response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
+                            else{
+                                response.status(300);
+                                response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
                         }
                     });     
                 }
@@ -685,14 +720,21 @@ app.post("/procesar_arreglar_pico", function(req, response){
                     next(err);
                 }
                 else{                
-                    partida.pasarTurno(datosPartida, req.session.nick, function(err){
+                    partida.pasarTurno(datosPartida, req.session.nick, function(err, final){
                         if(err){
                             next(err);
                         }
                         else{
-                            response.status(300);
-                            response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
-                            response.end();
+                            if(final){
+                                response.status(300);
+                                response.redirect("/partidaTerminada.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
+                            else{
+                                response.status(300);
+                                response.redirect("/partida.html?Nombre=" + datosPartida.Nombre);                
+                                response.end();
+                            }
                         }
                     });     
                 }

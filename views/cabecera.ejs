@@ -63,6 +63,9 @@
              <% if(pagina === "partida") { %>
                 <a href="/partida.html?Nombre=<%= datosPartida.Nombre %>"><input type="submit" class="botonMenuActual" value="Partida"></a>
             <% } %>
+            <% if(pagina === "partidaTerminada") { %>
+                <a href="/partidaTerminada.html?Nombre=<%= datosPartida.Nombre %>"><input type="submit" class="botonMenuActual" value="Partida"></a>
+            <% } %>
         <% } else { %>
             <% if(pagina === "index") { %>
                 <a href="/index.html"><input type="submit" class="botonMenuActual" value="Inicio"></a>

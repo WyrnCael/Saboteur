@@ -1,10 +1,10 @@
-@import url('https://fonts.googleapis.com/css?family=Chewy|Luckiest+Guy|Shrikhand|Rancho|Tillana');
-
+@import url('https://fonts.googleapis.com/css?family=Chewy|Lobster+Two|Luckiest+Guy|Shadows+Into+Light+Two|Shrikhand|Rancho|Tillana|Source+Sans+Pro|Mirza');
+ 
 
 #all{
 	padding: 5px 50px 5px 50px;
 	height: 100%;
-        font-family: 'Tillana', cursive;
+        font-family: 'Mirza', cursive;
 }
 
 html, body{
@@ -21,6 +21,7 @@ body{
 
 #logo{
 	float: left;
+        display: inline-block;
 }
 
 #fotoUsuario{
@@ -46,6 +47,7 @@ body{
 	border-radius: 15px 50px;
 	padding: 5px 10px 5px 10px;
         margin: 20px;
+        display: inline-block;
 }
 
 #infoConectado{
@@ -71,9 +73,8 @@ body{
 }
 
 #menu{
-    clear: both;
-    margin: 0 auto;
-    vertical-align: initial;  
+    margin-left: auto;
+    padding-top: 50px;
     text-align: center;
 }
 
@@ -85,7 +86,6 @@ body{
 	border-radius: 8px;
         display: block;
         position:relative;
-        font-family: 'Tillana', cursive;
         font-size: 18.5px;
 }
 
@@ -94,7 +94,8 @@ body{
 }
 
 h1, h2{
-    font-weight:normal;
+    font-weight:bold;
+    font-family: 'Lobster Two';
     text-shadow:0 0 1px #000;
     color:darkblue;
     padding:2px 0 0;
@@ -134,14 +135,9 @@ th:last-child {
 -moz-border-radius: 0 6px 0 0;
 -webkit-border-radius: 0 6px 0 0;
 border-radius: 0 6px 0 0;
-}
-
-
-
- 
+} 
 
 .botonMenu {
-    font-family: 'Tillana';
     font-size: 23px;
     font-weight: bold;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.55), 0 6px 2px 0 rgba(0, 0, 0, 0.4);
@@ -164,7 +160,7 @@ border-radius: 0 6px 0 0;
     transition: all 0.2s ease-in-out;
 }
 
-.botonMenu:hover, .botonPartida:hover{
+.botonMenu:hover{
 	cursor: pointer;
         background-color: rgb(255, 200, 128);
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0), 0 6px 2px 0 rgba(0, 0, 0, 0);
@@ -172,7 +168,6 @@ border-radius: 0 6px 0 0;
 
 #submit {
     font-weight: bold;
-    font-family: 'Tillana', cursive;
     cursor: pointer;
     padding: 5px;
     margin: 6.5px;
@@ -191,9 +186,15 @@ border-radius: 0 6px 0 0;
   background:none;
   cursor:pointer;
   padding:0;
-  font-family: 'Tillana', cursive;
   font-size:inherit;
+  font-weight: bold;
 }
+
+botonPartida:hover{
+    color:darkblue;
+}
+
+
 .turnoDeJugador{
     background-color: rgb(255, 145, 0);
 }

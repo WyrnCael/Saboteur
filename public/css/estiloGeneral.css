@@ -4,7 +4,7 @@
 #all{
 	padding: 5px 50px 5px 50px;
 	height: 100%;
-        font-family: Tahoma, Geneva, sans-serif;
+        font-family: 'Tillana', cursive;
 }
 
 html, body{
@@ -40,7 +40,7 @@ body{
 
 #datosUsuario{
         float: right;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 6px 2px 0 rgba(0, 0, 0, 0.29);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.55), 0 6px 2px 0 rgba(0, 0, 0, 0.4);
 	background: rgb(153, 255, 255);
 	background: rgba(153, 255, 255, 0.95);
 	border-radius: 15px 50px;
@@ -96,7 +96,7 @@ body{
 h1, h2{
     font-weight:normal;
     text-shadow:0 0 1px #000;
-    color:black;
+    color:darkblue;
     padding:2px 0 0;
     line-height:1.2em;
 }
@@ -104,22 +104,25 @@ h1, h2{
 
 
 th{
-	background-color: #86592d;
-	color: white;
+	background-color: rgb(255, 145, 0);
+	color:darkblue;
 }
 
 table, th, td{
 	padding: 5px 10px 5px 10px;
-        text-align: center;
-        
+        text-align: center;        
 }
 
+
+
 td{
-    border: 1px solid #86592d;
+    border: 1px solid rgb(255, 145, 0);
+    
 }     
 table{
     border-collapse: collapse; /* IE7 and lower */
     border-spacing: 0; 
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.50), 0 6px 2px 0 rgba(0, 0, 0, 0.39);
 }
 
 th:first-child {
@@ -138,14 +141,16 @@ border-radius: 0 6px 0 0;
  
 
 .botonMenu {
-    font-family: 'Tillana', cursive;
+    font-family: 'Tillana';
     font-size: 23px;
+    font-weight: bold;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.55), 0 6px 2px 0 rgba(0, 0, 0, 0.4);
     text-shadow: 0px 1px rgba(0, 0, 0, 0.2);
     text-align:center;
     text-decoration: none;
     display:inline-block;
-    color: #FFF;
-    background: rgb(179, 107, 0);
+    color:darkblue;
+    background: rgb(255, 145, 0);
     padding: 7px 15px;
     white-space: nowrap;    
     -webkit-border-radius: 5px;
@@ -161,7 +166,8 @@ border-radius: 0 6px 0 0;
 
 .botonMenu:hover, .botonPartida:hover{
 	cursor: pointer;
-        background-color: rgb(102, 61, 0);
+        background-color: rgb(255, 200, 128);
+        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0), 0 6px 2px 0 rgba(0, 0, 0, 0);
 }
 
 #submit {
@@ -176,7 +182,8 @@ border-radius: 0 6px 0 0;
 }
 
 #submit:hover {
-    background: rgb(204, 122, 0);
+    background:blue;
+    color:rgb(255, 145, 0);
 }
 
 .botonPartida{
@@ -196,6 +203,10 @@ border-radius: 0 6px 0 0;
     background-color: #FFF000;
 }
 
+.trNormal{
+  background:rgb(163, 202, 193);
+}
+
 .trNormal:hover {
-  background-color: rgb(163, 202, 193);    
+  background: rgb(190, 218, 211);    
 }

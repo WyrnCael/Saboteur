@@ -153,7 +153,7 @@ border-radius: 0 6px 0 0;
     background: rgb(0, 102, 102);
     background: rgba(0, 102, 102, 0.95);
     position: relative;
-    border: 0px solid black; 
+    border: none; 
     text-align: center;
     font-weight:bold;
     font-family: 'Lobster Two';

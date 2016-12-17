@@ -14,7 +14,9 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x-1, y)) tablero[x-1][y] = -1;
                     }
                 } else{
-                    obtenerPosicionesPosibles(tablero, tablero[x-1][y], cartaInsertar);
+                    if(esPosible(tablero[x-1][y], cartaActual, 1)){
+                        obtenerPosicionesPosibles(tablero, tablero[x-1][y], cartaInsertar);
+                    }                    
                 }
             }
             if(y > 0){
@@ -23,7 +25,9 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x, y-1)) tablero[x][y-1] = -1;
                     }
                 } else{
-                    obtenerPosicionesPosibles(tablero, tablero[x][y-1], cartaInsertar);
+                    if(esPosible(tablero[x][y-1], cartaActual, 4)){
+                        obtenerPosicionesPosibles(tablero, tablero[x][y-1], cartaInsertar);
+                    }
                 }
             }
             if(x < 6){
@@ -32,7 +36,9 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x+1, y)) tablero[x+1][y] = -1;
                     }
                 } else{
-                    obtenerPosicionesPosibles(tablero, tablero[x+1][y], cartaInsertar);
+                    if(esPosible(tablero[x+1][y], cartaActual, 3)){
+                        obtenerPosicionesPosibles(tablero, tablero[x+1][y], cartaInsertar);
+                    }
                 }
             }
             if(y < 6){
@@ -41,7 +47,9 @@ function obtenerPosicionesPosibles(tablero, cartaActual, cartaInsertar){
                         if (compruebaDisponiblidadTotal(tablero, cartaInsertar, x, y+1)) tablero[x][y+1] = -1;
                     }
                 } else{
-                    obtenerPosicionesPosibles(tablero, tablero[x][y+1], cartaInsertar);
+                    if(esPosible(tablero[x][y+1], cartaActual, 2)){
+                        obtenerPosicionesPosibles(tablero, tablero[x][y+1], cartaInsertar);
+                    }
                 }
             }        
         }

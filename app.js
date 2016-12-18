@@ -1,7 +1,7 @@
 /* 
  * GRUPO 111 - Rubén Casado y Juan José Prieto
  */
-var express = require('express');
+var express = require("express");
 var expressValidator = require("express-validator");
 var path = require("path");
 var ejs = require("ejs");
@@ -36,13 +36,6 @@ app.use(express.static(__dirname + '/public'));
 app.use(expressValidator());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(middlewareSession);
- 
-// Pantalla para errores
-app.use(function(error, req, res, next) {
-  res.status(500);
-  res.render("500", {session: {}, err: { mensaje: error.message, detalle: error.stack }, pagina: "500"  });
-  res.end();
-});
 
 app.get("/", function(req, response) {
   response.status(300);
@@ -75,7 +68,7 @@ app.get("/registro.html", function(req, response) {
   response.end();
 });
 
-app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, response) {
+app.post("/procesar_fromulario_registro", upload.single("foto"), function(req, response, next) {
   var datos = req.body;
   req.checkBody("usuario", "El campo 'Nombre de usuario' no puede estar vacío.").notEmpty();
   req.checkBody("usuario", "El campo 'Nombre de usuario' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});
@@ -127,7 +120,7 @@ app.get("/logout", function(request, response) {
     response.end();
 });
 
-app.post("/procesar_login", function(req, response) {
+app.post("/procesar_login", function(req, response, next) {
     DAO.login(req.body, function(err, user){
         if(err){
             next(err);
@@ -149,7 +142,7 @@ app.post("/procesar_login", function(req, response) {
     });
 });
 
-app.get("/listaPartidas.html", function(req, response) {
+app.get("/listaPartidas.html", function(req, response, next) {
     if(req.session.nick){
         DAO.obtenerPartidasAbiertas(req.session.nick, function(error, datosPartida){
             if(error){
@@ -200,7 +193,7 @@ app.get("/creaPartida.html", function(req, response) {
     response.end();
 });
 
-app.post("/procesar_creacion_partida", function(req, response) {
+app.post("/procesar_creacion_partida", function(req, response, next) {
     req.checkBody("nombrePartida", "El campo 'Nombre no puede estar vacío.").notEmpty();
     req.checkBody("nombrePartida", "El campo 'Nombre' no puede tener mas de 20 caracteres.").isLength({min : 0, max: 20});                
     req.getValidationResult().then(function(result) {
@@ -235,7 +228,7 @@ app.post("/procesar_creacion_partida", function(req, response) {
     });
 });
 
-app.get("/unirsePartida.html", function(req, response) {
+app.get("/unirsePartida.html", function(req, response, next) {
     DAO.obtenerPartidasAbiertas(req.session.nick, function(err, partidasAbiertas){
         if(err){
             next(err);
@@ -265,7 +258,7 @@ app.get("/unirsePartida.html", function(req, response) {
     
 });
 
-app.post("/procesar_unirse_partida", function(req, response){
+app.post("/procesar_unirse_partida", function(req, response, next){
     
     DAO.insertJugadorEnPartida(req.session.nick, req.body.Nombre, function(err){
         if(err){
@@ -296,7 +289,7 @@ app.post("/procesar_unirse_partida", function(req, response){
     });
 });
 
-app.post("/procesar_cerrar_partida", function(req, response){
+app.post("/procesar_cerrar_partida", function(req, response, next){
     
     var partidas = [];
     partidas[0] = {};
@@ -313,7 +306,7 @@ app.post("/procesar_cerrar_partida", function(req, response){
     });
 });
 
-app.get("/partida.html", function(req, response){
+app.get("/partida.html", function(req, response, next){
     if(req.session.nick){
         DAO.obtenerPartida(req.query.Nombre, function(err, datosPartida){
             if(err){
@@ -402,7 +395,7 @@ app.get("/partida.html", function(req, response){
        
 });
 
-app.get("/partidaTerminada.html", function(req, res){
+app.get("/partidaTerminada.html", function(req, res, next){
     DAO.obtenerPartida(req.query.Nombre, function(err, datosPartida){
         if(err){
             next(err);
@@ -468,7 +461,7 @@ app.get("/partidaTerminada.html", function(req, res){
     });
 });
 
-app.post("/procesar_carta_seleccionada", function(req, response){
+app.post("/procesar_carta_seleccionada", function(req, response, next){
     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
     DAO.obtenerCartasTablero(datosPartida.Nombre, function(err, cartasTablero){
         if(err){
@@ -533,7 +526,7 @@ app.post("/procesar_carta_seleccionada", function(req, response){
     
 });
 
-app.post("/procesar_insertar_carta", function(req, response){
+app.post("/procesar_insertar_carta", function(req, response, next){
     var carta = JSON.parse(req.body.Carta.toString());
     carta.PosX = parseInt(req.body.PosX);
     carta.PosY = parseInt(req.body.PosY);    
@@ -558,7 +551,7 @@ app.post("/procesar_insertar_carta", function(req, response){
     });   
 });
 
-app.post("/procesar_desechar_carta", function(req, response){  
+app.post("/procesar_desechar_carta", function(req, response, next){  
     var carta = JSON.parse(req.body.carta.toString());
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
         if(err){
@@ -587,7 +580,7 @@ app.post("/procesar_desechar_carta", function(req, response){
     });
 });
 
-app.post("/procesar_bomba", function(req, response){  
+app.post("/procesar_bomba", function(req, response, next){  
     var cartaBomba = JSON.parse(req.body.CartaBomba.toString());
     var carta = JSON.parse(req.body.Carta.toString());
     DAO.descartarCarta(cartaBomba, function(err){
@@ -624,7 +617,7 @@ app.post("/procesar_bomba", function(req, response){
     });
 });
 
-app.post("/procesar_lupa", function(req, response){  
+app.post("/procesar_lupa", function(req, response, next){  
     var cartaLupa = JSON.parse(req.body.CartaLupa.toString());
     var carta = JSON.parse(req.body.Carta.toString());
     DAO.obtenerCartaTablero(cartaLupa, function(err, cartaTablero){
@@ -669,7 +662,7 @@ app.post("/procesar_lupa", function(req, response){
     });    
 });
 
-app.post("/procesar_romper_pico", function(req, response){  
+app.post("/procesar_romper_pico", function(req, response, next){  
     var nickObjetivo = req.body.Nick;
     var carta = JSON.parse(req.body.Carta.toString());
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
@@ -706,7 +699,7 @@ app.post("/procesar_romper_pico", function(req, response){
     });
 });
 
-app.post("/procesar_arreglar_pico", function(req, response){  
+app.post("/procesar_arreglar_pico", function(req, response, next){  
     var nickObjetivo = req.body.Nick;
     var carta = JSON.parse(req.body.Carta.toString());
     DAO.descartarCartaYAsignar(carta, req.session.nick, function(err){
@@ -818,7 +811,7 @@ app.get("/imagen/carta/:id", function(request, response, next) {
     
 });
 
-app.post("/procesar_insertar_comentario", function(req, res){
+app.post("/procesar_insertar_comentario", function(req, res, next){
     var datosComentario = {};
     var datosPartida = JSON.parse(req.body.DatosPartida.toString());
     var cartas = JSON.parse(req.body.Cartas.toString());
@@ -856,6 +849,12 @@ app.post("/procesar_insertar_comentario", function(req, res){
     });
 });
 
+// Pantalla para errores
+app.use(function(err, req, res, next) {
+  res.status(500);
+  res.render("500", {session: {}, err: { mensaje: err.message, detalle: err.stack }, pagina: "500"  });
+  res.end();
+});
 
 app.listen(config.port, function() {
     console.log("Servidor arrancado en el puerto " + config.port);

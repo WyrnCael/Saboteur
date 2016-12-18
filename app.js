@@ -856,6 +856,14 @@ app.use(function(err, req, res, next) {
   res.end();
 });
 
-app.listen(config.port, function() {
+// Pantalla página no encontrada
+app.use(function(req, response, next) {
+    response.status(404);
+    response.render("404", {errores: undefined, session: req.session, pagina: "404"});
+    response.end();
+});
+
+
+app.listen(config.port, function(next) {
     console.log("Servidor arrancado en el puerto " + config.port);
 });

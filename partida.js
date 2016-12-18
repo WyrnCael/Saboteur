@@ -1,3 +1,6 @@
+/* 
+ * GRUPO 111 - Rubén Casado y Juan José Prieto
+ */
 "use strict";
 
 var DAO = require('./DAO.js');

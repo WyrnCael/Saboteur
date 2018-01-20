@@ -67,3 +67,7 @@ la pepita de oro, los saboteadores ganan la partida.
    - [Multer](https://github.com/expressjs/multer)
    - [Mysql](https://github.com/mysqljs/mysql)
  - [XAMPP](https://www.apachefriends.org/es/index.html)
+ 
+ ### Base de datos
+ 
+ La base de datos utilizada por la web está disponible en [el último release](https://github.com/WyrnCael/Saboteur/releases).
